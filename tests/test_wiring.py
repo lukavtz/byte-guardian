@@ -72,6 +72,21 @@ def test_create_dispatcher_registers_repo(monkeypatch: pytest.MonkeyPatch) -> No
     assert any(middleware._repo is repo for middleware in middlewares if hasattr(middleware, "_repo"))
 
 
+def test_message_middlewares_are_outer_so_they_run_once(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Inner dispatcher middleware re-runs per router; a 1/s private limit then blocks all."""
+    dispatcher = _dispatcher(monkeypatch, FakeRepo())
+
+    outer = dispatcher.message.outer_middleware._middlewares  # type: ignore[attr-defined]
+    inner = dispatcher.message.middleware._middlewares  # type: ignore[attr-defined]
+    assert any(type(m).__name__ == "RateLimitMiddleware" for m in outer)
+    assert any(type(m).__name__ == "AllowlistMiddleware" for m in outer)
+    assert not any(
+        type(m).__name__ in {"RateLimitMiddleware", "AllowlistMiddleware"} for m in inner
+    )
+
+
 @pytest.mark.asyncio
 async def test_startup_seeds_then_loads(monkeypatch: pytest.MonkeyPatch) -> None:
     repo = FakeRepo()

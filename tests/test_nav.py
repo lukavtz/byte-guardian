@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
@@ -38,7 +39,7 @@ class FakeDB:
         opt_in: dict[int, bool] | None = None,
         locales: dict[int, str] | None = None,
     ) -> None:
-        self.settings: dict[str, str] = {}
+        self.settings: dict[str, object] = {}
         self.users = dict(opt_in or {})
         self.locales = dict(locales or {})
 
@@ -48,7 +49,8 @@ class FakeDB:
     def execute(self, statement, params: dict) -> _Result:
         sql = " ".join(str(statement).split())
         if sql.startswith("INSERT INTO settings"):
-            self.settings[params["key"]] = params["value"]
+            # asyncpg decodes jsonb, so the fake must too.
+            self.settings[params["key"]] = json.loads(params["value"])
             return _Result([])
         if sql.startswith("SELECT value FROM settings"):
             key = params["key"]

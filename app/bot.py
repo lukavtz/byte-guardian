@@ -101,8 +101,10 @@ def create_dispatcher(settings: Settings, bot: Bot, redis: Redis | None) -> Disp
         visibility_timeout_seconds=settings.queue_visibility_timeout_seconds,
     )
     dispatcher.update.middleware(DedupeMiddleware(redis))
-    dispatcher.message.middleware(RateLimitMiddleware(redis))
-    dispatcher.message.middleware(AllowlistMiddleware(settings.admin_id_set))
+    # Outer, not inner: aiogram re-runs a dispatcher-level inner middleware once
+    # per nested router, so a 1/s private limit dropped every message.
+    dispatcher.message.outer_middleware(RateLimitMiddleware(redis))
+    dispatcher.message.outer_middleware(AllowlistMiddleware(settings.admin_id_set))
     dispatcher.errors.register(handle_error)
 
     async def startup_content(**_kwargs: object) -> None:

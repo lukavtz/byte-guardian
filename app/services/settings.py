@@ -25,10 +25,6 @@ DELETE_SQL = text("DELETE FROM settings WHERE key = :key")
 TAKE_SQL = text("DELETE FROM settings WHERE key = :key RETURNING value")
 
 
-def _decode(value: Any) -> Any:
-    return json.loads(value) if isinstance(value, str) else value
-
-
 async def settings_get(
     session_factory: async_sessionmaker[AsyncSession], key: str
 ) -> Any | None:
@@ -37,8 +33,9 @@ async def settings_get(
             row = (await session.execute(SELECT_SQL, {"key": key})).first()
     if row is None:
         return None
-    value = row[0]
-    return json.loads(value) if isinstance(value, str) else value
+    # The asyncpg dialect decodes jsonb itself; a second json.loads here turns
+    # "1" into 1 and crashes on plain strings.
+    return row[0]
 
 
 async def settings_set(
@@ -98,7 +95,7 @@ async def draft_take(
             row = (await session.execute(TAKE_SQL, {"key": key})).first()
     if row is None:
         return None
-    value = _decode(row[0])
+    value = row[0]
     if not isinstance(value, dict):
         return None
     created_at = value.get("created_at")
