@@ -6,7 +6,8 @@
     "sort": 7,
     "title": {
       "ru": "Радиация",
-      "en": "Radiation"
+      "en": "Radiation",
+      "zh": "辐射"
     }
   },
   "threats": [
@@ -91,6 +92,45 @@
             "112",
             "City emergency dispatch service"
           ]
+        },
+        "zh": {
+          "title": "辐射事故",
+          "summary": "收到放射性物质释放的警报。到室内躲避，脱去外衣，关闭窗户和通风口，打开收音机，等待官方指示。",
+          "signs": [
+            "“辐射危险”信号、警报器或断续的汽笛声",
+            "通过广播、电视和扩音器发布的官方消息",
+            "监测站和剂量计的读数升高",
+            "工业场地上空出现浓重粉尘或烟雾"
+          ],
+          "before": [
+            "向当地政府或统一紧急调度服务了解辐射事故的通报方式",
+            "家中备好几天的水、食物和药品",
+            "备好密封袋和薄膜，用于封窗和封装食品",
+            "记下112和当地的预警渠道"
+          ],
+          "during": [
+            "进入室内，把外衣和鞋放进袋子",
+            "关闭窗户、门和通风口，封住缝隙",
+            "打开收音机或电视，等待官方消息",
+            "待在房间最靠里的位置，远离窗户"
+          ],
+          "after": [
+            "仅在官方许可后外出",
+            "在集合点接受辐射检测",
+            "按服务部门的指示换衣和淋浴",
+            "关注关于安全区域的消息"
+          ],
+          "forbidden": [
+            "不要外出，不要让孩子出去玩",
+            "不要开窗通风",
+            "不要吃留在露天的食物",
+            "不要相信即时通讯软件里的传言"
+          ],
+          "contacts": [
+            "112",
+            "城市紧急调度服务"
+          ],
+          "source": "俄罗斯紧急情况部 · https://41.mchs.gov.ru/deyatelnost/poleznaya-informaciya/dopolnitelnye-stranicy/staticheskie-stranicy/kompleksnaya-sistema-ekstrennogo-opoveshcheniya-naseleniya/prakticheskie-meropriyatiya/pamyatki-po-deystviyam-naseleniya/pamyatka-po-deystviyam-naseleniya-pri-poluchenii-signala-ekstrennogo-opoveshcheniya-o-radiacionnoy-opasnosti"
         }
       },
       "quiz": {
@@ -169,6 +209,44 @@
             "answer": 1,
             "explanation": "Only official channels give verified instructions."
           }
+        ],
+        "zh": [
+          {
+            "id": "q1",
+            "prompt": "宣布发生辐射事故时首先应该做什么？",
+            "options": [
+              "进入室内，关窗并打开收音机",
+              "走到外面看发生了什么",
+              "开窗通风",
+              "到事故设施去了解详情"
+            ],
+            "answer": 0,
+            "explanation": "在释放事故中，躲避和官方消息是防护的基础。"
+          },
+          {
+            "id": "q2",
+            "prompt": "放射性释放期间，待在公寓的哪里最安全？",
+            "options": [
+              "在阳台上",
+              "在客厅窗边",
+              "在房间最靠里的位置，远离窗户",
+              "在入口门旁的楼道"
+            ],
+            "answer": 2,
+            "explanation": "窗户和外墙附近积尘更多，所以要待在房间最靠里的位置。"
+          },
+          {
+            "id": "q3",
+            "prompt": "应该从哪里获取辐射情况的信息？",
+            "options": [
+              "从传言和聊天群",
+              "从政府和部门的官方消息",
+              "从陌生博主的帖子",
+              "从街上的谈话"
+            ],
+            "answer": 1,
+            "explanation": "只有官方渠道给出经过核实的指示。"
+          }
         ]
       }
     },
@@ -243,6 +321,40 @@
             "112",
             "Ambulance 103"
           ]
+        },
+        "zh": {
+          "title": "碘预防",
+          "summary": "碘预防是在辐射事故后由官方正式通知时服用稳定碘制剂。俄罗斯使用碘化钾：成人和2岁以上儿童每次0.125克片剂。通知后最初几小时效果最好。",
+          "signs": [
+            "发生放射性碘释放的辐射事故",
+            "存在放射性碘进入体内的风险",
+            "官方宣布需要进行碘预防"
+          ],
+          "before": [
+            "检查片剂有效期：为4年",
+            "了解碘化钾片剂的存放位置",
+            "记下112和门诊部的电话"
+          ],
+          "during": [
+            "仅在官方正式通知后服用0.125克片剂（成人和2岁以上儿童）",
+            "不要拖延服用：通知后最初几小时防护效果最好",
+            "每天1片，但不超过10天，或直到官方通知停止",
+            "2岁以下儿童：1/4片，且只能按医嘱服用"
+          ],
+          "after": [
+            "按官方指示停止服用，但最晚不超过10天",
+            "孕妇和2岁以下儿童：只能按医嘱，用法不同",
+            "查看制剂的说明书和有效期"
+          ],
+          "forbidden": [
+            "不要拖延服用：最初几小时防护效果最好",
+            "不要使用超过有效期的片剂"
+          ],
+          "contacts": [
+            "112",
+            "救护车103"
+          ],
+          "source": "俄罗斯紧急情况部 · https://mchs.gov.ru/ministerstvo/o-ministerstve/terminy-mchs-rossii/term/3015 · 俄罗斯紧急情况部堪察加边疆区总局 · https://41.mchs.gov.ru/deyatelnost/poleznaya-informaciya/dopolnitelnye-stranicy/staticheskie-stranicy/kompleksnaya-sistema-ekstrennogo-opoveshcheniya-naseleniya/prakticheskie-meropriyatiya/pamyatki-po-deystviyam-naseleniya/pamyatka-po-deystviyam-naseleniya-pri-poluchenii-signala-ekstrennogo-opoveshcheniya-o-radiacionnoy-opasnosti"
         }
       },
       "quiz": {
@@ -320,6 +432,44 @@
             ],
             "answer": 0,
             "explanation": "Stabilized tablets of 0.125 g have been developed for adults and children from 2 years."
+          }
+        ],
+        "zh": [
+          {
+            "id": "q1",
+            "prompt": "碘预防什么时候最有效？",
+            "options": [
+              "事故后最初几小时",
+              "事故后一个月",
+              "事故前每天",
+              "任何时候只要提到辐射"
+            ],
+            "answer": 0,
+            "explanation": "在事故后最初几小时内进行效果最好。"
+          },
+          {
+            "id": "q2",
+            "prompt": "俄罗斯进行碘预防使用哪种制剂？",
+            "options": [
+              "碘化钾",
+              "活性炭",
+              "阿司匹林",
+              "Validol"
+            ],
+            "answer": 0,
+            "explanation": "俄罗斯为此推荐并使用碘化钾。"
+          },
+          {
+            "id": "q3",
+            "prompt": "成人的碘化钾片剂剂量是多少？",
+            "options": [
+              "0.125克",
+              "0.5克",
+              "1克",
+              "0.005克"
+            ],
+            "answer": 0,
+            "explanation": "为成人和2岁以上儿童研制了0.125克的稳定片剂。"
           }
         ]
       }
@@ -401,6 +551,43 @@
             "112",
             "City emergency dispatch service"
           ]
+        },
+        "zh": {
+          "title": "从污染区疏散",
+          "summary": "只有官方宣布后才开始疏散。带好证件、药品和水，安顿好住宅，沿指定路线行动。",
+          "signs": [
+            "广播和电视发布疏散通知",
+            "装有扩音器的车辆发出警报",
+            "要求前往集合点的命令"
+          ],
+          "before": [
+            "带好证件、现金、药品和饮用水",
+            "把物品装进密封袋或薄膜中",
+            "关好门窗，切断电源和燃气",
+            "通知邻居，帮助老人做好准备"
+          ],
+          "during": [
+            "穿厚衣物，戴帽子和手套",
+            "用湿布或口罩遮住口鼻",
+            "沿指定路线前往集合点",
+            "上车时在疏散委员会登记"
+          ],
+          "after": [
+            "把外衣交去去污或销毁",
+            "用肥皂清洗身体，用清水漱口",
+            "接受辐射检测并换上干净衣物",
+            "向医务人员说明自己的感受"
+          ],
+          "forbidden": [
+            "未获许可不要回家",
+            "不要携带受污染的物品或玩具",
+            "不要饮用开放水源的水"
+          ],
+          "contacts": [
+            "112",
+            "城市紧急调度服务"
+          ],
+          "source": "俄罗斯紧急情况部 · https://73.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/deystviya-naseleniya-pri-radiacionnoy-avarii-i-radioaktivnom-zagryaznenii-mestnosti"
         }
       },
       "quiz": {
@@ -479,6 +666,44 @@
             "answer": 0,
             "explanation": "The screening shows whether contamination remains on the body or clothing."
           }
+        ],
+        "zh": [
+          {
+            "id": "q1",
+            "prompt": "放射性污染区的疏散什么时候开始？",
+            "options": [
+              "一看到烟就开始",
+              "政府正式宣布之后",
+              "下班之后",
+              "听邻居建议"
+            ],
+            "answer": 1,
+            "explanation": "疏散路线和时间由官方确定。"
+          },
+          {
+            "id": "q2",
+            "prompt": "离开污染区时如何保护呼吸？",
+            "options": [
+              "深呼吸",
+              "用湿布或口罩遮住口鼻",
+              "脱掉外衣",
+              "不做防护地逆风走"
+            ],
+            "answer": 1,
+            "explanation": "湿布或口罩可以拦住部分放射性粉尘。"
+          },
+          {
+            "id": "q3",
+            "prompt": "在集合点清洗之后要做什么？",
+            "options": [
+              "接受辐射检测",
+              "去商店",
+              "回家取物品",
+              "吃从家里带来的食物"
+            ],
+            "answer": 0,
+            "explanation": "检测可以显示身体或衣物上是否还有污染。"
+          }
         ]
       }
     },
@@ -555,6 +780,41 @@
             "112",
             "City emergency dispatch service"
           ]
+        },
+        "zh": {
+          "title": "受污染的衣物和鞋",
+          "summary": "离开污染区后穿的衣物可能带有放射性粉尘。在门口脱下，放进密封袋。",
+          "signs": [
+            "外出后衣物和鞋上有粉尘",
+            "官方通报该地区本底水平升高",
+            "工作人员要求你去污"
+          ],
+          "before": [
+            "家中备好备用袋子和干净衣物",
+            "在门口留出放外衣的位置",
+            "了解去污点的位置"
+          ],
+          "during": [
+            "在门口脱下外衣和鞋",
+            "把物品放进袋子并扎紧",
+            "用肥皂在流动水下洗手和洗脸",
+            "淋浴并换上干净衣物"
+          ],
+          "after": [
+            "不要把受污染物品与其他衣物一起洗",
+            "按服务部门指示把物品送去辐射监测",
+            "在室外用水清洗鞋子"
+          ],
+          "forbidden": [
+            "不要在室内抖打衣物",
+            "不要在共用洗衣机里清洗受污染物品",
+            "不要把受污染物品存放在起居室"
+          ],
+          "contacts": [
+            "112",
+            "城市紧急调度服务"
+          ],
+          "source": "俄罗斯紧急情况部 · https://73.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/deystviya-naseleniya-pri-radiacionnoy-avarii-i-radioaktivnom-zagryaznenii-mestnosti"
         }
       },
       "quiz": {
@@ -633,6 +893,44 @@
             "answer": 1,
             "explanation": "Washing at home spreads contamination to the machine, the water, and other items."
           }
+        ],
+        "zh": [
+          {
+            "id": "q1",
+            "prompt": "离开污染区后外衣应放在哪里？",
+            "options": [
+              "卧室的衣柜里",
+              "门口密封的袋子里",
+              "阳台上",
+              "和其他衣物一起放进洗衣机"
+            ],
+            "answer": 1,
+            "explanation": "放在门口的袋子里可以防止粉尘扩散到整个住所。"
+          },
+          {
+            "id": "q2",
+            "prompt": "脱下受污染衣物后手应该怎么处理？",
+            "options": [
+              "用肥皂在流动水下清洗",
+              "用干布擦",
+              "到早上都不处理",
+              "在衣服上蹭"
+            ],
+            "answer": 0,
+            "explanation": "肥皂和流动水可以清除皮肤上的粉尘。"
+          },
+          {
+            "id": "q3",
+            "prompt": "为什么不能在家清洗受污染物品？",
+            "options": [
+              "布料会损坏",
+              "粉尘会进入洗衣机、水和其他物品",
+              "商店规定禁止",
+              "洗涤剂太贵"
+            ],
+            "answer": 1,
+            "explanation": "在家清洗会把污染扩散到洗衣机、水和其他物品。"
+          }
         ]
       }
     },
@@ -709,6 +1007,41 @@
             "112",
             "Rospotrebnadzor"
           ]
+        },
+        "zh": {
+          "title": "受污染的水和食物",
+          "summary": "来自污染区的水和食物可能有危险。饮用经过检测的水或瓶装水，食用密封包装的食物。",
+          "signs": [
+            "关于水源受污染的警告",
+            "禁止销售来自该区的食品",
+            "粉尘落在敞开的食物和表面上"
+          ],
+          "before": [
+            "储备瓶装水和密封包装食品",
+            "把食物存放在柜子和冰箱里",
+            "了解哪些水源被认为是安全的"
+          ],
+          "during": [
+            "饮用瓶装水或经过检测的水源的水",
+            "用检测过的水清洗蔬菜和水果",
+            "不要在污染区采蘑菇、浆果或草药",
+            "不要饮用井水或开放水体的水"
+          ],
+          "after": [
+            "按服务部门指示把储备食物送去辐射检测",
+            "丢弃留在露天未遮盖的食物",
+            "向服务部门询问水何时恢复安全"
+          ],
+          "forbidden": [
+            "不要吃未遮盖的食物",
+            "未经服务部门许可不要饮用自来水",
+            "不要给孩子吃来自污染区的食物"
+          ],
+          "contacts": [
+            "112",
+            "俄罗斯消费者权益保护局"
+          ],
+          "source": "俄罗斯紧急情况部 · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pravila-povedeniya-naseleniya-na-radiaktivno-zagryaznennoy-territorii_2"
         }
       },
       "quiz": {
@@ -787,6 +1120,44 @@
             "answer": 2,
             "explanation": "Mushrooms and berries accumulate radioactive substances, so they are not gathered in the contamination zone."
           }
+        ],
+        "zh": [
+          {
+            "id": "q1",
+            "prompt": "水源受污染时应该喝什么水？",
+            "options": [
+              "最近的井水",
+              "开放水体的水",
+              "瓶装水或经过检测的水",
+              "未经服务部门警示的自来水"
+            ],
+            "answer": 2,
+            "explanation": "经过检测的水不含放射性物质，或含量在安全范围内。"
+          },
+          {
+            "id": "q2",
+            "prompt": "留在露天未遮盖的食物应该怎么处理？",
+            "options": [
+              "丢掉",
+              "冲洗后食用",
+              "喂给动物",
+              "放进冰箱"
+            ],
+            "answer": 0,
+            "explanation": "放射性粉尘落在了未遮盖的食物上。"
+          },
+          {
+            "id": "q3",
+            "prompt": "可以在污染区采蘑菇和浆果吗？",
+            "options": [
+              "可以，只要洗干净",
+              "可以，只要长时间煮",
+              "不可以",
+              "只在九月可以"
+            ],
+            "answer": 2,
+            "explanation": "蘑菇和浆果会蓄积放射性物质，因此不在污染区采集。"
+          }
         ]
       }
     },
@@ -863,6 +1234,41 @@
             "112",
             "City emergency dispatch service"
           ]
+        },
+        "zh": {
+          "title": "剂量计和本底读数",
+          "summary": "剂量计显示所在位置的剂量率。它不能代替官方通报：读数升高时，进入室内躲避并拨打112。",
+          "signs": [
+            "剂量计读数高于通常本底",
+            "官方通报你所在地区本底升高",
+            "广播警报或汽笛声"
+          ],
+          "before": [
+            "事先检查剂量计的电池和工作状态",
+            "记下你所在地区的通常本底水平",
+            "阅读设备说明书，了解测量单位"
+          ],
+          "during": [
+            "把读数与你所在地区的通常本底比较",
+            "读数升高时进入室内并打开收音机",
+            "拨打112报告高读数",
+            "不要因单次跳数惊慌，先检查设备"
+          ],
+          "after": [
+            "为有关部门记录读数和时间",
+            "关注官方通报",
+            "把读数转交辐射监测点"
+          ],
+          "forbidden": [
+            "不要仅凭设备读数服药",
+            "不要把未经核实的数字当作预报发布",
+            "不要自行拆解或修理设备"
+          ],
+          "contacts": [
+            "112",
+            "城市紧急调度服务"
+          ],
+          "source": "俄罗斯紧急情况部 · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pravila-povedeniya-naseleniya-na-radiaktivno-zagryaznennoy-territorii_2"
         }
       },
       "quiz": {
@@ -941,6 +1347,44 @@
             "answer": 2,
             "explanation": "Pills are taken only after an official announcement."
           }
+        ],
+        "zh": [
+          {
+            "id": "q1",
+            "prompt": "剂量计显示什么？",
+            "options": [
+              "你所在位置的辐射剂量率",
+              "准确的七天预报",
+              "天气",
+              "自来水水位"
+            ],
+            "answer": 0,
+            "explanation": "设备测量它所在位置的本底。"
+          },
+          {
+            "id": "q2",
+            "prompt": "剂量计读数升高时应该怎么做？",
+            "options": [
+              "继续到处走动",
+              "进入室内，打开收音机并拨打112",
+              "关掉设备",
+              "打开窗户"
+            ],
+            "answer": 1,
+            "explanation": "躲避并与官方联系，比自行判断更重要。"
+          },
+          {
+            "id": "q3",
+            "prompt": "可以只凭剂量计读数服用碘化钾吗？",
+            "options": [
+              "可以，总是可以",
+              "可以，如果设备很贵",
+              "不可以，需要官方信号和医务人员的指示",
+              "可以，只需要给儿童服用"
+            ],
+            "answer": 2,
+            "explanation": "只有在官方正式通知后才能服药。"
+          }
         ]
       }
     },
@@ -1017,6 +1461,41 @@
             "112",
             "City emergency dispatch service"
           ]
+        },
+        "zh": {
+          "title": "在建筑物内躲避",
+          "summary": "在室内躲避可以减少进入室内的放射性粉尘。关闭窗户和通风口，转移到没有窗户的房间，等待官方消息。",
+          "signs": [
+            "警报信号和躲避指令",
+            "辐射水平高于正常",
+            "释放后空气中有粉尘"
+          ],
+          "before": [
+            "了解最近的避难所或地下室位置",
+            "家中备好水、食物、手电筒、收音机和药品",
+            "储备封堵缝隙用的塑料薄膜和胶带"
+          ],
+          "during": [
+            "进入室内，关闭窗户、门和通风口",
+            "转移到没有窗户的房间或地下室",
+            "用塑料薄膜或胶带封住窗户缝隙",
+            "收听广播，等待官方消息"
+          ],
+          "after": [
+            "仅在官方许可后离开",
+            "向服务部门询问房间能否通风",
+            "离开时接受辐射监测"
+          ],
+          "forbidden": [
+            "不要到阳台上，也不要开窗",
+            "不要使用排风扇或空调",
+            "不要把食物和水敞开放置"
+          ],
+          "contacts": [
+            "112",
+            "城市紧急调度服务"
+          ],
+          "source": "俄罗斯紧急情况部 · https://41.mchs.gov.ru/deyatelnost/poleznaya-informaciya/dopolnitelnye-stranicy/staticheskie-stranicy/kompleksnaya-sistema-ekstrennogo-opoveshcheniya-naseleniya/prakticheskie-meropriyatiya/pamyatki-po-deystviyam-naseleniya/pamyatka-po-deystviyam-naseleniya-pri-poluchenii-signala-ekstrennogo-opoveshcheniya-o-radiacionnoy-opasnosti"
         }
       },
       "quiz": {
@@ -1094,6 +1573,44 @@
             ],
             "answer": 2,
             "explanation": "Services determine when it is safe to leave based on measurements."
+          }
+        ],
+        "zh": [
+          {
+            "id": "q1",
+            "prompt": "放射性释放期间最好在哪个房间躲避？",
+            "options": [
+              "阳台",
+              "建筑物内部没有窗户的房间",
+              "入口旁的楼道",
+              "建筑物的院子"
+            ],
+            "answer": 1,
+            "explanation": "没有窗户的内间可以防粉尘和辐射。"
+          },
+          {
+            "id": "q2",
+            "prompt": "躲避期间通风设备应该怎么处理？",
+            "options": [
+              "开到最大",
+              "关闭",
+              "开窗通风",
+              "无所谓"
+            ],
+            "answer": 1,
+            "explanation": "通风会把放射性粉尘吸入房间。"
+          },
+          {
+            "id": "q3",
+            "prompt": "什么时候可以离开躲避处？",
+            "options": [
+              "一小时后",
+              "风停之后",
+              "官方许可后",
+              "想走就走"
+            ],
+            "answer": 2,
+            "explanation": "服务部门根据测量结果确定何时可以安全离开。"
           }
         ]
       }
