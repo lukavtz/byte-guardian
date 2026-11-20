@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
@@ -10,6 +11,7 @@ from test_llm import _card, _client, _message, _Repo, _settings
 from app.handlers import llm as handlers
 from app.services import llm as service
 from app.services import web_search
+from app.services.conversation import Turn
 from app.services.web_search import WebResult, format_web_context, search_web
 
 DDG_HTML = """
@@ -185,11 +187,45 @@ def test_web_context_is_marked_untrusted_and_clipped() -> None:
 def test_build_messages_appends_the_untrusted_block() -> None:
     block = format_web_context([WebResult(title="Т", url="https://cbr.ru/x", snippet="к")])
     messages = service.build_messages("какой курс?", "ru", [_card()], block)
-    user = messages[1]["content"]
+    user = messages[-1]["content"]
 
     assert "Карточки:" in user
     assert user.index("Карточки:") < user.index("UNTRUSTED")
-    assert "Источник: <url>" in messages[0]["content"]
+    assert "URL: https://cbr.ru/x" in user
+    assert "Никогда не пиши URL" in messages[0]["content"]
+
+
+def test_build_messages_never_claims_there_are_no_cards() -> None:
+    user = service.build_messages("какой курс?", "ru", [], None)[-1]["content"]
+    assert "Карточек по теме нет" not in user
+    assert "Карточки:" not in user
+
+
+def test_build_messages_always_injects_skills(monkeypatch: pytest.MonkeyPatch) -> None:
+    seen: list[tuple[str, str]] = []
+
+    def fake_skills(question: str, locale: str) -> str:
+        seen.append((question, locale))
+        return '<skill name="formatting">правила</skill>'
+
+    monkeypatch.setattr(service, "format_skills", fake_skills)
+    messages = service.build_messages("привет", "ru", [])
+
+    assert seen == [("привет", "ru")]
+    assert '<skill name="formatting">' in messages[0]["content"]
+
+
+def test_build_messages_keeps_history_between_rules_and_question() -> None:
+    history = [
+        Turn(role="user", text="был пожар", at=1.0),
+        Turn(role="assistant", text="звони 101", at=2.0),
+    ]
+    messages = service.build_messages("что дальше?", "ru", [], None, history)
+
+    assert [message["role"] for message in messages] == ["system", "system", "user", "assistant", "user"]
+    assert messages[2]["content"] == "<history>был пожар</history>"
+    assert messages[3]["content"] == "<history>звони 101</history>"
+    assert "<history>" not in messages[-1]["content"]
 
 
 # --- handler flow ---------------------------------------------------------
@@ -254,11 +290,14 @@ async def test_respond_skips_search_for_strong_card_matches(monkeypatch: pytest.
 
 
 async def test_invented_source_url_gets_no_button(monkeypatch: pytest.MonkeyPatch) -> None:
+    retrieved = "https://mchs.gov.ru/real"
+    invented = "https://invented.example/x"
+
     async def fake_search(query: str, **kwargs: object) -> list[WebResult]:
-        return [WebResult(title="Т", url="https://mchs.gov.ru/real", snippet="с")]
+        return [WebResult(title="Т", url=retrieved, snippet="с")]
 
     def completion(request: httpx.Request) -> httpx.Response:
-        content = "Текст\nИсточник: https://invented.example/x"
+        content = f"Текст\nИсточник: {invented}\nИсточник: {retrieved}"
         return httpx.Response(200, json={"choices": [{"message": {"content": content}}]})
 
     monkeypatch.setattr(handlers, "search_web", fake_search)
@@ -276,4 +315,30 @@ async def test_invented_source_url_gets_no_button(monkeypatch: pytest.MonkeyPatc
     )
 
     markup = message.answer.await_args.kwargs["reply_markup"]
-    assert markup.inline_keyboard[0][0].callback_data is not None
+    urls = [button.url for row in markup.inline_keyboard for button in row if button.url]
+    assert urls == [retrieved]
+
+
+async def test_respond_does_not_log_question_or_secret(
+    monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    settings = _settings()
+
+    def completion(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, json={"choices": [{"message": {"content": "Ответ"}}]})
+
+    monkeypatch.setattr(service, "client_for", lambda settings: _client(completion))
+    message = _message("вопрос")
+    with caplog.at_level(logging.DEBUG):
+        await handlers.respond(
+            message,
+            "СЕКРЕТНЫЙ_ВОПРОС_991",
+            bot=SimpleNamespace(id=999),
+            settings=settings,
+            repository=None,
+            bot_username="bytebot",
+            chat=True,
+        )
+
+    assert "СЕКРЕТНЫЙ_ВОПРОС_991" not in caplog.text
+    assert settings.llm_api_key not in caplog.text
