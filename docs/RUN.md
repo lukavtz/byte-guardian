@@ -1,0 +1,158 @@
+# Запуск ByteGuardian в Podman
+
+Проверялось на Podman 6.2.0 (macOS arm64) и rootless Podman на Linux.
+Требования: Podman ≥ 5, compose-провайдер (`podman compose`), `.env` в корне репозитория.
+
+## 1. Подготовка
+
+```bash
+cp .env.example .env
+```
+
+Заполнить минимум:
+
+| Переменная | Значение |
+|---|---|
+| `BOT_TOKEN` | токен от @BotFather |
+| `WEBHOOK_SECRET` | `A-Za-z0-9_-`, 1–256 символов |
+| `POSTGRES_PASSWORD` | пароль БД |
+| `REDIS_PASSWORD` | пароль Redis |
+| `BOT_MODE` | `polling` локально, `webhook` в проде |
+| `WEBHOOK_URL` | `https://<домен>` (только webhook) |
+| `ADMIN_IDS` | Telegram ID админов через запятую |
+| `LLM_BASE_URL`, `LLM_MODEL`, `LLM_API_KEY` | OpenAI-совместимый провайдер |
+
+`DATABASE_URL` и `REDIS_URL` compose собирает сам из паролей и имён сервисов.
+Вручную их задавать не нужно; для запуска без compose — обязательно.
+
+## 2. macOS
+
+```bash
+podman machine init      # один раз
+podman machine start
+podman machine inspect --format '{{.ConnectionInfo.PodmanSocket.Path}}'
+```
+
+## 3. Запуск
+
+```bash
+podman compose up -d --build
+podman compose ps
+podman compose logs -f bot
+curl -fsS localhost:8080/healthz
+curl -fsS localhost:8080/readyz
+```
+
+Порядок: `postgres`/`redis` (healthcheck) → `migrate` (`alembic upgrade head`) →
+`bot`, `worker`. `caddy` публикует 80/443 и проксирует `bot:8080`.
+
+Проверка без запуска контейнеров:
+
+```bash
+podman compose config
+```
+
+## 4. Режимы
+
+Polling (dev): `BOT_MODE=polling`, вебхук не нужен, наружу ничего не публикуется.
+
+Webhook (prod): `BOT_MODE=webhook`, `WEBHOOK_URL=https://<домен>`.
+Caddy терминирует TLS на `<домен>` из `Caddyfile`, Telegram ходит на `/webhook`.
+
+Перед сменой режима удалить старый вебхук:
+
+```bash
+curl -fsS "https://api.telegram.org/bot$BOT_TOKEN/deleteWebhook"
+```
+
+Зарегистрировать новый:
+
+```bash
+curl -fsS "https://api.telegram.org/bot$BOT_TOKEN/setWebhook" \
+  -d "url=$WEBHOOK_URL/webhook" \
+  -d "secret_token=$WEBHOOK_SECRET" \
+  -d 'allowed_updates=["message","callback_query","inline_query"]'
+curl -fsS "https://api.telegram.org/bot$BOT_TOKEN/getWebhookInfo"
+```
+
+## 5. Rootless-порты
+
+Rootless Podman по умолчанию не может слушать порты < 1024, поэтому публикация
+80/443 упадёт с `bind: permission denied`.
+
+Linux (постоянно):
+
+```bash
+sudo sysctl -w net.ipv4.ip_unprivileged_port_start=80
+echo 'net.ipv4.ip_unprivileged_port_start=80' | sudo tee /etc/sysctl.d/99-podman-ports.conf
+```
+
+Без прав root: убрать `ports` у `caddy` и поставить внешний reverse proxy, либо
+слушать 8080/8443 и проксировать с хоста.
+
+macOS: порты внутри `podman machine` уже разрешены, sysctl не нужен.
+
+## 6. Обслуживание
+
+```bash
+podman compose logs -f bot worker
+podman compose restart bot
+podman compose exec bot uv run alembic upgrade head
+podman compose down                 # тома сохраняются
+podman compose down -v              # удалить БД и Redis
+```
+
+Бэкап БД:
+
+```bash
+podman compose exec postgres pg_dump -U "${POSTGRES_USER:-bot}" "${POSTGRES_DB:-bot}" > backup.sql
+```
+
+## 7. Диагностика
+
+**`Cannot connect to Podman` / нет сокета**
+```bash
+podman machine start            # macOS
+podman info                     # должен вернуть версию, не ошибку
+systemctl --user status podman.socket   # Linux: включить и запустить
+systemctl --user enable --now podman.socket
+export DOCKER_HOST=unix://$XDG_RUNTIME_DIR/podman/podman.sock
+```
+
+**`podman compose` требует внешний провайдер**
+`podman compose` — обёртка. Если провайдер не найден:
+```bash
+podman compose version          # покажет используемый бинарь
+pipx install podman-compose     # альтернатива
+# или поставить docker-compose и указать его:
+export PODMAN_COMPOSE_PROVIDER=/opt/homebrew/bin/docker-compose
+```
+Проверка: `podman compose config` должен печатать разобранный YAML без ошибок.
+
+**`pull access denied` / `short-name resolution`**
+Добавить registry в имя образа (`docker.io/library/postgres:18-alpine`) или
+`unqualified-search-registries` в `/etc/containers/registries.conf`.
+
+**`migrate` завершился с ошибкой**
+```bash
+podman compose logs migrate
+podman compose run --rm migrate uv run alembic current
+```
+Причина обычно — неверный `POSTGRES_PASSWORD` или недоступный `postgres`.
+
+**`readyz` отдаёт 503**
+```bash
+podman compose ps                       # все ли healthy
+podman compose exec redis redis-cli -a "$REDIS_PASSWORD" ping
+podman compose exec postgres pg_isready -U "${POSTGRES_USER:-bot}"
+```
+`checks.postgres` / `checks.redis` в ответе показывают, что именно упало.
+
+**Вебхук не доходит**
+```bash
+podman compose logs caddy bot
+curl -i https://<домен>/healthz
+curl -fsS "https://api.telegram.org/bot$BOT_TOKEN/getWebhookInfo"
+```
+`last_error_message` в ответе Telegram обычно указывает на 403 (неверный секрет)
+или 502 (Caddy не видит `bot`).

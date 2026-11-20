@@ -2,7 +2,8 @@
 
 Дата: 2026-11-20
 Проект: телеграм-бот-справочник по БЖД (безопасность жизнедеятельности), практика в вузе.
-Стек: Python 3.14 + aiogram 3.31, Postgres 17, Podman, OpenAI-совместимый LLM.
+Стек: Python 3.14 + aiogram 3.31, Postgres 18, Redis 8 (dedupe, rate limit, очередь),
+Podman Compose, OpenAI-совместимый LLM.
 
 ## 1. Зачем
 
@@ -48,9 +49,10 @@
   не callback (`raw/iva-agent/.../rich-replies/SKILL.md:158-160`) → навигация только
   через `reply_markup`.
 - Inline-режим не умеет Rich Messages: только `InlineQueryResult*` + HTML ≤4096.
-- Podman 6.2.0 установлен, машина не создана (`podman machine init`); compose-провайдер —
-  внешний `docker-compose` 29.9.2.
-- Postgres-очередь и dedupe `update_id` генерирует скаффолд aurifex.
+- Podman 6.2.0 установлен, машина не создана (`podman machine init`); `podman compose`
+  работает через внешний compose-провайдер версии 5.6.1.
+- Очередь задач — Postgres; dedupe `update_id` и rate limit требуют Redis:
+  без него бот стартует, но защита от повторов и лимиты отключены (см. §11).
 
 ## 4. Подходы и решение
 
@@ -83,6 +85,7 @@
 | stack | `aiogram` |
 | features | `commands`, `inline`, `llm`, `broadcast`, `rich` |
 | storage.postgres | `true` |
+| storage.redis | `true` — обязателен для dedupe `update_id` и rate limit |
 | runtime.queue | `postgres` |
 | i18n.defaultLocale | `ru` |
 | i18n.enabled | `en`, `ru`, `zh` (+ `tt` вручную после скаффолда) |
@@ -148,6 +151,8 @@ Severity 1–3, рендер — `●●○` + подпись «Высокая/�
    объяснение, «Дальше»; итог `X/3`, «Ещё раз» (новый seed).
 5. Поиск — любой текст в личке = поисковый запрос (без флагов и FSM);
    кнопка «Поиск» лишь подсказывает. Нет результатов → подсказки категорий.
+   Под результатами — кнопка «Спросить Байта» (`/ask <текст>`): ИИ в личке
+   включается только явно, обычный текст никогда не уходит в модель.
 6. Язык — 4 кнопки, пишут `user.locale` и перерисовывают текущий экран.
 7. `/admin` — тумблеры категорий, рассылка, статистика.
 8. Группа — триггер: `@bot` в тексте, реплай на сообщение бота, `/ask <вопрос>`.
@@ -210,6 +215,8 @@ Severity 1–3, рендер — `●●○` + подпись «Высокая/�
 
 ## 9. ИИ
 
+- Триггеры: `/ask` в личке и в группе, `@bot` в группе, реплай на сообщение бота.
+  Обычный текст в личке — только поиск; в модель он не уходит (`docs/DESIGN.md` §7.5).
 - Вход: текст вопроса (+ цитата, если это реплай). Локальный поиск → 3 карточки.
 - Prompt: роль «инструктор БЖД», карточки как факты, правила: только по карточкам,
   ≤700 знаков, без выдуманных телефонов, при угрозе жизни — «звоните 112», не давать
@@ -231,11 +238,14 @@ Severity 1–3, рендер — `●●○` + подпись «Высокая/�
 
 ## 11. Эксплуатация
 
-- `compose.yaml`: app + Postgres + Caddy. Dockerfile `python:3.14-slim`, non-root,
-  `alembic upgrade head`, health `/healthz`.
-- Podman: `podman machine init && podman machine start`, `podman compose up -d`;
-  rootless порты 80/443 — README с `net.ipv4.ip_unprivileged_port_start`.
+- `compose.yaml`: bot + worker + migrate + Postgres + Redis + Caddy. Dockerfile
+  `python:3.14-slim`, non-root, `alembic upgrade head`, health `/healthz`.
+- Podman Compose: `podman machine init && podman machine start`,
+  `podman compose up -d --build`; точные команды — `docs/RUN.md`.
+  Rootless порты 80/443 — `net.ipv4.ip_unprivileged_port_start=80`.
 - Секреты через `.env` / `*_FILE`; токен и LLM-ключ в чат не попадают.
+- Redis обязателен: без него отключены dedupe `update_id` (повторы апдейтов) и
+  rate limit (флуд и лимиты ИИ). `readyz` возвращает 503, если Redis недоступен.
 - Миграция Alembic `0001_content`.
 - Наблюдаемость: структурные логи, dedupe `update_id`, `retry_after`.
 

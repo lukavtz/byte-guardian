@@ -4,9 +4,9 @@
 
 **Goal:** Бот-справочник БЖД с маскотом Ба́йтом: 8 категорий угроз, карточки, тесты, поиск, ИИ в личке и группах, рассылка.
 
-**Architecture:** aiogram 3.31 + Postgres; экраны stateless на `callback_data`, рендер Rich HTML, сид контента из JSON в БД и in-memory индекс, ИИ — RAG по 3 карточкам через OpenAI-совместимый API.
+**Architecture:** aiogram 3.31 + Postgres + Redis; экраны stateless на `callback_data`, рендер Rich HTML, сид контента из JSON в БД и in-memory индекс, ИИ — RAG по 3 карточкам через OpenAI-совместимый API.
 
-**Tech Stack:** Python 3.14, aiogram 3.31, SQLAlchemy 2 async + asyncpg, Alembic, Postgres 17, pytest, Podman Compose.
+**Tech Stack:** Python 3.14, aiogram 3.31, SQLAlchemy 2 async + asyncpg, Alembic, Postgres 18, Redis 8 (dedupe `update_id`, rate limit, очередь), pytest, Podman Compose.
 
 **Spec:** `ByteBot-DESIGN.md`
 
@@ -41,7 +41,7 @@
 - Produces: рабочее дерево `ByteBot/` со стеком aiogram 3.31, `app/main.py`, `app/bot.py`, `app/db/*`, `app/services/i18n.py`, `app/handlers/{commands,llm,inline,broadcast,rich}.py`, `app/jobs/{llm,broadcast}.py`, `compose.yaml`.
 
 - [ ] **Step 1:** `telegram_bot_target_resolve` со `stack: "aiogram"`; зафиксировать версии в заметке.
-- [ ] **Step 2:** `telegram_bot_scaffold` с BotSpec из дизайна §5 (`features: commands, inline, llm, broadcast, rich`; `storage.postgres: true`; `runtime.queue: postgres`; admin `1715051614`).
+- [ ] **Step 2:** `telegram_bot_scaffold` с BotSpec из дизайна §5 (`features: commands, inline, llm, broadcast, rich`; `storage.postgres: true`; `storage.redis: true` — dedupe и rate limit; `runtime.queue: postgres`; admin `1715051614`).
 - [ ] **Step 3:** `telegram_bot_verify` на `ByteBot/`; ожидается pass. Отчёт сохранить в `docs/VERIFY.md`.
 - [ ] **Step 4:** `python3.14 -m venv .venv && .venv/bin/pip install -e .` (или `uv sync`); `pytest -q` — базовые тесты зелёные.
 - [ ] **Step 5:** `git init`, первый коммит; `gh repo create lukavtz/byte-guardian --public --source=. --remote=origin --push`.
@@ -213,7 +213,7 @@
 - Produces: `podman compose up -d --build`; `/healthz` 200; polling-режим локально.
 
 - [ ] **Step 1:** `podman machine init && podman machine start` (macOS, один раз).
-- [ ] **Step 2:** `cp .env.example .env`, заполнить `TELEGRAM_BOT_TOKEN`, `DATABASE_URL`, `LLM_*` локально (не коммитить).
+- [ ] **Step 2:** `cp .env.example .env`, заполнить `BOT_TOKEN`, `WEBHOOK_SECRET`, `POSTGRES_PASSWORD`, `REDIS_PASSWORD`, `LLM_*` (не коммитить).
 - [ ] **Step 3:** `podman compose up -d --build`; `curl -fsS localhost:8080/healthz`.
 - [ ] **Step 4:** Smoke в Telegram: `/start` → категория → карточка → тест 3/3 → вопрос ИИ в личке → `@bot` в тестовой группе.
 - [ ] **Step 5:** README: запуск, Podman, webhook, переменные, скриншоты; commit `docs: run and deploy`.

@@ -5,7 +5,7 @@
   "specHash": "a6a556412aa1d12b9eecda6d2f33cc073c0d891d584f76a641a4853f224d83db",
   "generatedAt": "2026-11-20T07:33:19.679Z",
   "files": {
-    ".dockerignore": "da868521d37045dc1a8941e523bbe68d7dcd60bfeaca798dd3677ba35c5bd330",
+    ".containerignore": "6f07f72f04fbba34fca0e9332d13de91317a748f74267874464aa468d86399ee",
     ".env.example": "611cfac354407790d5f36e6e6b7f7fd899b36fdd5d7cd9a5bc53763256e48145",
     ".github/workflows/ci.yml": "aa60f9409a7b634e081cff1b73e79be3925899b2383db1c15d08937d435bf3cc",
     ".gitignore": "4af7084f8771645721d720887347b8a87fed99f7d0b26b779497a2d3d2921cf0",
@@ -52,7 +52,7 @@
     "app/services/retry.py": "1d1e97dbf7424e12964f4c328e2532f38ae13099beb281a65bbf2dc8370cee72",
     "app/webhook.py": "510f1b9508477704636b7eb8b6b6cf9bc9482d321fd391da0426d1722592ce6b",
     "app/worker.py": "e93e6218e3153faac384882cb22f248a422799ecdfdf1302661aa2e55105dc6d",
-    "docker-compose.yml": "3847ec2c26f7499992c4a6c94bb750fdfd748c47cce31086a0a6170e871cbff7",
+    "compose.yaml": "8bbe4579209c8517e3f52cc914dc8341bf1dccb4698320728582c0d35bcd563b",
     "migrations/env.py": "f7206a6d4fbcbd9b6ebda533725fa71871693908e3b7212c576bd9ec39ca19d6",
     "migrations/versions/0001_runtime_schema.py": "73c1b7cdf3bf015c3d707b1a39ca98a1a68da53688a1eae1e9938416f38d18d2",
     "pyproject.toml": "f51e7417ef368aa652c667e0390b4b1b471b66cb229cff3aa73cef2515aeb8df",
