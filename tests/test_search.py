@@ -158,6 +158,7 @@ async def test_inline_result_without_matches_switches_to_menu() -> None:
     assert kwargs["switch_pm_text"]
     assert kwargs["results"]
 
+
 async def test_inline_caps_results_and_keeps_html_small() -> None:
     categories = [CategoryRow(slug="fire", sort=1, emoji="🔥", titles={LOCALE: "Пожар"})]
     threats = [ThreatRow(slug=f"fire-{index}", category_slug="fire", severity=3, sort=index) for index in range(15)]
