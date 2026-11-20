@@ -14,6 +14,7 @@
   <img alt="478 тестов проходят" src="https://img.shields.io/badge/tests-478%20passed-2FE0C8?style=flat-square">
   <a href="https://github.com/lukavtz/byte-guardian/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/lukavtz/byte-guardian/actions/workflows/ci.yml/badge.svg?branch=main&style=flat-square"></a>
   <a href="https://github.com/lukavtz/byte-guardian/actions/workflows/deploy.yml"><img alt="Deploy" src="https://github.com/lukavtz/byte-guardian/actions/workflows/deploy.yml/badge.svg?branch=main&style=flat-square"></a>
+  <a href="https://github.com/lukavtz/byte-guardian/pkgs/container/byte-guardian"><img alt="Package: ghcr.io/lukavtz/byte-guardian" src="https://img.shields.io/badge/package-ghcr.io%2Flukavtz%2Fbyte--guardian-2496ED?logo=docker&logoColor=white&style=flat-square"></a>
 </p>
 
 <p align="center">Живой бот — <a href="https://t.me/ByteTisbi_bot">@ByteTisbi_bot</a>. Прод — Altare, Ubuntu 24.04, polling.</p>
@@ -62,6 +63,9 @@
 
 ```bash
 cp .env.example .env     # BOT_TOKEN, WEBHOOK_SECRET, POSTGRES_PASSWORD, REDIS_PASSWORD, LLM_API_KEY
+
+# Готовый образ (теги — v* и latest):
+docker pull ghcr.io/lukavtz/byte-guardian:latest
 
 podman machine init      # macOS, один раз
 podman machine start
