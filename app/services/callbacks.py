@@ -13,6 +13,9 @@ Screens are stateless: everything needed to redraw arrives in the callback.
     b1:lang_menu
     b1:search_hint
     b1:admin
+    b1:admin:cat:<slug>
+    b1:admin:bc
+    b1:admin:hint
     b1:bc:<yes|no>
     b1:ask:<slug>
     b1:chat
@@ -45,8 +48,9 @@ ACTIONS = frozenset(
     }
 )
 _BARE = frozenset(
-    {"menu", "admin", "lang_menu", "search_hint", "chat", "chat_exit"}
+    {"menu", "lang_menu", "search_hint", "chat", "chat_exit"}
 )
+_ADMIN_BARE = frozenset({"bc", "hint"})
 _PAGES = frozenset({"cat", "card"})
 _HEX = frozenset("0123456789abcdef")
 _BOOL_ARGS = frozenset({"yes", "no"})
@@ -143,6 +147,18 @@ def cb_admin() -> str:
     return _pack("admin")
 
 
+def cb_admin_category(slug: str) -> str:
+    return _pack("admin", "cat", _slug(slug))
+
+
+def cb_admin_broadcast() -> str:
+    return _pack("admin", "bc")
+
+
+def cb_admin_hint() -> str:
+    return _pack("admin", "hint")
+
+
 def cb_broadcast(confirm: bool) -> str:
     return _pack("bc", "yes" if confirm else "no")
 
@@ -178,6 +194,15 @@ def parse_cb(data: str | None) -> Callback | None:
     if len(parts) < 2 or parts[0] != PREFIX or parts[1] not in ACTIONS:
         return None
     action, args = parts[1], parts[2:]
+
+    if action == "admin":
+        if not args:
+            return Callback(action)
+        if len(args) == 1 and args[0] in _ADMIN_BARE:
+            return Callback(action, arg=args[0])
+        if len(args) == 2 and args[0] == "cat" and args[1]:
+            return Callback(action, arg=args[1], extra=("cat",))
+        return None
 
     if action in _BARE:
         return Callback(action) if not args else None

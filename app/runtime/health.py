@@ -17,7 +17,7 @@ async def healthz(_request: web.Request) -> web.Response:
     return web.json_response({"ok": True})
 
 
-async def _probe(check: Probe | None) -> str:
+async def probe(check: Probe | None) -> str:
     if check is None:
         return "skip"
     try:
@@ -29,8 +29,8 @@ async def _probe(check: Probe | None) -> str:
 
 async def readyz(request: web.Request) -> web.Response:
     probes: dict[str, Probe | None] = request.app.get("readiness_probes", {})
-    postgres = await _probe(probes.get("postgres"))
-    redis = await _probe(probes.get("redis"))
+    postgres = await probe(probes.get("postgres"))
+    redis = await probe(probes.get("redis"))
     ok = postgres != "fail" and redis != "fail"
     return web.json_response(
         {"ok": ok, "checks": {"postgres": postgres, "redis": redis}},

@@ -23,6 +23,7 @@ from app.middlewares.repo import RepoMiddleware
 from app.middlewares.user_sync import UserSyncMiddleware
 from app.runtime.queue import Queue
 from app.services.retry import is_retry_after_error, sleep_retry_after
+from app.webhook import readiness_probes
 
 logger = logging.getLogger(__name__)
 
@@ -93,6 +94,7 @@ def create_dispatcher(settings: Settings, bot: Bot, redis: Redis | None) -> Disp
         session_factory, aliases_path=content_directory() / "aliases.json"
     )
     dispatcher.workflow_data["repo"] = repo
+    dispatcher.workflow_data["readiness_probes"] = readiness_probes(dispatcher, redis)
     dispatcher.update.middleware(RepoMiddleware(repo))
     dispatcher.workflow_data["queue"] = Queue(
         session_factory,
