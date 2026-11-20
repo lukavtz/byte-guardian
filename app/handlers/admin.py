@@ -26,9 +26,17 @@ from app.services.callbacks import (
     cb_admin_broadcast,
     cb_admin_cancel,
     cb_admin_category,
+    cb_admin_category_edit,
+    cb_admin_category_screen,
     cb_admin_content,
     cb_admin_edit,
     cb_admin_hint,
+    cb_admin_move,
+    cb_admin_question,
+    cb_admin_quiz,
+    cb_admin_quiz_answer,
+    cb_admin_quiz_edit,
+    cb_admin_severity,
     cb_admin_threat,
     cb_admin_threats,
     cb_admin_toggle,
@@ -66,6 +74,26 @@ FIELD_LABELS: dict[str, tuple[str, str, str]] = {
 PROMPT_TEXT = "Пришлите новый текст."
 TOAST_SAVED = "Сохранено"
 TOAST_CANCELLED = "Отменено"
+# Pending-edit fields that are not threat text: key -> prompt.
+EXTRA_PROMPTS: dict[str, str] = {
+    "cat_title": "Пришлите название раздела.",
+    "cat_emoji": "Пришлите один значок раздела.",
+    "q_prompt": "Пришлите текст вопроса (до 600 символов).",
+    "q_option0": "Пришлите вариант 1.",
+    "q_option1": "Пришлите вариант 2.",
+    "q_option2": "Пришлите вариант 3.",
+    "q_option3": "Пришлите вариант 4.",
+    "q_explanation": "Пришлите объяснение (до 600 символов, можно пустое).",
+}
+QUIZ_PENDING = {
+    "p": "q_prompt",
+    "o0": "q_option0",
+    "o1": "q_option1",
+    "o2": "q_option2",
+    "o3": "q_option3",
+    "e": "q_explanation",
+}
+QUIZ_OPTIONS = ("o0", "o1", "o2", "o3")
 
 STATS_SQL = text(
     """
@@ -304,7 +332,12 @@ def content_screen(categories: list[content_admin.CategoryItem]) -> RichScreen:
                 f"{item.title} · {item.active}/{item.total}",
                 data=cb_admin_threats(item.slug),
                 icon=("catalog", _esc(item.emoji)),
-            )
+            ),
+            rich_button(
+                "Изменить",
+                data=cb_admin_category_screen(item.slug),
+                icon=("description", "📖"),
+            ),
         )
         for item in categories
     ]
@@ -356,6 +389,111 @@ def threats_screen(
     return RichScreen(html + "\n".join(rows))
 
 
+def category_editor_screen(item: content_admin.CategoryItem) -> RichScreen:
+    """A section's title and icon; enabled stays on the admin home."""
+    rows = [
+        rich_row(
+            rich_button(
+                "Название",
+                data=cb_admin_category_edit(item.slug, "title"),
+                icon=("description", "📖"),
+            ),
+            rich_button(
+                "Значок",
+                data=cb_admin_category_edit(item.slug, "emoji"),
+                icon=("category", "🏷"),
+            ),
+        ),
+        rich_row(rich_button("Назад", data=cb_admin_content(), icon=("back", "🏠"))),
+    ]
+    html = (
+        f"<h1>{premium('category', '🏷')} {_esc(item.title)}</h1>"
+        f"<p>{_esc(item.emoji)} · {'включён' if item.enabled else 'выключен'}"
+        f" · карточек {item.active}/{item.total}</p><hr/>"
+    )
+    return RichScreen(html + "\n".join(rows))
+
+
+def quiz_screen(
+    slug: str, locale: str, quizzes: list[content_admin.QuizEdit]
+) -> RichScreen:
+    rows = [
+        rich_row(
+            rich_button(
+                f"{number}. {item.prompt}",
+                data=cb_admin_question(slug, locale, number),
+            )
+        )
+        for number, item in enumerate(quizzes, start=1)
+    ]
+    if not rows:
+        rows.append("<p>Вопросов на этом языке нет.</p>")
+    rows.append(
+        rich_row(
+            rich_button("Назад", data=cb_admin_threat(slug, locale), icon=("back", "🏠"))
+        )
+    )
+    html = (
+        f"<h1>{premium('test', '✅')} Тесты</h1>"
+        f"<p>{premium('stats', '🔢')} Вопросов: <b>{len(quizzes)}</b>"
+        f" · язык <code>{_esc(locale)}</code></p><hr/>"
+    )
+    return RichScreen(html + "\n".join(rows))
+
+
+def quiz_question_screen(
+    quiz: content_admin.QuizEdit, index: int, total: int
+) -> RichScreen:
+    """One question: prompt, four options, the correct index, explanation."""
+    options = [
+        rich_button(
+            f"{number}. {text}",
+            data=cb_admin_quiz_edit(quiz.slug, quiz.locale, index, QUIZ_OPTIONS[number - 1]),
+            style="success" if number - 1 == quiz.answer else None,
+            icon=("done", "✅") if number - 1 == quiz.answer else None,
+        )
+        for number, text in enumerate(quiz.options, start=1)
+    ]
+    answers = [
+        rich_button(
+            str(number),
+            data=cb_admin_quiz_answer(quiz.slug, quiz.locale, index, number - 1),
+            style="success" if number - 1 == quiz.answer else None,
+        )
+        for number in range(1, 5)
+    ]
+    rows = [
+        *(rich_row(button) for button in options),
+        rich_row(*answers),
+        rich_row(
+            rich_button(
+                "Вопрос",
+                data=cb_admin_quiz_edit(quiz.slug, quiz.locale, index, "p"),
+                icon=("description", "📖"),
+            ),
+            rich_button(
+                "Объяснение",
+                data=cb_admin_quiz_edit(quiz.slug, quiz.locale, index, "e"),
+                icon=("digest", "📝"),
+            ),
+        ),
+        rich_row(
+            rich_button(
+                "Назад",
+                data=cb_admin_quiz(quiz.slug, quiz.locale),
+                icon=("back", "🏠"),
+            )
+        ),
+    ]
+    html = (
+        f"<h1>{premium('test', '✅')} Вопрос {index}/{total}</h1>"
+        f"<p>{_esc(quiz.prompt)}</p>"
+        f"<p>{premium('done', '✅')} Верный: <b>{quiz.answer + 1}</b></p>"
+        f"<p>{_esc(quiz.explanation) or '—'}</p><hr/>"
+    )
+    return RichScreen(html + "\n".join(rows))
+
+
 def _field_block(title: str, items: tuple[str, ...]) -> str:
     if not items:
         return f"<h3>{_esc(title)}</h3><p>—</p>"
@@ -390,6 +528,38 @@ def threat_editor_screen(detail: content_admin.ThreatDetail) -> RichScreen:
         for field, (label, icon, _prompt) in FIELD_LABELS.items()
     ]
     rows.extend(rich_row(*buttons[index : index + 2]) for index in range(0, len(buttons), 2))
+    rows.append(
+        rich_row(
+            *(
+                rich_button(
+                    str(level),
+                    data=cb_admin_severity(detail.slug, detail.locale, level),
+                    style="success" if level == detail.severity else None,
+                    icon=("done", "✅") if level == detail.severity else None,
+                )
+                for level in (1, 2, 3)
+            )
+        )
+    )
+    rows.append(
+        rich_row(
+            rich_button(
+                "Выше",
+                data=cb_admin_move(detail.slug, detail.locale, "up"),
+                icon=("arrow", "🔽"),
+            ),
+            rich_button(
+                "Ниже",
+                data=cb_admin_move(detail.slug, detail.locale, "down"),
+                icon=("arrow", "🔽"),
+            ),
+            rich_button(
+                "Тесты",
+                data=cb_admin_quiz(detail.slug, detail.locale),
+                icon=("test", "✅"),
+            ),
+        )
+    )
     rows.append(
         rich_row(
             rich_button(
@@ -475,6 +645,13 @@ async def _home(
         health_checks(_probes(dispatcher)),
     )
     return home_screen(stats, categories, health)
+
+
+async def _editor(
+    session_factory: async_sessionmaker[AsyncSession], slug: str, locale: str
+) -> RichScreen | None:
+    detail = await content_admin.get_threat(session_factory, slug, locale)
+    return None if detail is None else threat_editor_screen(detail)
 
 
 async def _send_new(query: CallbackQuery, bot: Bot, screen: RichScreen) -> None:
@@ -575,6 +752,121 @@ async def admin_callback(
             return
         await query.answer()
         await _redraw(query, bot, threat_editor_screen(detail))
+        return
+
+    if kind == "ced":
+        item = await content_admin.get_category(session_factory, callback.arg)
+        if item is None:
+            await query.answer("Раздел не найден.", show_alert=True)
+            return
+        await query.answer()
+        await _redraw(query, bot, category_editor_screen(item))
+        return
+
+    if kind == "cedit":
+        field = callback.extra[1]
+        pending_field = "cat_title" if field == "title" else "cat_emoji"
+        await settings_service.edit_pending_save(
+            session_factory,
+            user_id,
+            {"slug": callback.arg, "locale": "ru", "field": pending_field},
+        )
+        await query.answer()
+        await _send_new(
+            query,
+            bot,
+            prompt_screen(
+                EXTRA_PROMPTS[pending_field],
+                cb_admin_category_screen(callback.arg),
+            ),
+        )
+        return
+
+    if kind == "sev":
+        level = int(callback.extra[2])
+        await content_admin.set_threat_severity(
+            session_factory, _repo(dispatcher), callback.arg, level
+        )
+        await query.answer(f"Важность: {level}")
+        screen = await _editor(session_factory, callback.arg, callback.extra[1])
+        if screen is not None:
+            await _redraw(query, bot, screen)
+        return
+
+    if kind == "move":
+        moved = await content_admin.move_threat(
+            session_factory, _repo(dispatcher), callback.arg, callback.extra[2]
+        )
+        await query.answer("Перемещено" if moved else "Дальше некуда")
+        detail = await content_admin.get_threat(
+            session_factory, callback.arg, callback.extra[1]
+        )
+        if detail is not None:
+            threats = await content_admin.list_threats(
+                session_factory, detail.category_slug
+            )
+            await _redraw(
+                query, bot, threats_screen(detail.category_slug, threats)
+            )
+        return
+
+    if kind == "quiz":
+        quizzes = await content_admin.list_quizzes(
+            session_factory, callback.arg, callback.extra[1]
+        )
+        await query.answer()
+        await _redraw(
+            query, bot, quiz_screen(callback.arg, callback.extra[1], quizzes)
+        )
+        return
+
+    if kind in {"q", "qe", "qa"}:
+        locale = callback.extra[1]
+        index = int(callback.extra[2])
+        quiz = await content_admin.get_quiz(
+            session_factory, callback.arg, locale, index
+        )
+        if quiz is None:
+            await query.answer("Вопрос не найден.", show_alert=True)
+            return
+        total = len(
+            await content_admin.list_quizzes(session_factory, callback.arg, locale)
+        )
+        if kind == "qe":
+            pending_field = QUIZ_PENDING[callback.extra[3]]
+            await settings_service.edit_pending_save(
+                session_factory,
+                user_id,
+                {
+                    "slug": callback.arg,
+                    "locale": locale,
+                    "field": pending_field,
+                    "qid": quiz.question_id,
+                },
+            )
+            await query.answer()
+            await _send_new(
+                query,
+                bot,
+                prompt_screen(
+                    EXTRA_PROMPTS[pending_field],
+                    cb_admin_question(callback.arg, locale, index),
+                ),
+            )
+            return
+        if kind == "qa":
+            quiz = await content_admin.set_quiz_answer(
+                session_factory,
+                _repo(dispatcher),
+                callback.arg,
+                locale,
+                quiz.question_id,
+                int(callback.extra[3]),
+            )
+            await query.answer(f"Верный ответ: {quiz.answer + 1}")
+        else:
+            await query.answer()
+        await _redraw(query, bot, quiz_question_screen(quiz, index, total))
         return
 
     if kind == "edit":
@@ -704,6 +996,82 @@ async def admin_edit_text(
             return
         await message.answer(TOAST_SAVED)
         await show(bot, message.chat.id, threat_editor_screen(detail))
+        return
+
+    if field in {"cat_title", "cat_emoji"}:
+        item = await content_admin.get_category(
+            session_factory, pending.get("slug", "")
+        )
+        if item is None:
+            await message.answer("Раздел не найден.")
+            return
+        title = raw if field == "cat_title" else item.title
+        emoji = raw if field == "cat_emoji" else item.emoji
+        try:
+            await content_admin.save_category(
+                session_factory,
+                _repo(dispatcher),
+                item.slug,
+                title,
+                emoji,
+                item.enabled,
+            )
+        except content_admin.ContentError as error:
+            await message.answer(str(error))
+            await settings_service.edit_pending_save(session_factory, user.id, pending)
+            return
+        await message.answer(TOAST_SAVED)
+        fresh = await content_admin.get_category(session_factory, item.slug)
+        if fresh is not None:
+            await show(bot, message.chat.id, category_editor_screen(fresh))
+        return
+
+    if field.startswith("q_") and field in EXTRA_PROMPTS:
+        slug = pending.get("slug", "")
+        locale = pending.get("locale", content_admin.DEFAULT_LOCALE)
+        qid = pending.get("qid", "")
+        quizzes = await content_admin.list_quizzes(session_factory, slug, locale)
+        current = next((q for q in quizzes if q.question_id == qid), None)
+        if current is None:
+            await message.answer("Вопрос не найден.")
+            return
+        if field == "q_prompt":
+            patch: dict[str, object] = {"prompt": raw}
+        elif field == "q_explanation":
+            patch = {"explanation": raw}
+        else:
+            position = int(field[-1])
+            if position >= len(current.options):
+                await message.answer("Этого варианта нет: сначала заполните предыдущие.")
+                await settings_service.edit_pending_save(
+                    session_factory, user.id, pending
+                )
+                return
+            options = list(current.options)
+            options[position] = raw
+            patch = {"options": options}
+        try:
+            saved = await content_admin.save_quiz(
+                session_factory, _repo(dispatcher), slug, locale, qid, patch
+            )
+        except content_admin.ContentError as error:
+            await message.answer(str(error))
+            await settings_service.edit_pending_save(session_factory, user.id, pending)
+            return
+        await message.answer(TOAST_SAVED)
+        index = next(
+            (
+                number
+                for number, quiz in enumerate(quizzes, start=1)
+                if quiz.question_id == qid
+            ),
+            1,
+        )
+        await show(
+            bot,
+            message.chat.id,
+            quiz_question_screen(saved, index, len(quizzes)),
+        )
         return
 
     if field not in content_admin.EDIT_FIELDS:

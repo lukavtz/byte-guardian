@@ -225,6 +225,58 @@ def cb_admin_toggle(slug: str, locale: str = "ru") -> str:
     return _pack("admin", "toggle", _slug(slug), _locale(locale))
 
 
+def cb_admin_category_screen(slug: str) -> str:
+    return _pack("admin", "ced", _slug(slug))
+
+
+def cb_admin_category_edit(slug: str, field: str) -> str:
+    if field not in {"title", "emoji"}:
+        raise ValueError(f"bad category field: {field!r}")
+    return _pack("admin", "cedit", _slug(slug), field)
+
+
+def cb_admin_severity(slug: str, locale: str, level: int) -> str:
+    if level not in (1, 2, 3):
+        raise ValueError(f"bad severity: {level!r}")
+    return _pack("admin", "sev", _slug(slug), _locale(locale), str(level))
+
+
+def cb_admin_move(slug: str, locale: str, direction: str) -> str:
+    if direction not in {"up", "down"}:
+        raise ValueError(f"bad direction: {direction!r}")
+    return _pack("admin", "move", _slug(slug), _locale(locale), direction)
+
+
+def cb_admin_quiz(slug: str, locale: str = "ru") -> str:
+    return _pack("admin", "quiz", _slug(slug), _locale(locale))
+
+
+def _index(index: int) -> str:
+    if isinstance(index, bool) or not 1 <= index <= 99:
+        raise ValueError(f"bad question index: {index!r}")
+    return str(index)
+
+
+def cb_admin_question(slug: str, locale: str, index: int) -> str:
+    return _pack("admin", "q", _slug(slug), _locale(locale), _index(index))
+
+
+def cb_admin_quiz_edit(
+    slug: str, locale: str, index: int, field: str
+) -> str:
+    if field not in ("p", "o0", "o1", "o2", "o3", "e"):
+        raise ValueError(f"bad quiz field: {field!r}")
+    return _pack("admin", "qe", _slug(slug), _locale(locale), _index(index), field)
+
+
+def cb_admin_quiz_answer(
+    slug: str, locale: str, index: int, answer: int
+) -> str:
+    if answer not in (0, 1, 2, 3):
+        raise ValueError(f"bad answer: {answer!r}")
+    return _pack("admin", "qa", _slug(slug), _locale(locale), _index(index), str(answer))
+
+
 def cb_admin_broadcast() -> str:
     return _pack("admin", "bc")
 
@@ -281,16 +333,33 @@ def parse_cb(data: str | None) -> Callback | None:
             return Callback(action, arg=args[0])
         if len(args) == 1 and args[0] == "content":
             return Callback(action, arg="content")
-        if len(args) == 2 and args[0] in {"cat", "threats", "add"} and args[1]:
+        if len(args) == 2 and args[0] in {"cat", "threats", "add", "ced"} and args[1]:
             return Callback(action, arg=args[1], extra=(args[0],))
-        if len(args) == 3 and args[0] in {"threat", "cancel", "toggle"} and args[1]:
-            if args[2] not in _LOC:
+        if len(args) == 3 and args[1] and args[2] in _LOC:
+            if args[0] in {"threat", "cancel", "toggle", "quiz"}:
+                return Callback(action, arg=args[1], extra=(args[0], args[2]))
+        if len(args) == 3 and args[0] == "cedit" and args[1]:
+            if args[2] not in {"title", "emoji"}:
                 return None
-            return Callback(action, arg=args[1], extra=(args[0], args[2]))
-        if len(args) == 4 and args[0] == "edit" and args[1] and args[3] in _EDIT_FIELDS:
-            if args[2] not in _LOC:
+            return Callback(action, arg=args[1], extra=("cedit", args[2]))
+        if len(args) == 4 and args[1] and args[2] in _LOC:
+            name, slug, locale, value = args
+            if name == "edit" and value in _EDIT_FIELDS:
+                return Callback(action, arg=slug, extra=("edit", locale, value))
+            if name == "sev" and value in {"1", "2", "3"}:
+                return Callback(action, arg=slug, extra=("sev", locale, value))
+            if name == "move" and value in {"up", "down"}:
+                return Callback(action, arg=slug, extra=("move", locale, value))
+            if name == "q" and value.isdigit() and 1 <= int(value) <= 99:
+                return Callback(action, arg=slug, extra=("q", locale, value))
+        if len(args) == 5 and args[1] and args[2] in _LOC and args[3].isdigit():
+            name, slug, locale, index, value = args
+            if not 1 <= int(index) <= 99:
                 return None
-            return Callback(action, arg=args[1], extra=("edit", args[2], args[3]))
+            if name == "qe" and value in {"p", "o0", "o1", "o2", "o3", "e"}:
+                return Callback(action, arg=slug, extra=("qe", locale, index, value))
+            if name == "qa" and value in {"0", "1", "2", "3"}:
+                return Callback(action, arg=slug, extra=("qa", locale, index, value))
         return None
 
     if action == "search":

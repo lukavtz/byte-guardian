@@ -27,6 +27,9 @@ MIN_ITEMS = 2
 MAX_ITEMS = 5
 # A card's phone list can hold one number; content lists start at two.
 MIN_CONTACTS = 1
+MAX_PROMPT = 600
+MAX_EXPLANATION = 600
+QUIZ_FIELDS = ("p", "o0", "o1", "o2", "o3", "e")
 
 LIST_FIELDS = ("signs", "before", "during", "after", "forbidden", "contacts")
 TEXT_FIELDS = ("title", "summary", "source")
@@ -52,7 +55,7 @@ THREATS_SQL = text(
            ) AS title
       FROM threat t
      WHERE t.category_slug = :category
-     ORDER BY t.severity DESC, t.sort, t.slug
+     ORDER BY t.sort, t.slug
     """
 )
 THREAT_SQL = text(
@@ -128,6 +131,50 @@ ENABLED_SQL = text(
      WHERE slug = :slug RETURNING enabled
     """
 )
+CATEGORY_SQL = text(
+    """
+    SELECT c.slug, c.emoji, c.enabled, c.titles,
+           (SELECT count(*) FROM threat t WHERE t.category_slug = c.slug) AS total,
+           (SELECT count(*) FROM threat t
+             WHERE t.category_slug = c.slug AND t.enabled) AS active
+      FROM category c WHERE c.slug = :slug
+    """
+)
+SEVERITY_SQL = text(
+    """
+    UPDATE threat SET severity = :severity, edited_at = now()
+     WHERE slug = :slug RETURNING severity
+    """
+)
+THREAT_SORT_LIST_SQL = text(
+    "SELECT slug FROM threat WHERE category_slug = :category ORDER BY sort, slug"
+)
+SORT_UPDATE_SQL = text(
+    "UPDATE threat SET sort = :sort, edited_at = now() WHERE slug = :slug"
+)
+QUIZZES_SQL = text(
+    """
+    SELECT threat_slug, question_id, locale, prompt, options, answer, explanation
+      FROM quiz_question
+     WHERE threat_slug = :slug AND locale = :locale
+     ORDER BY question_id
+    """
+)
+QUIZ_UPDATE_SQL = text(
+    """
+    UPDATE quiz_question
+       SET prompt = :prompt,
+           options = CAST(:options AS jsonb),
+           answer = :answer,
+           explanation = :explanation,
+           admin_version = admin_version + 1,
+           edited_at = now()
+     WHERE threat_slug = :slug
+       AND question_id = :qid
+       AND locale = :locale
+    RETURNING question_id
+    """
+)
 
 
 class ContentError(ValueError):
@@ -172,6 +219,17 @@ class ThreatDetail:
     source: str
 
 
+@dataclass(frozen=True, slots=True)
+class QuizEdit:
+    slug: str
+    locale: str
+    question_id: str
+    prompt: str
+    options: tuple[str, ...]
+    answer: int
+    explanation: str
+
+
 def _title(titles: Any, slug: str) -> str:
     if isinstance(titles, dict):
         value = titles.get(DEFAULT_LOCALE) or next(iter(titles.values()), "")
@@ -189,6 +247,17 @@ def _single(value: object, field: str, limit: int) -> str:
         raise ContentError(f"{field}: ожидается текст")
     clean = value.strip()
     if not clean:
+        raise ContentError(f"{field}: пустое значение")
+    if len(clean) > limit:
+        raise ContentError(f"{field}: не больше {limit} символов")
+    return clean
+
+
+def _text(value: object, field: str, limit: int, required: bool = True) -> str:
+    if not isinstance(value, str):
+        raise ContentError(f"{field}: ожидается текст")
+    clean = value.strip()
+    if required and not clean:
         raise ContentError(f"{field}: пустое значение")
     if len(clean) > limit:
         raise ContentError(f"{field}: не больше {limit} символов")
@@ -235,6 +304,30 @@ def parse_field_input(field: str, raw: str) -> str | tuple[str, ...]:
         parts = tuple(part.strip() for part in raw.split(separator))
         return tuple(part for part in parts if part)
     return raw.strip()
+
+
+def validate_quiz_patch(patch: dict[str, Any]) -> dict[str, Any]:
+    unknown = set(patch) - {"prompt", "options", "answer", "explanation"}
+    if unknown:
+        raise ContentError("Неизвестное поле: " + ", ".join(sorted(unknown)))
+    clean: dict[str, Any] = {}
+    for field, value in patch.items():
+        if field == "prompt":
+            clean[field] = _text(value, "Вопрос", MAX_PROMPT)
+        elif field == "explanation":
+            clean[field] = _text(value, "Объяснение", MAX_EXPLANATION, required=False)
+        elif field == "options":
+            if not isinstance(value, (list, tuple)):
+                raise ContentError("Варианты: ожидается список")
+            options = tuple(str(item).strip() for item in value)
+            if not 2 <= len(options) <= 4 or not all(options):
+                raise ContentError("Варианты: нужно 2–4 непустых пункта")
+            clean[field] = options
+        elif field == "answer":
+            if isinstance(value, bool) or not isinstance(value, int):
+                raise ContentError("Ответ: ожидается число")
+            clean[field] = value
+    return clean
 
 
 async def list_categories(
@@ -494,6 +587,176 @@ async def create_threat(
     return detail
 
 
+async def get_category(
+    session_factory: async_sessionmaker[AsyncSession], slug: str
+) -> CategoryItem | None:
+    async with session_factory() as session:
+        row = (await session.execute(CATEGORY_SQL, {"slug": slug})).mappings().first()
+    if row is None:
+        return None
+    return CategoryItem(
+        slug=str(row["slug"]),
+        title=_title(row["titles"], str(row["slug"])),
+        emoji=str(row["emoji"]),
+        enabled=bool(row["enabled"]),
+        total=int(row["total"]),
+        active=int(row["active"]),
+    )
+
+
+async def set_threat_severity(
+    session_factory: async_sessionmaker[AsyncSession],
+    repo: ContentRepository | None,
+    slug: str,
+    severity: int,
+) -> int:
+    if isinstance(severity, bool) or not 1 <= severity <= 3:
+        raise ContentError("Важность: от 1 до 3.")
+    async with session_factory() as session:
+        row = (
+            await session.execute(SEVERITY_SQL, {"slug": slug, "severity": severity})
+        ).first()
+        await session.commit()
+    if row is None:
+        raise ContentError("Карточка не найдена.")
+    await _reload(repo)
+    return int(row[0])
+
+
+async def move_threat(
+    session_factory: async_sessionmaker[AsyncSession],
+    repo: ContentRepository | None,
+    slug: str,
+    direction: str,
+) -> bool:
+    """Swap the card with its sort neighbour; rewrite the whole order."""
+    if direction not in {"up", "down"}:
+        raise ContentError("Направление: up или down.")
+    async with session_factory() as session:
+        threat = (await session.execute(THREAT_SQL, {"slug": slug})).mappings().first()
+        if threat is None:
+            raise ContentError("Карточка не найдена.")
+        slugs = [
+            str(row[0])
+            for row in (
+                await session.execute(
+                    THREAT_SORT_LIST_SQL, {"category": threat["category_slug"]}
+                )
+            ).all()
+        ]
+        index = slugs.index(slug)
+        target = index - 1 if direction == "up" else index + 1
+        if not 0 <= target < len(slugs):
+            await session.commit()
+            return False
+        slugs[index], slugs[target] = slugs[target], slugs[index]
+        for position, item in enumerate(slugs):
+            await session.execute(SORT_UPDATE_SQL, {"slug": item, "sort": position})
+        await session.commit()
+    await _reload(repo)
+    return True
+
+
+def _quiz(row: Any) -> QuizEdit:
+    return QuizEdit(
+        slug=str(row["threat_slug"]),
+        locale=str(row["locale"]),
+        question_id=str(row["question_id"]),
+        prompt=str(row["prompt"]),
+        options=tuple(row["options"] or ()),
+        answer=int(row["answer"]),
+        explanation=str(row["explanation"] or ""),
+    )
+
+
+async def list_quizzes(
+    session_factory: async_sessionmaker[AsyncSession], slug: str, locale: str
+) -> list[QuizEdit]:
+    async with session_factory() as session:
+        rows = (
+            await session.execute(QUIZZES_SQL, {"slug": slug, "locale": locale})
+        ).mappings().all()
+    return [_quiz(row) for row in rows]
+
+
+async def get_quiz(
+    session_factory: async_sessionmaker[AsyncSession],
+    slug: str,
+    locale: str,
+    index: int,
+) -> QuizEdit | None:
+    """``index`` is the 1-based position in the question_id order."""
+    quizzes = await list_quizzes(session_factory, slug, locale)
+    if not 1 <= index <= len(quizzes):
+        return None
+    return quizzes[index - 1]
+
+
+async def save_quiz(
+    session_factory: async_sessionmaker[AsyncSession],
+    repo: ContentRepository | None,
+    slug: str,
+    locale: str,
+    question_id: str,
+    patch: dict[str, Any],
+) -> QuizEdit:
+    if locale not in LOCALES:
+        raise ContentError("Неизвестный язык.")
+    quizzes = await list_quizzes(session_factory, slug, locale)
+    current = next((q for q in quizzes if q.question_id == question_id), None)
+    if current is None:
+        raise ContentError("Вопрос не найден.")
+    clean = validate_quiz_patch(patch)
+    merged = {
+        "prompt": current.prompt,
+        "options": current.options,
+        "answer": current.answer,
+        "explanation": current.explanation,
+        **clean,
+    }
+    if not 0 <= int(merged["answer"]) < len(merged["options"]):
+        raise ContentError("Ответ: от 1 до числа вариантов.")
+    async with session_factory() as session:
+        row = (
+            await session.execute(
+                QUIZ_UPDATE_SQL,
+                {
+                    "slug": slug,
+                    "locale": locale,
+                    "qid": question_id,
+                    "prompt": merged["prompt"],
+                    "options": _json(tuple(merged["options"])),
+                    "answer": int(merged["answer"]),
+                    "explanation": merged["explanation"],
+                },
+            )
+        ).first()
+        await session.commit()
+    if row is None:
+        raise ContentError("Вопрос не найден.")
+    await _reload(repo)
+    saved = next(
+        (q for q in await list_quizzes(session_factory, slug, locale)
+         if q.question_id == question_id),
+        None,
+    )
+    assert saved is not None
+    return saved
+
+
+async def set_quiz_answer(
+    session_factory: async_sessionmaker[AsyncSession],
+    repo: ContentRepository | None,
+    slug: str,
+    locale: str,
+    question_id: str,
+    answer: int,
+) -> QuizEdit:
+    return await save_quiz(
+        session_factory, repo, slug, locale, question_id, {"answer": answer}
+    )
+
+
 __all__ = [
     "CategoryItem",
     "ContentError",
@@ -504,17 +767,27 @@ __all__ = [
     "MAX_ITEM",
     "MAX_SUMMARY",
     "SLUG_PATTERN",
+    "QUIZ_FIELDS",
+    "QuizEdit",
     "ThreatDetail",
     "ThreatItem",
     "create_threat",
     "delete_threat",
+    "get_category",
+    "get_quiz",
     "get_threat",
     "list_categories",
+    "list_quizzes",
     "list_threats",
+    "move_threat",
     "parse_field_input",
     "restore_threat",
     "save_category",
+    "save_quiz",
     "save_threat",
+    "set_quiz_answer",
     "set_threat_enabled",
+    "set_threat_severity",
     "validate_patch",
+    "validate_quiz_patch",
 ]

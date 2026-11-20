@@ -16,8 +16,16 @@ from app.services.callbacks import (
     cb_admin,
     cb_admin_add,
     cb_admin_cancel,
+    cb_admin_category_edit,
+    cb_admin_category_screen,
     cb_admin_content,
     cb_admin_edit,
+    cb_admin_move,
+    cb_admin_question,
+    cb_admin_quiz,
+    cb_admin_quiz_answer,
+    cb_admin_quiz_edit,
+    cb_admin_severity,
     cb_admin_threat,
     cb_admin_threats,
     cb_admin_toggle,
@@ -79,6 +87,19 @@ class FakeDB:
             }
         }
         self.texts: dict[tuple[str, str], dict] = {("fire-home", "ru"): dict(TEXT)}
+        self.quizzes: dict[tuple[str, str, str], dict] = {
+            ("fire-home", "ru", f"q{number}"): {
+                "threat_slug": "fire-home",
+                "question_id": f"q{number}",
+                "locale": "ru",
+                "prompt": f"Вопрос {number}?",
+                "options": [f"Вариант {number}a", f"Вариант {number}b", f"Вариант {number}c", f"Вариант {number}d"],
+                "answer": 0,
+                "explanation": f"Объяснение {number}",
+                "admin_version": 0,
+            }
+            for number in (1, 2, 3)
+        }
 
     def factory(self) -> FakeSessionFactory:
         return FakeSessionFactory(self)
@@ -98,6 +119,8 @@ class FakeDB:
         if sql.startswith("SELECT c.slug, c.emoji"):
             rows = []
             for item in self.categories.values():
+                if "WHERE c.slug = :slug" in sql and item["slug"] != params["slug"]:
+                    continue
                 total = sum(
                     1 for t in self.threats.values() if t["category_slug"] == item["slug"]
                 )
@@ -186,6 +209,50 @@ class FakeDB:
                 return _Result([])
             threat["enabled"] = params["enabled"]
             return _Result([(params["enabled"],)])
+        if sql.startswith("UPDATE threat SET severity"):
+            threat = self.threats.get(params["slug"])
+            if threat is None:
+                return _Result([])
+            threat["severity"] = params["severity"]
+            return _Result([(params["severity"],)])
+        if sql.startswith("SELECT slug FROM threat WHERE category_slug"):
+            return _Result(
+                [
+                    (t["slug"],)
+                    for t in sorted(
+                        (
+                            t
+                            for t in self.threats.values()
+                            if t["category_slug"] == params["category"]
+                        ),
+                        key=lambda t: (t["sort"], t["slug"]),
+                    )
+                ]
+            )
+        if sql.startswith("UPDATE threat SET sort"):
+            self.threats[params["slug"]]["sort"] = params["sort"]
+            return _Result([])
+        if sql.startswith("SELECT threat_slug, question_id, locale"):
+            return _Result(
+                [
+                    quiz
+                    for (slug, locale, _qid), quiz in sorted(self.quizzes.items())
+                    if slug == params["slug"] and locale == params["locale"]
+                ]
+            )
+        if sql.startswith("UPDATE quiz_question"):
+            key = (params["slug"], params["locale"], params["qid"])
+            quiz = self.quizzes.get(key)
+            if quiz is None:
+                return _Result([])
+            quiz.update(
+                prompt=params["prompt"],
+                options=json.loads(params["options"]),
+                answer=params["answer"],
+                explanation=params["explanation"],
+                admin_version=quiz.get("admin_version", 0) + 1,
+            )
+            return _Result([(params["qid"],)])
         raise AssertionError("unexpected SQL: " + sql)
 
 
@@ -481,9 +548,220 @@ def test_content_callbacks_fit_and_parse() -> None:
         cb_admin_add(slug),
         cb_admin_cancel(slug, "ru"),
         cb_admin_toggle(slug, "ru"),
+        cb_admin_category_screen(slug),
+        cb_admin_category_edit(slug, "title"),
+        cb_admin_severity(slug, "ru", 3),
+        cb_admin_move(slug, "ru", "down"),
+        cb_admin_quiz(slug, "ru"),
+        cb_admin_question(slug, "ru", 99),
+        cb_admin_quiz_edit(slug, "ru", 99, "o0"),
+        cb_admin_quiz_answer(slug, "ru", 99, 3),
     ]
     for payload in payloads:
         assert len(payload.encode("utf-8")) <= 64, payload
     assert parse_cb(cb_admin_edit("fire-home", "ru", "signs")) is not None
+    assert parse_cb(cb_admin_severity("fire-home", "ru", 2)) is not None
+    assert parse_cb(cb_admin_move("fire-home", "ru", "up")) is not None
+    assert parse_cb(cb_admin_quiz_answer("fire-home", "ru", 2, 3)) is not None
     assert parse_cb("b1:admin:edit:fire-home:xx:signs") is None
     assert parse_cb("b1:admin:edit:fire-home:ru:nope") is None
+    assert parse_cb("b1:admin:sev:fire-home:ru:4") is None
+    assert parse_cb("b1:admin:qe:fire-home:ru:1:zz") is None
+
+
+# --- category editor ------------------------------------------------------
+
+
+async def test_category_edit_roundtrip_through_message() -> None:
+    db = FakeDB()
+    calls: list[int] = []
+    factory = db.factory()
+    await settings_service.edit_pending_save(
+        factory, 42, {"slug": "fire", "locale": "ru", "field": "cat_title"}
+    )
+    message = make_message(text="Пожары")
+
+    await admin.admin_edit_text(
+        message, FakeBot(), factory, make_settings(), make_dispatcher(_repo(calls))
+    )
+
+    message.answer.assert_awaited_once_with(admin.TOAST_SAVED)
+    assert db.categories["fire"]["titles"] == {"ru": "Пожары"}
+    assert calls == [1]
+    assert await settings_service.edit_pending(factory, 42) is None
+
+
+async def test_category_editor_screen_and_single_primary() -> None:
+    item = content_admin.CategoryItem("fire", "Пожар", "🔥", True, 3, 2)
+    screen = admin.category_editor_screen(item)
+
+    assert "Пожар" in screen.html
+    assert cb_admin_category_edit("fire", "title") in screen.html
+    assert screen.html.count('style="primary"') <= 1
+
+
+# --- severity and sort ----------------------------------------------------
+
+
+async def test_severity_saves_and_reloads() -> None:
+    db = FakeDB()
+    calls: list[int] = []
+
+    assert (
+        await content_admin.set_threat_severity(
+            db.factory(), _repo(calls), "fire-home", 1
+        )
+        == 1
+    )
+    assert db.threats["fire-home"]["severity"] == 1
+    assert calls == [1]
+    with pytest.raises(content_admin.ContentError):
+        await content_admin.set_threat_severity(db.factory(), None, "fire-home", 4)
+
+
+async def test_move_threat_swaps_sort_with_neighbour() -> None:
+    db = FakeDB()
+    db.threats["fire-two"] = {
+        "slug": "fire-two",
+        "category_slug": "fire",
+        "severity": 2,
+        "sort": 1,
+        "enabled": True,
+    }
+    calls: list[int] = []
+
+    assert await content_admin.move_threat(
+        db.factory(), _repo(calls), "fire-home", "down"
+    )
+    assert db.threats["fire-two"]["sort"] == 0
+    assert db.threats["fire-home"]["sort"] == 1
+    assert not await content_admin.move_threat(
+        db.factory(), _repo(calls), "fire-home", "down"
+    )
+    assert calls == [1]
+
+
+# --- quiz editor ----------------------------------------------------------
+
+
+async def test_quiz_save_bumps_admin_version_and_reloads() -> None:
+    db = FakeDB()
+    calls: list[int] = []
+
+    saved = await content_admin.save_quiz(
+        db.factory(),
+        _repo(calls),
+        "fire-home",
+        "ru",
+        "q1",
+        {"options": ["A", "B", "C", "D"], "answer": 2},
+    )
+
+    assert saved.answer == 2
+    assert saved.options == ("A", "B", "C", "D")
+    quiz = db.quizzes[("fire-home", "ru", "q1")]
+    assert quiz["admin_version"] == 1
+    assert calls == [1]
+
+
+async def test_quiz_validation_rejects_bad_values() -> None:
+    db = FakeDB()
+    with pytest.raises(content_admin.ContentError):
+        await content_admin.save_quiz(
+            db.factory(), None, "fire-home", "ru", "q1", {"answer": 4}
+        )
+    with pytest.raises(content_admin.ContentError):
+        await content_admin.save_quiz(
+            db.factory(), None, "fire-home", "ru", "q1",
+            {"options": ["A", "", "C", "D"]},
+        )
+    with pytest.raises(content_admin.ContentError):
+        await content_admin.save_quiz(
+            db.factory(), None, "fire-home", "ru", "q1",
+            {"explanation": "x" * 601},
+        )
+    with pytest.raises(content_admin.ContentError):
+        await content_admin.save_quiz(
+            db.factory(), None, "fire-home", "ru", "missing", {"answer": 1}
+        )
+
+
+async def test_quiz_answer_and_roundtrip_through_message() -> None:
+    db = FakeDB()
+    calls: list[int] = []
+    factory = db.factory()
+    await settings_service.edit_pending_save(
+        factory,
+        42,
+        {
+            "slug": "fire-home",
+            "locale": "ru",
+            "field": "q_option0",
+            "qid": "q2",
+        },
+    )
+    message = make_message(text="Новый вариант")
+
+    await admin.admin_edit_text(
+        message, FakeBot(), factory, make_settings(), make_dispatcher(_repo(calls))
+    )
+
+    message.answer.assert_awaited_once_with(admin.TOAST_SAVED)
+    quiz = db.quizzes[("fire-home", "ru", "q2")]
+    assert quiz["options"][0] == "Новый вариант"
+    assert calls == [1]
+
+
+async def test_quiz_answer_index_saves() -> None:
+    db = FakeDB()
+    quiz = await content_admin.set_quiz_answer(
+        db.factory(), None, "fire-home", "ru", "q1", 3
+    )
+    assert quiz.answer == 3
+    assert db.quizzes[("fire-home", "ru", "q1")]["answer"] == 3
+
+
+def test_editor_screens_have_at_most_one_primary() -> None:
+    detail = content_admin.ThreatDetail(
+        slug="fire-home",
+        category_slug="fire",
+        severity=3,
+        enabled=True,
+        locale="ru",
+        locales=("ru", "en"),
+        exact=True,
+        title="Пожар",
+        summary="Дым",
+        signs=("Дым",),
+        before=("Датчик",),
+        during=("101",),
+        after=("Улица",),
+        forbidden=("Лифт",),
+        contacts=("101",),
+        source="МЧС",
+    )
+    quiz = content_admin.QuizEdit(
+        slug="fire-home",
+        locale="ru",
+        question_id="q1",
+        prompt="Что делать?",
+        options=("A", "B", "C", "D"),
+        answer=1,
+        explanation="Потому что.",
+    )
+    category = content_admin.CategoryItem("fire", "Пожар", "🔥", True, 3, 2)
+    screens = [
+        admin.content_screen([category]),
+        admin.threats_screen(
+            "fire", [content_admin.ThreatItem("fire-home", "Пожар", 3, True)]
+        ),
+        admin.threat_editor_screen(detail),
+        admin.category_editor_screen(category),
+        admin.quiz_screen("fire-home", "ru", [quiz]),
+        admin.quiz_question_screen(quiz, 1, 3),
+    ]
+    for screen in screens:
+        assert screen.html.count('style="primary"') <= 1
+    assert cb_admin_question("fire-home", "ru", 1) in admin.quiz_screen(
+        "fire-home", "ru", [quiz]
+    ).html
