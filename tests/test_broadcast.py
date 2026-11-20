@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock
 
@@ -214,6 +215,18 @@ async def test_stop_disables_broadcasts() -> None:
 
     assert db.users[7] is False
     message.answer.assert_awaited_once_with(broadcast.STOP_TEXT)
+
+
+async def test_stop_with_missing_column_reports_failure(caplog) -> None:
+    db = FakeDB(users=[(7, True)], opt_in_column=False)
+    message = make_message(user_id=7)
+
+    with caplog.at_level(logging.ERROR, logger="app.handlers.broadcast"):
+        await broadcast.stop_broadcasts(message, db.factory())
+
+    assert db.users[7] is True
+    message.answer.assert_awaited_once_with(broadcast.STOP_FAILED_TEXT)
+    assert "broadcasts_opt_in" in caplog.text
 
 
 async def test_non_admin_broadcast_is_denied() -> None:

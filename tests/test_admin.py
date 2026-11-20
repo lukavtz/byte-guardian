@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import json
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock
@@ -65,7 +66,9 @@ class FakeDB:
             key = params["key"]
             return _Result([(self.settings[key],)] if key in self.settings else [])
         if sql.startswith("DELETE FROM settings"):
-            self.settings.pop(params["key"], None)
+            key = params["key"]
+            if key in self.settings:
+                return _Result([(self.settings.pop(key),)])
             return _Result([])
         if sql.startswith("SELECT (SELECT count(*)"):
             users, threats, quizzes, answers = self.stats
@@ -216,6 +219,20 @@ async def test_draft_expires_after_an_hour(monkeypatch: pytest.MonkeyPatch) -> N
     clock["now"] += 1
     assert await settings_service.draft_take(db.factory(), 42) is None
     assert "broadcast_draft:42" not in db.settings
+
+
+async def test_draft_take_is_atomic() -> None:
+    db = FakeDB()
+
+    await settings_service.draft_save(db.factory(), 42, "<b>once</b>")
+    first, second = await asyncio.gather(
+        settings_service.draft_take(db.factory(), 42),
+        settings_service.draft_take(db.factory(), 42),
+    )
+
+    assert {first, second} == {"<b>once</b>", None}
+    assert "broadcast_draft:42" not in db.settings
+    assert await settings_service.draft_take(db.factory(), 42) is None
 
 
 async def test_settings_value_json_is_parsed() -> None:

@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import logging
 import re
 
+import asyncpg
 from aiogram import Bot, Dispatcher, F, Router
 from aiogram.filters import Command, CommandObject
 from aiogram.types import (
@@ -10,6 +12,7 @@ from aiogram.types import (
     InlineKeyboardMarkup,
     Message,
 )
+from sqlalchemy.exc import ProgrammingError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.config import Settings
@@ -29,6 +32,9 @@ UUID_PATTERN = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-
 MAX_BROADCAST_CHARS = 4000
 PREVIEW_TITLE = "Broadcast preview. Send it?"
 STOP_TEXT = "Broadcasts are off. You will not receive mass messages."
+STOP_FAILED_TEXT = "Could not update broadcast settings right now. Please try again later."
+
+logger = logging.getLogger(__name__)
 
 router = Router(name="broadcast")
 
@@ -146,7 +152,14 @@ async def stop_broadcasts(
     user = message.from_user
     if user is None:
         return
-    await set_opt_in(session_factory, user.id, False)
+    try:
+        await set_opt_in(session_factory, user.id, False)
+    except (ProgrammingError, asyncpg.UndefinedColumnError) as error:
+        if "broadcasts_opt_in" not in str(error):
+            raise
+        logger.exception("broadcasts_opt_in is missing; /stop cannot persist")
+        await message.answer(STOP_FAILED_TEXT)
+        return
     await message.answer(STOP_TEXT)
 
 

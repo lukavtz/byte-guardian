@@ -21,6 +21,11 @@ UPSERT_SQL = text(
     """
 )
 DELETE_SQL = text("DELETE FROM settings WHERE key = :key")
+TAKE_SQL = text("DELETE FROM settings WHERE key = :key RETURNING value")
+
+
+def _decode(value: Any) -> Any:
+    return json.loads(value) if isinstance(value, str) else value
 
 
 async def settings_get(
@@ -68,17 +73,22 @@ async def draft_save(
 async def draft_take(
     session_factory: async_sessionmaker[AsyncSession], admin_id: int
 ) -> str | None:
+    # DELETE ... RETURNING consumes the draft atomically: a double tap can
+    # never broadcast the same draft twice.
     key = draft_key(admin_id)
-    value = await settings_get(session_factory, key)
+    async with session_factory() as session:
+        async with session.begin():
+            row = (await session.execute(TAKE_SQL, {"key": key})).first()
+    if row is None:
+        return None
+    value = _decode(row[0])
     if not isinstance(value, dict):
         return None
     created_at = value.get("created_at")
     html = value.get("html")
     if not isinstance(created_at, (int, float)) or isinstance(created_at, bool):
-        await settings_delete(session_factory, key)
         return None
     if time.time() - float(created_at) >= DRAFT_TTL_SECONDS:
-        await settings_delete(session_factory, key)
         return None
     return html if isinstance(html, str) and html else None
 
