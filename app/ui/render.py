@@ -358,10 +358,8 @@ def _card_html(card: CardView, locale: str, shown: list[int], summary: str | Non
         + (f"<p>{_esc(text)}</p>" if text else "")
         + _section("card.quick", _esc(quick), locale, ("warning", "⚠️"))
         + _section("card.signs", signs, locale, ("eyes", "👀"))
-        + _details("card.before", before, locale, icon=("hourglass", "⏲"))
         + _details("card.during", during, locale, opened=True, icon=("fire", "🔥"))
-        + _details("card.after", after, locale, icon=("refresh", "🔄"))
-        + _details("card.forbidden", forbidden, locale, icon=("cancel", "❌"))
+        + _details("card.details_more", before + after + forbidden, locale, icon=("catalog", "📂"))
         + (f"<p>… {_esc(t(locale, 'card.truncated'))}</p>" if truncated else "")
         + "<footer>"
         + " · ".join(

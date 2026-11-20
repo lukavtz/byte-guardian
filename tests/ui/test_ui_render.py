@@ -48,6 +48,12 @@ BUTTON = re.compile(r"<tg-button(?=[\s>])([^>]*)>(.*?)</tg-button>", re.DOTALL)
 ROW = re.compile(r"<tg-button-row\b[^>]*>(.*?)</tg-button-row>", re.DOTALL)
 ATTRIBUTE = re.compile(r'([\w-]+)="([^"]*)"')
 BARE_EMOJI = re.compile(r"[\U0001F000-\U0001FAFF\u2600-\u27BF\u2B00-\u2BFF]")
+DETAIL = re.compile(r"<details(?P<flag>[^>]*)>(?P<body>.*?)</details>", re.DOTALL)
+
+
+def _closed_details(html: str) -> list[re.Match[str]]:
+    """Closed sections: open details do not add a mobile tap target."""
+    return [match for match in DETAIL.finditer(html) if " open" not in match.group("flag")]
 
 
 def _img_src(url: str) -> str:
@@ -301,7 +307,7 @@ def test_card_layout_separates_the_summary_signs_and_footer() -> None:
     assert html.count("<br/>") >= 1
     assert "Первое действие" in html
     assert "Признаки</b><br/>• Дым из-под двери" in html
-    assert len(re.findall(r"<summary><b>.*?</b></summary>", html)) == 4
+    assert len(re.findall(r"<summary><b>.*?</b></summary>", html)) == 2
     footer = re.search(r"<footer>(.*?)</footer>", html)
     assert footer is not None
     assert strip_premium(footer.group(1)).split(" · ")[1:] == ["ТИСБИ", "101", "112", "МЧС России"]
@@ -693,22 +699,35 @@ def test_card_uses_rich_markup() -> None:
     assert "RU" not in html
 
 
-def test_card_has_a_details_block_per_step() -> None:
+def test_card_has_at_most_two_closed_details_with_nonempty_bodies() -> None:
     html = render_card(_card(), LOCALE, page=1, has_quiz=True).html
-    raw = re.findall(r"<summary>(.*?)</summary>", html)
-    summaries = [strip_premium(re.sub(r"<[^>]+>", "", text)).strip() for text in raw]
-    assert [label.split(" ", 1)[-1] for label in summaries] == ["До", "Во время", "После", "Нельзя"]
-    opened = re.findall(r"<details( open)?>", html)
-    assert opened == ["", " open", "", ""]
+    closed = _closed_details(html)
+    assert len(closed) <= 2
+    for match in closed:
+        summary = re.search(r"<summary>(.*?)</summary>", match.group("body"), re.DOTALL)
+        assert summary is not None
+        body = match.group("body")[summary.end() :]
+        assert re.sub(r"<[^>]+>", "", body).strip()
 
 
-def test_card_details_have_visible_labels_without_nested_headings() -> None:
+def test_card_details_labels_collapse_secondary_steps_but_not_the_first_action() -> None:
     html = render_card(_card(), LOCALE, page=1, has_quiz=True).html
     raw = re.findall(r"<summary>(.*?)</summary>", html)
-    summaries = [re.sub(r"^\W+\s*", "", strip_premium(re.sub(r"<[^>]+>", "", item))).strip() for item in raw]
-    assert len(summaries) == 4
+    summaries = [strip_premium(re.sub(r"<[^>]+>", "", item)).strip() for item in raw]
+    assert len(summaries) == 2
+    assert any("Во время" in label for label in summaries)
+    assert not any(label == "До" for label in summaries)
     assert all("<h2>" not in item for item in raw)
-    assert summaries == ["До", "Во время", "После", "Нельзя"]
+
+
+def test_card_keeps_critical_steps_and_numbers_visible_without_expansion() -> None:
+    card = dataclasses.replace(_card(), quick="Звоните 101")
+    html = render_card(card, LOCALE, page=1, has_quiz=True).html
+    above = html.split("<details", 1)[0]
+    assert "Первое действие" in above
+    assert "Звоните 101" in above
+    assert "101" in above and "112" in above
+    assert "<footer>" in html and "</footer>" in html
 
 
 def test_card_keeps_the_first_action_and_contacts_visible() -> None:

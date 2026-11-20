@@ -51,6 +51,7 @@
   "card.mistakes": "常见错误",
   "card.citations": "来源",
   "card.more": "更多步骤",
+  "card.details_more": "之前 · 期间 · 之后 · 禁止",
   "card.updated": "更新",
   "card.not_found.title": "未找到卡片",
   "card.not_found.lead": "该卡片已不存在：分区可能已关闭，或链接已过期。",
