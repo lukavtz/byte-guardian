@@ -26,7 +26,7 @@ from app.services.callbacks import cb_broadcast
 from app.services.settings import draft_discard, draft_save, draft_take
 
 UUID_PATTERN = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", re.I)
-MAX_BROADCAST_CHARS = 4096
+MAX_BROADCAST_CHARS = 4000
 PREVIEW_TITLE = "Broadcast preview. Send it?"
 STOP_TEXT = "Broadcasts are off. You will not receive mass messages."
 
@@ -63,7 +63,7 @@ async def broadcast_command(
     if not broadcast_text:
         await message.answer("Usage: /broadcast <html text>")
         return
-    if len(broadcast_text) > MAX_BROADCAST_CHARS:
+    if len(broadcast_text.encode("utf-16-le")) // 2 > MAX_BROADCAST_CHARS:
         await message.answer(f"Broadcast is limited to {MAX_BROADCAST_CHARS} characters.")
         return
     await draft_save(session_factory, user.id, broadcast_text)

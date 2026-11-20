@@ -257,6 +257,20 @@ async def test_broadcast_rejects_empty_text() -> None:
     assert "Usage" in message.answer.await_args.args[0]
 
 
+async def test_broadcast_counts_utf16_units(monkeypatch: pytest.MonkeyPatch) -> None:
+    db = FakeDB()
+    save = AsyncMock()
+    monkeypatch.setattr(broadcast, "draft_save", save)
+    message = make_message()
+
+    await broadcast.broadcast_command(
+        message, SimpleNamespace(args="😀" * 2001), db.factory(), make_settings()
+    )
+
+    assert "limited" in message.answer.await_args.args[0]
+    save.assert_not_awaited()
+
+
 async def test_confirm_queues_broadcast(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
