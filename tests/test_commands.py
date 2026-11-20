@@ -8,6 +8,7 @@ from unittest.mock import AsyncMock
 import pytest
 
 from app.handlers import commands
+from app.services.i18n import t
 
 
 class FakeBot:
@@ -59,3 +60,16 @@ async def test_settings_renders_screen() -> None:
     bot = FakeBot()
     await commands.settings_command(_message(), bot, FakeSessions())
     assert bot.sent and "Настройки" in bot.sent[0]["rich_message"].html
+
+
+@pytest.mark.asyncio
+async def test_group_reply_without_username_has_no_dangling_colon() -> None:
+    message = _message()
+    message.chat = SimpleNamespace(id=1, type="supergroup")
+    bot = SimpleNamespace(me=AsyncMock(return_value=SimpleNamespace(username=None)))
+
+    assert await commands._private_only(message, bot, FakeSessions()) is False
+
+    text = message.answer.await_args.args[0]
+    assert text == t("ru", "group.private_only_plain")
+    assert not text.endswith(":")

@@ -162,7 +162,7 @@ async def test_inline_uses_the_saved_locale(monkeypatch: pytest.MonkeyPatch) -> 
     monkeypatch.setattr(inline_handler, "get_locale", saved_locale)
     kwargs = await _answer("", await _repo(), object())
 
-    assert kwargs["switch_pm_text"] == "Open categories"
+    assert kwargs["switch_pm_text"] == "Open sections"
 
 
 async def test_inline_empty_query_always_answers_with_menu() -> None:

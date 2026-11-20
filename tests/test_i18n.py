@@ -35,3 +35,43 @@ def test_admin_button_is_translated_everywhere() -> None:
     for locale in ("en", "ru", "zh", "tt"):
         text = t(locale, "button.admin")
         assert text != "button.admin" and text
+
+
+BROADCAST_KEYS = (
+    "admin.denied",
+    "group.private_only_plain",
+    "broadcasts.stopped",
+    "broadcasts.stop_failed",
+    "broadcasts.preview_title",
+    "broadcasts.send",
+    "broadcasts.cancel",
+    "broadcasts.usage",
+    "broadcasts.status_usage",
+    "broadcasts.too_long",
+    "broadcasts.admins_only",
+    "broadcasts.cancelled",
+    "broadcasts.draft_expired",
+    "broadcasts.queued",
+    "broadcasts.queued_id",
+    "broadcasts.not_found",
+    "broadcasts.status",
+    "broadcasts.state.pending",
+    "broadcasts.state.running",
+    "broadcasts.state.done",
+    "broadcasts.state.failed",
+)
+
+
+def test_admin_surface_is_copied_in_every_locale() -> None:
+    from app.services.i18n import LOCALES
+
+    for locale in LOCALES:
+        for key in BROADCAST_KEYS:
+            assert t(locale, key) != key, f"{locale} misses {key}"
+
+
+def test_help_hides_the_admin_command() -> None:
+    from app.services.i18n import LOCALES
+
+    for locale in LOCALES:
+        assert "/admin" not in t(locale, "help.commands")

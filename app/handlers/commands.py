@@ -51,8 +51,10 @@ async def _private_only(
         username = me.username
     except Exception:
         logger.warning("could not resolve bot username for the group reply")
-    link = f"https://t.me/{username}" if username else ""
-    await message.answer(t(locale, "group.private_only", link=link))
+    if username:
+        await message.answer(t(locale, "group.private_only", link=f"https://t.me/{username}"))
+    else:
+        await message.answer(t(locale, "group.private_only_plain"))
     return False
 
 

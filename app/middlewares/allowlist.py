@@ -7,6 +7,8 @@ from typing import Any
 from aiogram import BaseMiddleware
 from aiogram.types import Message, TelegramObject
 
+from app.services.i18n import resolve_locale, t
+
 logger = logging.getLogger(__name__)
 
 ADMIN_COMMANDS = frozenset({"/admin", "/broadcast"})
@@ -39,6 +41,8 @@ class AllowlistMiddleware(BaseMiddleware):
         if command in ADMIN_COMMANDS and not is_admin(
             message.from_user.id, self.admin_ids
         ):
-            await message.answer("This command is restricted to administrators.")
+            await message.answer(
+                t(resolve_locale(message.from_user.language_code), "admin.denied")
+            )
             return None
         return await handler(event, data)

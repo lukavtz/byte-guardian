@@ -451,7 +451,7 @@ def test_menu_never_exceeds_eight_categories() -> None:
 def test_chat_screen_carries_the_heading_lead_and_two_ways_out() -> None:
     screen = render_chat(LOCALE)
     assert "<h1>" in screen.html and "Чат с Байтом" in screen.html
-    assert "Напиши вопрос по БЖД — отвечу по карточкам. Выйти — кнопка ниже." in screen.html
+    assert "Напишите вопрос по БЖД — отвечу по карточкам. Выйти — кнопка ниже." in screen.html
     rows = _rows(screen.html)
     assert len(rows) == 1
     assert [button["data"] for button in rows[0]] == ["b1:chat_exit", "b1:menu"]

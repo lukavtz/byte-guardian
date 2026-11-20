@@ -11,6 +11,7 @@ from app.config import Settings
 from app.handlers import admin
 from app.services import settings as settings_service
 from app.services.callbacks import Callback, cb_admin, cb_admin_broadcast, cb_admin_category, cb_admin_hint, parse_cb
+from app.services.i18n import DEFAULT_LOCALE, t
 
 
 class _Result:
@@ -149,7 +150,7 @@ def make_settings(admin_ids: str = "42") -> Settings:
 
 def make_message(user_id: int = 42) -> MagicMock:
     message = MagicMock()
-    message.from_user = SimpleNamespace(id=user_id)
+    message.from_user = SimpleNamespace(id=user_id, language_code="ru")
     message.chat = SimpleNamespace(id=100)
     message.answer = AsyncMock()
     return message
@@ -157,7 +158,7 @@ def make_message(user_id: int = 42) -> MagicMock:
 
 def make_query(user_id: int, data: str) -> MagicMock:
     query = MagicMock()
-    query.from_user = SimpleNamespace(id=user_id)
+    query.from_user = SimpleNamespace(id=user_id, language_code="ru")
     query.data = data
     query.answer = AsyncMock()
     query.message = MagicMock()
@@ -259,7 +260,7 @@ async def test_non_admin_is_denied() -> None:
         message, bot, db.factory(), make_settings(), make_dispatcher()
     )
 
-    message.answer.assert_awaited_once_with(admin.ADMIN_ONLY_TEXT)
+    message.answer.assert_awaited_once_with(t(DEFAULT_LOCALE, "admin.denied"))
     assert not bot.calls
     assert not db.toggle_calls
 

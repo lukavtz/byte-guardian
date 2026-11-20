@@ -12,6 +12,7 @@ from app.handlers import broadcast
 from app.jobs import broadcast as broadcast_job
 from app.runtime.queue import ClaimedJob
 from app.services import broadcast as service
+from app.services.i18n import DEFAULT_LOCALE, t
 
 
 class _Result:
@@ -86,7 +87,7 @@ class FakeDB:
                 
             }
             return _Result([(broadcast_id,)])
-        if sql.startswith("SELECT status, last_user_id, sent, failed FROM broadcasts"):
+        if sql.startswith("SELECT status, last_user_id, sent, failed"):
             row = self.broadcasts.get(params["broadcast_id"])
             return _Result([dict(row)]) if row is not None else _Result([])
         if sql.startswith("UPDATE broadcasts SET status = 'running'"):
@@ -169,14 +170,14 @@ def make_settings(admin_ids: str = "42") -> Settings:
 
 def make_message(user_id: int = 42) -> MagicMock:
     message = MagicMock()
-    message.from_user = SimpleNamespace(id=user_id)
+    message.from_user = SimpleNamespace(id=user_id, language_code="ru")
     message.answer = AsyncMock()
     return message
 
 
 def make_query(user_id: int, data: str) -> MagicMock:
     query = MagicMock()
-    query.from_user = SimpleNamespace(id=user_id)
+    query.from_user = SimpleNamespace(id=user_id, language_code="ru")
     query.data = data
     query.answer = AsyncMock()
     query.message = MagicMock()
@@ -214,7 +215,7 @@ async def test_stop_disables_broadcasts() -> None:
     await broadcast.stop_broadcasts(message, db.factory())
 
     assert db.users[7] is False
-    message.answer.assert_awaited_once_with(broadcast.STOP_TEXT)
+    message.answer.assert_awaited_once_with(t(DEFAULT_LOCALE, "broadcasts.stopped"))
 
 
 async def test_stop_with_missing_column_reports_failure(caplog) -> None:
@@ -225,7 +226,7 @@ async def test_stop_with_missing_column_reports_failure(caplog) -> None:
         await broadcast.stop_broadcasts(message, db.factory())
 
     assert db.users[7] is True
-    message.answer.assert_awaited_once_with(broadcast.STOP_FAILED_TEXT)
+    message.answer.assert_awaited_once_with(t(DEFAULT_LOCALE, "broadcasts.stop_failed"))
     assert "broadcasts_opt_in" in caplog.text
 
 
@@ -237,7 +238,7 @@ async def test_non_admin_broadcast_is_denied() -> None:
         message, SimpleNamespace(args="hello"), db.factory(), make_settings()
     )
 
-    message.answer.assert_awaited_once_with(broadcast.ADMIN_ONLY_TEXT)
+    message.answer.assert_awaited_once_with(t(DEFAULT_LOCALE, "admin.denied"))
 
 
 async def test_broadcast_saves_draft_and_shows_confirm(
@@ -267,7 +268,7 @@ async def test_broadcast_rejects_empty_text() -> None:
         message, SimpleNamespace(args="  "), db.factory(), make_settings()
     )
 
-    assert "Usage" in message.answer.await_args.args[0]
+    assert message.answer.await_args.args[0] == t(DEFAULT_LOCALE, "broadcasts.usage")
 
 
 async def test_broadcast_counts_utf16_units(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -280,7 +281,9 @@ async def test_broadcast_counts_utf16_units(monkeypatch: pytest.MonkeyPatch) -> 
         message, SimpleNamespace(args="😀" * 2001), db.factory(), make_settings()
     )
 
-    assert "limited" in message.answer.await_args.args[0]
+    assert message.answer.await_args.args[0] == t(
+        DEFAULT_LOCALE, "broadcasts.too_long", limit=broadcast.MAX_BROADCAST_CHARS
+    )
     save.assert_not_awaited()
 
 
@@ -305,7 +308,9 @@ async def test_confirm_queues_broadcast(
     assert payload["broadcastId"] in db.broadcasts
     assert kwargs["idempotency_key"] == "broadcast:" + payload["broadcastId"]
     discard.assert_awaited_once_with(factory, 42)
-    assert "queued" in query.message.edit_text.await_args.args[0]
+    assert query.message.edit_text.await_args.args[0] == t(
+        DEFAULT_LOCALE, "broadcasts.queued_id", id=payload["broadcastId"]
+    )
 
 
 async def test_confirm_with_expired_draft_does_not_queue(
@@ -346,7 +351,9 @@ async def test_cancel_discards_draft(monkeypatch: pytest.MonkeyPatch) -> None:
 
     discard.assert_awaited_once_with(factory, 42)
     assert queue.enqueued == []
-    assert query.message.edit_text.await_args.args[0] == "Broadcast cancelled."
+    assert query.message.edit_text.await_args.args[0] == t(
+        DEFAULT_LOCALE, "broadcasts.cancelled"
+    )
 
 
 async def test_job_skips_blocked_and_saves_cursor() -> None:

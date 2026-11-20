@@ -24,6 +24,7 @@ from app.services.callbacks import (
     cb_menu,
     parse_cb,
 )
+from app.services.i18n import DEFAULT_LOCALE, resolve_locale, t
 from app.ui.delivery import show
 from app.ui.emoji import premium
 from app.ui.keyboards import rich_button, rich_row
@@ -31,15 +32,12 @@ from app.ui.render import RichScreen
 
 router = Router(name="admin")
 
-ADMIN_ONLY_TEXT = "This command is restricted to administrators."
 ADMIN_ONLY_ALERT = "Только для администраторов."
 BROADCAST_HINT = "Отправьте /broadcast с текстом сообщения."
 SLUG_PATTERN = re.compile(r"^[a-z0-9][a-z0-9-]{0,31}$")
 STATUS_LABELS = {
-    "pending": "в очереди",
-    "running": "идёт",
-    "done": "готово",
-    "failed": "ошибка",
+    name: t(DEFAULT_LOCALE, "broadcasts.state." + name)
+    for name in ("pending", "running", "done", "failed")
 }
 
 STATS_SQL = text(
@@ -166,7 +164,7 @@ def _health_block(health: Mapping[str, str]) -> str:
     )
     return (
         f"<p>healthz: <b>ok</b> · readyz: <b>{ready}</b></p>"
-        f"<p><code>{detail or 'проб нет'}</code></p>"
+        f"<p><code>{detail or 'проблем нет'}</code></p>"
     )
 
 
@@ -296,7 +294,8 @@ async def admin_panel(
 ) -> None:
     user_id = message.from_user.id if message.from_user else None
     if not is_admin(user_id, settings.admin_id_set):
-        await message.answer(ADMIN_ONLY_TEXT)
+        locale = resolve_locale(message.from_user.language_code if message.from_user else None)
+        await message.answer(t(locale, "admin.denied"))
         return
     await show(bot, message.chat.id, await _home(session_factory, dispatcher))
 

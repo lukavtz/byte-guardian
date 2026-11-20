@@ -327,7 +327,7 @@ async def test_category_page_carries_page_into_card_and_back() -> None:
     assert bot.edited and not bot.sent
     assert bot.edited[0]["message_id"] == 10
     html = bot.edited[0]["rich_message"].html
-    assert "Страница 2/2" in html
+    assert "Страница 2 из 2" in html
     datas = [item.callback_data for item in _buttons(bot.edited[0])]
     assert "b1:card:fire-5:2" in datas
     assert "b1:cat:fire:1" in datas

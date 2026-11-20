@@ -14,7 +14,7 @@
 
 8 разделов: пожар, терроризм, техногенные и природные ЧС, первая помощь, химия, радиация, кибербезопасность. В каждой карточке — признаки, действия до, во время и после, запреты и телефоны. После карточки — тест на 3 вопроса.
 
-Поиск по словам и режим @ByteTisbi_bot в любом чате. В группах Байт отвечает на упоминание или реплай и опирается на официальные памятки МЧС, Минздрава, НАК, Минцифры и Банка России.
+Поиск по словам и упоминание @ByteTisbi_bot в любом чате. В группах Байт отвечает на упоминание или на ответ на своё сообщение и опирается на официальные памятки МЧС, Минздрава, НАК, Минцифры и Банка России.
 
 При угрозе жизни звоните 112.
 
@@ -23,7 +23,7 @@
 **Name (64):** Byte — TISBI Life Safety
 
 **About (120):**
-TISBI safety-life assistant: 59 cards, quizzes and AI answers grounded in official Russian sources.
+TISBI life-safety assistant: 59 cards, quizzes and AI answers grounded in official Russian sources.
 
 **Description (512):**
 Byte is TISBI's student assistant for life safety.
