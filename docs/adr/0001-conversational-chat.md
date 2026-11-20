@@ -1,0 +1,5 @@
+# Conversational chat responses
+
+Status: accepted
+
+Context: `app/handlers/llm.py` short-circuits greetings, thanks, small talk and insults through fixed `SMALLTALK[locale][intent]` strings (and vague input through `VAGUE`), so Байт repeats identical canned lines instead of holding a natural conversation. The bot already has an OpenAI-compatible chat path, the persona system prompt and the 18-skill v2 selection system with a 20-question golden eval. Decision: route these utterances through the model with persona and skills, keeping only deterministic guards (empty input, rate limits, outage → search fallback) outside the model. Consequences: chat feels varied and natural; chit-chat now costs an LLM round trip and can fail (typing indicator, timeout and search fallback remain), and the canned-string tables are deleted so responses are governed by prompt/skills rather than code constants. Alternatives: keep fixed strings (rejected — the user complaint), expand the canned table (rejected — more of the same defect), or a separate conversational model/service (rejected — chat stays inside the bot on the same gateway).

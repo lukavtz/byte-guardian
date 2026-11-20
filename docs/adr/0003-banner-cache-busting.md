@@ -1,0 +1,5 @@
+# Banner cache busting
+
+Status: accepted
+
+Context: `app/ui/render.py` serves the menu banner and category art as `raw.githubusercontent.com` `<img>` URLs; Telegram and the CDN cache images by URL (`max-age=300`), so replaced art keeps showing stale pixels. The current `ART_VERSION` is a hand-maintained marker — easy to forget on the next art commit. Decision: keep one version marker as the single source of truth, derived from the shipped asset set (content hash / commit), and apply it to every generated image URL through `_img()` so a changed asset always yields a fresh URL. Consequences: stale banners stop appearing after art replacements; no per-image manual edits; the approved README/menu banner file `assets/brand/banner.jpg` is never regenerated or replaced by this work. Alternatives: rename every image file per release (rejected — churn, breaks references), or rely on CDN expiry alone (rejected — the user-visible staleness). If a newly generated image falls below the quality bar, prompts go to the human and no further replacements are produced in-house.

@@ -1,0 +1,5 @@
+# Card enrichment with official sources
+
+Status: accepted
+
+Context: All 59 threats in `content/*.json` already carry authoritative `source` lines with official HTTPS URLs, validated by `tests/content/test_content.py::SOURCE_HOSTS`, but `app/ui/render.py::_card_html()` deliberately strips URLs via `_no_links()` and only prints organisation names in the footer. The LLM web-answer path already builds real source buttons but cards never reuse them. Decision: surface each card's validated official `source` URLs as tappable citation links and deepen card copy against those same official pages, bumping `content_version` so the idempotent seed updates rows. Consequences: every card becomes independently verifiable by the student; raw URLs stay out of the rich footer; no new hosts are trusted without a source-validation test; content changes flow through the existing seed/migration path. Alternatives: leave names only (rejected — the user complaint), render arbitrary LLM-generated source links (rejected — invented URLs risk), or add a web-search call per card (rejected — cards are offline and already sourced).
