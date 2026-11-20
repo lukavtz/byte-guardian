@@ -31,7 +31,7 @@
           "during": [
             "Сообщите по 101 или 112 адрес, этаж и что горит",
             "Выведите людей и не пользуйтесь лифтом",
-            "Двигайтесь низом к выходу и не задерживайтесь в дыму",
+            "При сильном задымлении двигайтесь к выходу ползком, вдоль стены",
             "Закройте дверь горящей комнаты и заложите щели мокрой тканью"
           ],
           "after": [
@@ -50,7 +50,7 @@
             "101",
             "112"
           ],
-          "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pozhar-v-kvartire_4"
+          "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pozhar-v-kvartire_4 · ГУ МЧС России по Тульской области · https://71.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pozharnaya-bezopasnost/kak-vesti-sebya-pri-pozhare-v-mnogokvartirnom-dome"
         }
       },
       "quiz": {
