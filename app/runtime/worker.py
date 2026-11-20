@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import logging
 import os
 import time
@@ -36,8 +37,17 @@ async def run_worker(
     semaphore = asyncio.Semaphore(concurrency)
     tasks: set[asyncio.Task[None]] = set()
 
+    async def heartbeat(job_id: str) -> None:
+        while True:
+            await asyncio.sleep(queue.heartbeat_interval_seconds)
+            try:
+                await queue.heartbeat(job_id)
+            except Exception:  # noqa: BLE001
+                logger.exception("job heartbeat failed", extra={"job_id": job_id})
+
     async def run_job(job: ClaimedJob) -> None:
         started = time.monotonic()
+        beat = asyncio.create_task(heartbeat(job.id))
         try:
             handler = handlers.get(job.kind)
             if handler is None:
@@ -53,6 +63,9 @@ async def run_worker(
                 "job failed", extra={"job_id": job.id, "kind": job.kind}
             )
         finally:
+            beat.cancel()
+            with contextlib.suppress(asyncio.CancelledError):
+                await beat
             logger.info(
                 "job finished",
                 extra={

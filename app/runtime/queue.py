@@ -63,6 +63,13 @@ FAIL_SQL = text(
     """
 )
 
+HEARTBEAT_SQL = text(
+    """
+    UPDATE jobs SET locked_at = now()
+    WHERE id = :job_id AND status = 'running'
+    """
+)
+
 RECOVER_SQL = text(
     """
     UPDATE jobs SET status = 'pending', locked_at = NULL, locked_by = NULL
@@ -94,6 +101,11 @@ class Queue:
     ) -> None:
         self._session_factory = session_factory
         self._visibility_timeout_seconds = visibility_timeout_seconds
+
+    @property
+    def heartbeat_interval_seconds(self) -> float:
+        """How often a running job proves it is alive, before the reaper looks."""
+        return self._visibility_timeout_seconds / 3
 
     async def enqueue(
         self,
@@ -158,6 +170,12 @@ class Queue:
                 await session.execute(
                     FAIL_SQL, {"job_id": job_id, "last_error": clip_error(error)}
                 )
+
+    async def heartbeat(self, job_id: str) -> None:
+        """Extend the lease of a running job so the reaper leaves it alone."""
+        async with self._session_factory() as session:
+            async with session.begin():
+                await session.execute(HEARTBEAT_SQL, {"job_id": job_id})
 
     async def recover_stuck(self) -> int:
         async with self._session_factory() as session:

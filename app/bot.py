@@ -4,10 +4,10 @@ import logging
 import os
 from pathlib import Path
 
-from aiogram import Bot, Dispatcher
+from aiogram import Bot, Dispatcher, Router
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
-from aiogram.types import ErrorEvent
+from aiogram.types import CallbackQuery, ErrorEvent
 from redis.asyncio import Redis
 
 from app.config import Settings
@@ -15,6 +15,7 @@ from app.content.repository import ContentRepository
 from app.content.seed import seed_content
 from app.db.session import SessionFactory, create_session_factory
 from app.handlers import register_handlers
+from app.handlers.nav import menu_screen
 from app.middlewares.allowlist import AllowlistMiddleware
 from app.middlewares.callback_ack import CallbackAckMiddleware
 from app.middlewares.dedupe import DedupeMiddleware
@@ -23,6 +24,8 @@ from app.middlewares.repo import RepoMiddleware
 from app.middlewares.user_sync import UserSyncMiddleware
 from app.runtime.queue import Queue
 from app.services.retry import is_retry_after_error, sleep_retry_after
+from app.services.user_locale import get_locale
+from app.ui.delivery import show
 from app.webhook import readiness_probes
 
 logger = logging.getLogger(__name__)
@@ -79,6 +82,44 @@ def create_redis(settings: Settings) -> Redis | None:
     return Redis.from_url(settings.redis_url, decode_responses=True)
 
 
+ORPHAN_TOAST = "Кнопка устарела — вот меню"
+
+
+def register_orphan_callbacks(dispatcher: Dispatcher) -> None:
+    """Answer callbacks no router claimed and put the menu back in private chat.
+
+    Included after every handler router, so it only sees data that no screen
+    recognises: an old bot release, a deleted card, a foreign inline button.
+    Unlike an inline button these update ids stay valid, so the answer also
+    replaces the dead message when the chat is a private one.
+    """
+    router = Router(name="orphan_callbacks")
+
+    @router.callback_query()
+    async def on_orphan_callback(
+        query: CallbackQuery,
+        bot: Bot,
+        repo: ContentRepository,
+        session_factory: SessionFactory,
+        settings: Settings | None = None,
+    ) -> None:
+        await query.answer(ORPHAN_TOAST)
+        message = query.message
+        if message is None or getattr(message.chat, "type", None) != "private":
+            return
+        user_id = query.from_user.id if query.from_user else 0
+        locale = await get_locale(session_factory, user_id)
+        admin = bool(settings and user_id in settings.admin_id_set)
+        await show(
+            bot,
+            message.chat.id,
+            await menu_screen(repo, locale, admin),
+            message.message_id,
+        )
+
+    dispatcher.include_router(router)
+
+
 def create_dispatcher(settings: Settings, bot: Bot, redis: Redis | None) -> Dispatcher:
     dispatcher = Dispatcher()
     session_factory = create_session_factory(settings.database_url)
@@ -112,4 +153,5 @@ def create_dispatcher(settings: Settings, bot: Bot, redis: Redis | None) -> Disp
 
     dispatcher.startup.register(startup_content)
     register_handlers(dispatcher, bot)
+    register_orphan_callbacks(dispatcher)
     return dispatcher

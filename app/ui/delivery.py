@@ -6,7 +6,8 @@ Telegram refusals are handled here, once, instead of at every call site:
 
 * the edit changed nothing (`message is not modified`) — the desired state is
   already on screen, so it is a success;
-* the message is too old or gone — the screen goes out as a new message;
+* the message is gone, too old, no longer editable, or its callback query
+  expired — the screen goes out as a new message;
 * a `<tg-emoji>` was refused — the same screen is retried without premium
   emoji, for this screen only;
 * a `<tg-button>` was refused — the buttons are lifted out of the markup into
@@ -34,7 +35,12 @@ from app.ui.render import RichScreen
 MAX_ATTEMPTS = 4
 
 NOT_MODIFIED = "message is not modified"
-STALE = ("message to edit not found", "message to edit too old", "query is too old")
+STALE = (
+    "message to edit not found",
+    "message to edit too old",
+    "message can't be edited",
+    "query is too old",
+)
 
 
 class _Markup(TypedDict, total=False):

@@ -7,7 +7,7 @@ from aiogram.exceptions import TelegramBadRequest
 from aiogram.methods import EditMessageText, SendRichMessage
 from aiogram.types import InputRichMessage
 
-from app.ui.delivery import MAX_ATTEMPTS, show
+from app.ui.delivery import MAX_ATTEMPTS, STALE, show
 from app.ui.render import RichScreen
 
 CHAT_ID = 42
@@ -132,9 +132,10 @@ async def test_button_fallback_keeps_the_edit_in_place() -> None:
     assert bot.calls[1][1]["reply_markup"] is not None
 
 
+@pytest.mark.parametrize("fragment", STALE)
 @pytest.mark.asyncio
-async def test_stale_edit_becomes_a_fresh_message() -> None:
-    bot = FakeBot(_bad("edit_message_text", "Bad Request: message to edit not found"))
+async def test_stale_edit_becomes_a_fresh_message(fragment: str) -> None:
+    bot = FakeBot(_bad("edit_message_text", "Bad Request: " + fragment))
     screen = _screen()
     await show(bot, CHAT_ID, screen, MESSAGE_ID)
 

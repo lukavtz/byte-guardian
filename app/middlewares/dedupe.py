@@ -1,3 +1,10 @@
+"""Claim each update once in Redis, so a Telegram retry cannot run it twice.
+
+The claim fails open: a Redis outage must not stop the bot from answering
+users. The first failure is logged once and the update goes through; blocking
+delivery on an optional cache would turn a degraded dependency into an outage.
+"""
+
 from __future__ import annotations
 
 import logging
@@ -16,6 +23,7 @@ DEDUPE_TTL_SECONDS = 86_400
 class DedupeMiddleware(BaseMiddleware):
     def __init__(self, redis: Redis | None) -> None:
         self.redis = redis
+        self._unavailable_logged = False
         if redis is None:
             logger.warning("dedupe disabled: REDIS_URL is not set")
 
@@ -32,9 +40,13 @@ class DedupeMiddleware(BaseMiddleware):
             claimed = await self.redis.set(
                 f"update:{update_id}", "1", nx=True, ex=DEDUPE_TTL_SECONDS
             )
-        except Exception as error:
-            logger.error("dedupe unavailable; refusing update %s", update_id)
-            raise RuntimeError("update deduplication unavailable") from error
+        except Exception:
+            if not self._unavailable_logged:
+                logger.warning(
+                    "dedupe unavailable; delivering updates without it", exc_info=True
+                )
+                self._unavailable_logged = True
+            return await handler(event, data)
         if not claimed:
             logger.info("duplicate update %s ignored", update_id)
             return None
