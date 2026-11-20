@@ -362,16 +362,48 @@ def test_answered_question_marks_the_chosen_option() -> None:
     assert [b.get("style") for b in _buttons(wrong.html)][:4] == ["success", None, "danger", None]
 
 
-def test_result_shows_score_and_one_primary_retry() -> None:
+def _emphasized(html: str) -> list[dict[str, str]]:
+    return [button for button in _buttons(html) if button.get("style") in {"primary", "success", "danger"}]
+
+
+def test_result_shows_score_and_one_emphasized_retry() -> None:
     screen = render_result(correct=2, total=3, slug="fire-home", locale=LOCALE)
     assert "<h1>" in screen.html and "2/3" in screen.html
     buttons = _buttons(screen.html)
     assert len(buttons) == 2
-    primary = _primary(screen.html)
-    assert len(primary) == 1
-    parsed = parse_cb(primary[0]["data"])
+    emphasized = _emphasized(screen.html)
+    assert len(emphasized) == 1
+    assert emphasized[0]["style"] == "success"
+    parsed = parse_cb(emphasized[0]["data"])
     assert parsed is not None and parsed.action == "quiz_next" and parsed.arg == "fire-home"
     assert [cb.action for cb in _parsed(screen.html)][1] == "menu"
+
+
+def test_failed_result_keeps_the_retry_primary() -> None:
+    screen = render_result(correct=1, total=3, slug="fire-home", locale=LOCALE)
+    assert [button["style"] for button in _emphasized(screen.html)] == ["primary"]
+
+
+def test_navigation_screens_stay_neutral() -> None:
+    for screen in (
+        render_menu([_category()], LOCALE),
+        render_category(_category(), [_threat()], LOCALE, 1, 1),
+        search_screen("пожар", [_threat()], LOCALE),
+    ):
+        assert not _emphasized(screen.html)
+
+
+def test_quiz_styles_per_screen() -> None:
+    card = render_card(_card(), LOCALE, page=1, has_quiz=True)
+    assert [button["style"] for button in _emphasized(card.html)] == ["primary"]
+
+    question = render_question(_quiz(), "fire-home", 1, 3, "a3f1", LOCALE)
+    assert not _emphasized(question.html)
+
+    answered = render_question(_quiz(), "fire-home", 1, 3, "a3f1", LOCALE, chosen=1)
+    styles = [button.get("style") for button in _buttons(answered.html)]
+    assert styles[:4] == ["success", "danger", None, None]
+    assert [button["style"] for button in _emphasized(answered.html)] == ["success", "danger", "primary"]
 
 
 # --- search --------------------------------------------------------------

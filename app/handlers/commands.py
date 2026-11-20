@@ -1,13 +1,12 @@
-"""Commands: start (with deep link and one-time banner), help, settings."""
+"""Commands: start (with deep link), help, settings."""
 
 from __future__ import annotations
 
 import logging
-from pathlib import Path
 
 from aiogram import Bot, F, Router
 from aiogram.filters import Command, CommandObject
-from aiogram.types import BotCommand, CallbackQuery, FSInputFile, Message
+from aiogram.types import BotCommand, CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.content.repository import ContentRepository
@@ -23,39 +22,11 @@ from app.handlers.nav import (
 )
 from app.services.broadcast import set_opt_in
 from app.services.i18n import DEFAULT_LOCALE, ENABLED_LOCALES, t
-from app.services.settings import settings_get, settings_set
 from app.ui.delivery import show
 
 logger = logging.getLogger(__name__)
 
 router = Router(name="commands")
-
-BANNER_PATH = Path(__file__).resolve().parents[2] / "assets" / "banner.jpg"
-BANNER_KEY = "banner_file_id:{chat_id}"
-
-
-def banner_key(chat_id: int) -> str:
-    return BANNER_KEY.format(chat_id=chat_id)
-
-
-async def send_banner(
-    message: Message, session_factory: async_sessionmaker[AsyncSession]
-) -> None:
-    """Upload once per chat, then reuse the file id; never block the menu."""
-    key = banner_key(message.chat.id)
-    try:
-        cached = await settings_get(session_factory, key)
-        if isinstance(cached, str) and cached:
-            await message.answer_photo(photo=cached)
-            return
-        sent = await message.answer_photo(photo=FSInputFile(BANNER_PATH))
-        photos = getattr(sent, "photo", None) if sent is not None else None
-        if photos:
-            file_id = photos[-1].file_id
-            if isinstance(file_id, str) and file_id:
-                await settings_set(session_factory, key, file_id)
-    except Exception:
-        logger.warning("banner delivery failed; menu continues", exc_info=True)
 
 
 def _card_from_payload(payload: str) -> str | None:
@@ -94,7 +65,6 @@ async def start(
     if not await _private_only(message, bot, session_factory):
         return
     locale = await pin_initial_locale(session_factory, message.from_user)
-    await send_banner(message, session_factory)
     slug = _card_from_payload(command.args or "")
     screen = card_screen(repo, slug, 1, locale) if slug else None
     if screen is None:

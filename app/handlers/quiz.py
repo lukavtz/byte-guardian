@@ -91,10 +91,16 @@ async def quiz_callback(
             if owner is not None and owner != callback.from_user.id:
                 await _alert(callback, locale)
                 return
-        next_index = index + 1
-    else:
-        next_index = index if qid == START else index + 1
+        await callback.answer()
+        # The verdict stays on the screen: the reader sees the right option,
+        # their own mistake and the explanation before moving on.
+        screen = render_question(
+            quiz, slug, index + 1, len(questions), seed, locale, chosen=chosen
+        )
+        await show(bot, message.chat.id, screen, message.message_id)
+        return
 
+    next_index = index if qid == START else index + 1
     await callback.answer()
 
     if next_index < len(questions):

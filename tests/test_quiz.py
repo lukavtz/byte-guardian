@@ -260,11 +260,26 @@ async def test_three_answers_walk_to_the_result() -> None:
     questions = pick_questions(_quizzes(), SEED)
 
     for position, quiz in enumerate(questions):
-        query = _callback(
-            cb_quiz(SLUG, quiz.question_id, quiz.answer, SEED), bot
-        )
         await quiz_handler.quiz_callback(
-            callback=query, bot=bot, repo=repo, session_factory=db.factory()
+            callback=_callback(cb_quiz(SLUG, quiz.question_id, quiz.answer, SEED), bot),
+            bot=bot,
+            repo=repo,
+            session_factory=db.factory(),
+        )
+        # The answer stays on screen with its verdict, not the next question.
+        answer_call = bot.calls[-1]
+        assert answer_call[0] == "edit_message_text"
+        assert answer_call[1]["message_id"] == 10
+        html = _screen_html(answer_call)
+        assert quiz.prompt in html
+        assert f"Вопрос {position + 1}/3" in html
+        assert quiz.explanation in html
+
+        await quiz_handler.quiz_callback(
+            callback=_callback(cb_quiz_next(SLUG, quiz.question_id, SEED), bot),
+            bot=bot,
+            repo=repo,
+            session_factory=db.factory(),
         )
         html = _screen_html(bot.calls[-1])
         if position < len(questions) - 1:
@@ -318,8 +333,8 @@ async def test_repeat_click_does_not_write_twice() -> None:
 
     assert len(db.rows) == 1
     html = _screen_html(bot.calls[-1])
-    assert questions[1].prompt in html
-    assert "Вопрос 2/3" in html
+    assert quiz.prompt in html
+    assert "Вопрос 1/3" in html
 
 
 @pytest.mark.asyncio

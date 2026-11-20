@@ -237,12 +237,13 @@ def render_question(
 
 def render_result(correct: int, total: int, slug: str, locale: str) -> RichScreen:
     verdict = "perfect" if total and correct == total else ("partial" if correct else "zero")
+    passed = bool(total) and correct * 3 >= total * 2
     rows = [
         rich_row(
             rich_button(
                 f"{emoji('refresh', '🔄')} {t(locale, 'button.retry')}",
                 data=cb_quiz_next(slug, "start", secrets.token_hex(2)),
-                style="primary",
+                style="success" if passed else "primary",
             )
         ),
         rich_row(rich_button(f"{emoji('menu', '📂')} {t(locale, 'button.menu')}", data=cb_menu())),

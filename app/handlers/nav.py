@@ -29,7 +29,8 @@ from app.services.callbacks import (
 from app.services.i18n import DEFAULT_LOCALE, ENABLED_LOCALES, resolve_locale, t
 from app.services.user_locale import get_locale, set_locale
 from app.ui.delivery import show
-from app.ui.keyboards import PAGE_SIZE, button, markup, paired
+from app.ui.emoji import emoji
+from app.ui.keyboards import PAGE_SIZE, button, markup, paired, rich_button, rich_row
 from app.ui.render import RichScreen, render_card, render_category, render_menu
 
 logger = logging.getLogger(__name__)
@@ -112,7 +113,7 @@ def language_screen(locale: str) -> RichScreen:
         button(
             LANGUAGE_NAMES[code],
             cb_lang(code),
-            "primary" if code == locale else None,
+            "success" if code == locale else None,
         )
         for code in ENABLED_LOCALES
     ]
@@ -258,11 +259,12 @@ async def on_search_hint(
     session_factory: async_sessionmaker[AsyncSession],
 ) -> None:
     await query.answer()
-    message = query.message
-    if message is None or not _is_private(query):
-        return
     locale = await user_locale(session_factory, query.from_user)
-    await show(bot, message.chat.id, RichScreen(t(locale, "menu.search_hint")))
+    rows = rich_row(
+        rich_button(f"{emoji('menu', '📂')} {t(locale, 'button.menu')}", data=cb_menu())
+    )
+    screen = RichScreen(f"<p>{t(locale, 'menu.search_hint')}</p>" + rows)
+    await _redraw(query, bot, screen)
 
 
 def register(dp: object, _bot: Bot) -> None:

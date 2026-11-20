@@ -6,7 +6,6 @@ from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
 import pytest
-from aiogram.types import FSInputFile
 
 from app.content.types import CardView, CategoryView, ThreatView
 from app.handlers import commands, nav
@@ -211,7 +210,7 @@ def test_worst_case_callbacks_fit_telegram() -> None:
 
 
 @pytest.mark.asyncio
-async def test_start_payload_opens_card_and_caches_banner() -> None:
+async def test_start_payload_opens_card_as_one_rich_message() -> None:
     db = FakeDB()
     factory = fake = db.factory()
     repo = FakeRepo()
@@ -223,41 +222,24 @@ async def test_start_payload_opens_card_and_caches_banner() -> None:
     )
 
     assert repo.card_calls[0] == ("fire-0", "ru")
+    assert len(bot.sent) == 1
     assert "Пожар в квартире" in bot.sent[0]["rich_message"].html
-    import json
-    assert json.loads(db.settings["banner_file_id:7"]) == "cached-file"
-    assert isinstance(message.answer_photo.await_args.kwargs["photo"], FSInputFile)
+    message.answer_photo.assert_not_awaited()
     assert fake is factory
 
 
 @pytest.mark.asyncio
-async def test_start_without_payload_shows_menu_and_reuses_banner() -> None:
-    import json
-
+async def test_start_without_payload_sends_only_the_menu() -> None:
     db = FakeDB()
-    db.settings["banner_file_id:7"] = json.dumps("cached-file")
     repo = FakeRepo()
     bot = FakeBot()
     message = _message()
 
     await commands.start(message, SimpleNamespace(args=None), bot, repo, db.factory())
 
-    assert any(
-        item.text == "🔥 Пожар" for item in _buttons(bot.sent[0])
-    )
-    assert message.answer_photo.await_args.kwargs["photo"] == "cached-file"
-
-
-@pytest.mark.asyncio
-async def test_banner_failure_still_shows_menu() -> None:
-    repo = FakeRepo()
-    bot = FakeBot()
-    message = _message()
-    message.answer_photo = AsyncMock(side_effect=RuntimeError("no photo"))
-
-    await commands.start(message, SimpleNamespace(args=None), bot, repo, FakeDB().factory())
-
-    assert bot.sent
+    assert len(bot.sent) == 1
+    assert any(item.text == "🔥 Пожар" for item in _buttons(bot.sent[0]))
+    message.answer_photo.assert_not_awaited()
 
 
 @pytest.mark.asyncio
@@ -278,7 +260,8 @@ async def test_menu_callback_edits_in_private_chat() -> None:
     await nav.on_menu(query, bot, FakeRepo(), FakeDB().factory())
 
     query.answer.assert_awaited_once()
-    assert bot.edited
+    assert bot.edited and not bot.sent
+    assert bot.edited[0]["message_id"] == 10
     assert any(item.text == "🔥 Пожар" for item in _buttons(bot.edited[0]))
 
 
@@ -301,6 +284,8 @@ async def test_category_page_carries_page_into_card_and_back() -> None:
 
     await nav.on_category(query, bot, FakeRepo(), FakeDB().factory())
 
+    assert bot.edited and not bot.sent
+    assert bot.edited[0]["message_id"] == 10
     html = bot.edited[0]["rich_message"].html
     assert "Страница 2/2" in html
     datas = [item.callback_data for item in _buttons(bot.edited[0])]
@@ -315,6 +300,8 @@ async def test_card_back_button_keeps_page() -> None:
 
     await nav.on_card(query, bot, FakeRepo(), FakeDB().factory())
 
+    assert bot.edited and not bot.sent
+    assert bot.edited[0]["message_id"] == 10
     buttons = _buttons(bot.edited[0])
     datas = [item.callback_data for item in buttons if item.callback_data]
     assert "b1:cat:fire:2" in datas
@@ -330,6 +317,8 @@ async def test_language_callback_saves_and_rerenders_language_screen() -> None:
     await nav.on_lang(query, bot, db.factory())
 
     assert db.locales[7] == "en"
+    assert bot.edited and not bot.sent
+    assert bot.edited[0]["message_id"] == 10
     html = bot.edited[0]["rich_message"].html
     assert "Language" in html
     assert any(item.text == "English" for item in _buttons(bot.edited[0]))
@@ -368,6 +357,8 @@ async def test_broadcast_toggle_updates_flag_and_redraws() -> None:
 
     query.answer.assert_awaited_once()
     assert db.users[7] is False
+    assert bot.edited and not bot.sent
+    assert bot.edited[0]["message_id"] == 10
     assert "Выключена" in bot.edited[0]["rich_message"].html
 
 
@@ -393,6 +384,8 @@ async def test_language_menu_opens_four_languages() -> None:
     await nav.on_lang_menu(query, bot, FakeDB().factory())
 
     query.answer.assert_awaited_once()
+    assert bot.edited and not bot.sent
+    assert bot.edited[0]["message_id"] == 10
     labels = [item.text for item in _buttons(bot.edited[0])]
     assert {"Русский", "English", "中文", "Татарча"} <= set(labels)
 
@@ -406,6 +399,24 @@ async def test_search_hint_is_private_only() -> None:
 
     query.answer.assert_awaited_once()
     assert not bot.sent
+    assert not bot.edited
+
+
+@pytest.mark.asyncio
+async def test_search_hint_edits_the_menu_in_place() -> None:
+    bot = FakeBot()
+    query = _query(cb_search_hint())
+
+    await nav.on_search_hint(query, bot, FakeDB().factory())
+
+    query.answer.assert_awaited_once()
+    assert not bot.sent
+    assert _edited_message_id(bot.edited) == 10
+    assert any(item.callback_data == cb_menu() for item in _buttons(bot.edited[0]))
+
+
+def _edited_message_id(edited: list[dict]) -> int:
+    return edited[0]["message_id"]
 
 
 @pytest.mark.asyncio
@@ -436,3 +447,20 @@ async def test_group_settings_is_not_posted() -> None:
 
     assert not bot.sent
     assert "https://t.me/byte_bot" in message.answer.await_args.args[0]
+
+
+def _screen_buttons(screen) -> list[object]:
+    markup = keyboard_from_rich(screen.html) or screen.keyboard
+    return [item for row in markup.inline_keyboard for item in row]
+
+
+def test_language_screen_marks_the_current_locale_success() -> None:
+    buttons = _screen_buttons(nav.language_screen("ru"))
+    styles = {item.text: item.style for item in buttons}
+    assert styles["Русский"] == "success"
+    assert [item.style for item in buttons].count("primary") == 0
+
+
+def test_settings_has_exactly_one_primary_toggle() -> None:
+    buttons = _screen_buttons(nav.settings_screen("ru", True))
+    assert [item.style for item in buttons].count("primary") == 1
