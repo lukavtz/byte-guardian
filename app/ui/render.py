@@ -12,12 +12,14 @@ only cap drops whole card list items when a message would pass Telegram's
 
 from __future__ import annotations
 
+import hashlib
 import math
 import re
 import secrets
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from html import escape
+from pathlib import Path
 from urllib.parse import quote, urlencode
 
 from aiogram.types import InlineKeyboardMarkup
@@ -52,6 +54,21 @@ ART = "https://raw.githubusercontent.com/lukavtz/byte-guardian/main/assets/art"
 # The menu opens with the same banner the README shows, straight from assets/.
 BANNER = "https://raw.githubusercontent.com/lukavtz/byte-guardian/main/assets/brand/banner.jpg"
 EXT = "jpg"
+
+
+# Telegram caches <img> by URL, and raw.githubusercontent sends max-age=300.
+# Hash the deployed art bytes so any art change makes every image a fresh URL.
+def _art_version(root: Path) -> str:
+    art = root / "assets" / "art"
+    files = sorted(art.glob("*.jpg")) + sorted((root / "assets" / "brand").glob("banner.jpg"))
+    digest = hashlib.sha256()
+    for path in files:
+        digest.update(path.name.encode())
+        digest.update(path.read_bytes())
+    return digest.hexdigest()[:12] if files else "3a6d3c7"
+
+
+ART_VERSION = _art_version(Path(__file__).resolve().parents[2])
 ARTS = frozenset({"fire", "terror", "tech", "nature", "medical", "chem", "rad", "cyber", "chat", "lang"})
 
 
@@ -115,10 +132,15 @@ def _badge(card: CardView, locale: str) -> str:
     return f" · {_esc(t(locale, 'badge.fallback'))}" if card.fallback else ""
 
 
+def _img(url: str) -> str:
+    """An <img> with a cache-busting marker: new art commits get new URLs."""
+    return f'<img src="{url}?v={ART_VERSION}"/>'
+
+
 def _art(slug: str) -> str:
     """One picture above the heading: the section art; an unknown section
     borrows the hero. The menu has a banner of its own and does not call this."""
-    return f'<img src="{ART}/{slug if slug in ARTS else "hero"}.{EXT}"/>'
+    return _img(f"{ART}/{slug if slug in ARTS else 'hero'}.{EXT}")
 
 
 def _art_of_threat(slug: str) -> str:
@@ -186,12 +208,12 @@ def render_menu(categories: list[CategoryView], locale: str, is_admin: bool = Fa
             )
         )
     heading = f"{premium('shield', '🛡️')} {_esc(t(locale, 'menu.title'))}"
-    html = f'<img src="{BANNER}"/><h1>{heading}</h1><p>{_esc(t(locale, "menu.lead"))}</p><hr/>'
+    html = f'{_img(BANNER)}<h1>{heading}</h1><p>{_esc(t(locale, "menu.lead"))}</p><hr/>'
     return RichScreen(html + "\n".join(rows))
 
 
 def render_sections(categories: list[CategoryView], locale: str) -> RichScreen:
-    """The eight sections, one per row: the menu itself is the only way back."""
+    """The eight sections, one per row, then one full-width way home."""
     rows = [
         rich_row(
             rich_button(
@@ -202,6 +224,7 @@ def render_sections(categories: list[CategoryView], locale: str) -> RichScreen:
         )
         for item in categories[:8]
     ]
+    rows.append(rich_row(menu_button(locale)))
     heading = f"{premium('catalog', '📂')} {_esc(t(locale, 'button.sections'))}"
     html = _header("hero", heading, f"<p>{_esc(t(locale, 'sections.lead'))}</p>")
     return RichScreen(html + "\n".join(rows))

@@ -24,10 +24,12 @@ from app.ui.emoji import (
 from app.ui.keyboards import PAGE_SIZE, keyboard_from_rich, strip_rich_buttons
 from app.ui.render import (
     ART,
+    ART_VERSION,
     BANNER,
     CARD_CAP,
     EXT,
     RichScreen,
+    _art_version,
     render_card,
     render_category,
     render_chat,
@@ -46,6 +48,10 @@ BUTTON = re.compile(r"<tg-button(?=[\s>])([^>]*)>(.*?)</tg-button>", re.DOTALL)
 ROW = re.compile(r"<tg-button-row\b[^>]*>(.*?)</tg-button-row>", re.DOTALL)
 ATTRIBUTE = re.compile(r'([\w-]+)="([^"]*)"')
 BARE_EMOJI = re.compile(r"[\U0001F000-\U0001FAFF\u2600-\u27BF\u2B00-\u2BFF]")
+
+
+def _img_src(url: str) -> str:
+    return f'<img src="{url}?v={ART_VERSION}"/>'
 
 
 def _category(slug: str = "fire", title: str = "Пожар") -> CategoryView:
@@ -364,7 +370,7 @@ def test_action_buttons_are_verbs_without_trailing_dots() -> None:
 @pytest.mark.parametrize("slug", ["fire", "terror", "tech", "nature", "medical", "chem", "rad", "cyber"])
 def test_category_artwork_matches_the_section(slug: str) -> None:
     screen = render_category(_category(slug=slug), [_threat()], LOCALE, 1, 1)
-    assert f'<img src="{ART}/{slug}.jpg"/>' in screen.html
+    assert _img_src(f"{ART}/{slug}.jpg") in screen.html
 
 
 # --- pager ---------------------------------------------------------------
@@ -408,13 +414,13 @@ def test_single_page_has_no_pager() -> None:
 
 def test_menu_opens_with_its_banner() -> None:
     html = render_menu([_category()], LOCALE).html
-    assert f'<img src="{BANNER}"/>' in html
-    assert f'<img src="{ART}/menu.{EXT}"/>' not in html
+    assert _img_src(BANNER) in html
+    assert _img_src(f"{ART}/menu.{EXT}") not in html
     assert html.index("<img") < html.index("<h1>")
 
 
 def test_chat_uses_its_own_artwork() -> None:
-    assert f'<img src="{ART}/chat.jpg"/>' in render_chat(LOCALE).html
+    assert _img_src(f"{ART}/chat.jpg") in render_chat(LOCALE).html
 
 
 def test_menu_banner_is_the_readme_banner() -> None:
@@ -424,18 +430,45 @@ def test_menu_banner_is_the_readme_banner() -> None:
 
 
 def test_unknown_section_falls_back_to_the_hero() -> None:
-    assert f'<img src="{ART}/hero.jpg"/>' in search_screen("x", [], LOCALE).html
+    assert _img_src(f"{ART}/hero.jpg") in search_screen("x", [], LOCALE).html
     unknown = render_category(_category(slug="space"), [_threat()], LOCALE, 1, 1)
-    assert f'<img src="{ART}/hero.jpg"/>' in unknown.html
+    assert _img_src(f"{ART}/hero.jpg") in unknown.html
 
 
 def test_card_and_quiz_use_the_category_artwork() -> None:
     card = render_card(_card(category_slug="chem"), LOCALE, 1, True)
-    assert f'<img src="{ART}/chem.jpg"/>' in card.html
+    assert _img_src(f"{ART}/chem.jpg") in card.html
     question = render_question(_quiz(), "rad-smoke", 1, 3, "a3f1", LOCALE)
-    assert f'<img src="{ART}/rad.jpg"/>' in question.html
+    assert _img_src(f"{ART}/rad.jpg") in question.html
     result = render_result(3, 3, "medical-aid", LOCALE)
-    assert f'<img src="{ART}/medical.jpg"/>' in result.html
+    assert _img_src(f"{ART}/medical.jpg") in result.html
+
+
+def test_art_urls_carry_a_cache_busting_version() -> None:
+    """Telegram caches images by URL; a version marker makes new art a new URL."""
+    assert ART_VERSION
+    screens = [
+        render_category(_category(slug="fire"), [_threat()], LOCALE, 1, 1),
+        render_chat(LOCALE),
+        render_menu([_category()], LOCALE),
+        search_screen("x", [], LOCALE),
+    ]
+    sources = re.findall(r'<img src="([^"]+)"', "\n".join(s.html for s in screens))
+    assert sources, "no artwork URLs rendered"
+    for src in sources:
+        parsed = urlparse(src)
+        assert parse_qs(parsed.query)["v"] == [ART_VERSION], src
+
+
+def test_art_version_tracks_asset_bytes(tmp_path: Path) -> None:
+    """Changing deployed art bytes changes the cache-busting marker."""
+    art = tmp_path / "assets" / "art"
+    art.mkdir(parents=True)
+    (art / "chat.jpg").write_bytes(b"original")
+    original = _art_version(tmp_path)
+    assert _art_version(tmp_path) == original
+    (art / "chat.jpg").write_bytes(b"changed")
+    assert _art_version(tmp_path) != original
 
 
 # --- menu ----------------------------------------------------------------
@@ -461,20 +494,23 @@ def test_menu_is_a_doorway_with_at_most_seven_buttons() -> None:
     assert not [cb for cb in parsed if cb.action == "cat"]
 
 
-def test_sections_screen_lists_eight_sections_without_extra_rows() -> None:
+def test_sections_screen_lists_eight_sections_then_a_menu_button() -> None:
     slugs = ["fire", "terror", "tech", "nature", "medical", "chem", "rad", "cyber"]
     categories = [_category(slug=slug, title=slug.title()) for slug in slugs]
     screen = render_sections(categories, LOCALE)
 
-    parsed = _parsed(screen.html)
+    parsed = [cb for cb in _parsed(screen.html) if cb.action == "cat"]
     assert [cb.arg for cb in parsed] == slugs
-    assert all(cb.action == "cat" for cb in parsed)
     assert "‹ Назад" not in screen.html
-    assert "b1:menu" not in _data(screen.html)
+    menu = [button for button in _buttons(screen.html) if button.get("data") == "b1:menu"]
+    assert len(menu) == 1
+    assert menu[0]["label"] == "🏠 Меню" and menu[0]["style"] == "success"
+    assert _rows(screen.html)[-1][-1]["data"] == "b1:menu"
 
 
 def test_every_screen_but_the_menu_ends_with_one_success_menu_button() -> None:
     screens = [
+        render_sections([_category()], LOCALE),
         render_chat(LOCALE),
         render_category(_category(), [_threat()], LOCALE, 1, 1),
         render_card(_card(), LOCALE, page=1, has_quiz=True),

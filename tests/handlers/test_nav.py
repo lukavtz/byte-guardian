@@ -26,7 +26,7 @@ from app.services.callbacks import (
 )
 from app.services.settings import chat_mode_on, set_chat_mode
 from app.ui.keyboards import keyboard_from_rich
-from app.ui.render import ART
+from app.ui.render import ART, ART_VERSION
 
 
 class _Result:
@@ -533,7 +533,7 @@ def test_language_screen_marks_the_current_locale_success() -> None:
 
 def test_language_screen_opens_with_its_own_banner() -> None:
     html = nav.language_screen("ru").html
-    assert f'<img src="{ART}/lang.jpg"/>' in html
+    assert f'<img src="{ART}/lang.jpg?v={ART_VERSION}"/>' in html
     assert html.index("<img") < html.index("<h1>") < html.index("<hr/>")
 
 
@@ -620,7 +620,7 @@ async def test_sections_callback_opens_the_section_picker() -> None:
     html = bot.edited[0]["rich_message"].html
     assert "Восемь разделов" in html
     datas = [item.callback_data for item in _buttons(bot.edited[0]) if item.callback_data]
-    assert datas == [cb_cat("fire", 1)]
+    assert datas == [cb_cat("fire", 1), cb_menu()]
 
 
 @pytest.mark.asyncio
