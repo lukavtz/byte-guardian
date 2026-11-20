@@ -432,7 +432,7 @@ async def test_broadcast_toggle_updates_flag_and_redraws() -> None:
 
 
 @pytest.mark.asyncio
-async def test_menu_has_search_and_language_row() -> None:
+async def test_menu_has_search_and_settings_row() -> None:
     bot = FakeBot()
     query = _query(cb_menu())
 
@@ -441,7 +441,8 @@ async def test_menu_has_search_and_language_row() -> None:
     buttons = _buttons(bot.edited[0])
     datas = [item.callback_data for item in buttons if item.callback_data]
     assert cb_search_hint() in datas
-    assert cb_lang_menu() in datas
+    assert cb_settings() in datas
+    assert cb_lang_menu() not in datas
     assert len(buttons) <= 10
 
 
@@ -590,7 +591,7 @@ def test_settings_has_no_primary_and_ends_with_the_menu_button() -> None:
     buttons = _screen_buttons(nav.settings_screen("ru", True))
     assert not [item for item in buttons if item.style == "primary"]
     assert buttons[-1].callback_data == cb_menu()
-    assert buttons[-1].style is None
+    assert buttons[-1].style == "success"
     toggle = next(item for item in buttons if item.callback_data == nav.OPT_IN_OFF)
     assert toggle.style is None
 
@@ -604,7 +605,7 @@ def test_language_settings_and_help_end_with_one_menu_button() -> None:
         buttons = _screen_buttons(screen)
         menu = [item for item in buttons if item.callback_data == cb_menu()]
         assert len(menu) == 1
-        assert menu[0].text.endswith("Меню") and menu[0].style is None
+        assert menu[0].text.endswith("Меню") and menu[0].style == "success"
         assert buttons[-1] is menu[0]
 
 
@@ -619,7 +620,7 @@ async def test_sections_callback_opens_the_section_picker() -> None:
     html = bot.edited[0]["rich_message"].html
     assert "Восемь разделов" in html
     datas = [item.callback_data for item in _buttons(bot.edited[0]) if item.callback_data]
-    assert cb_cat("fire", 1) in datas and cb_menu() in datas
+    assert datas == [cb_cat("fire", 1)]
 
 
 @pytest.mark.asyncio

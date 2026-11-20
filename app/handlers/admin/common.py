@@ -68,6 +68,14 @@ def _menu_row() -> str:
     return rich_row(menu_button(DEFAULT_LOCALE))
 
 
+def _back_menu_row(data: str) -> str:
+    """Back on the left, green menu on the right: one row, one way home."""
+    return rich_row(
+        rich_button("Назад", data=data, style="danger", icon=("back", "🏠")),
+        menu_button(DEFAULT_LOCALE),
+    )
+
+
 def prompt_screen(text: str, cancel_data: str) -> RichScreen:
     """One short instruction and the way out; the next message is the value."""
     return RichScreen(

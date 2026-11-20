@@ -6,7 +6,7 @@ from typing import Any
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from app.handlers.admin.common import _esc, _menu_row
+from app.handlers.admin.common import _back_menu_row, _esc
 from app.services.callbacks import cb_admin, cb_admin_hint, cb_broadcast_status
 from app.services.i18n import DEFAULT_LOCALE, t
 from app.ui.emoji import premium
@@ -70,10 +70,7 @@ def broadcast_screen(audience: int, last: Mapping[str, Any] | None) -> RichScree
                     icon=("hourglass", "⏳"),
                 ),
             ),
-            rich_row(
-                rich_button("Назад", data=cb_admin(), icon=("back", "🏠"))
-            ),
-            _menu_row(),
+            _back_menu_row(cb_admin()),
         )
     )
     return RichScreen(html)

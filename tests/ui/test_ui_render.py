@@ -447,14 +447,13 @@ def test_menu_is_a_doorway_with_at_most_seven_buttons() -> None:
     screen = render_menu(categories, LOCALE)
 
     rows = _rows(screen.html)
-    assert [len(row) for row in rows] == [1, 1, 2, 2]
+    assert [len(row) for row in rows] == [1, 1, 2, 1]
     parsed = _parsed(screen.html)
     assert [cb.action for cb in parsed] == [
         "chat",
         "sections",
         "search_hint",
         "random",
-        "lang_menu",
         "settings",
     ]
     assert len(parsed) <= 7
@@ -462,21 +461,20 @@ def test_menu_is_a_doorway_with_at_most_seven_buttons() -> None:
     assert not [cb for cb in parsed if cb.action == "cat"]
 
 
-def test_sections_screen_lists_eight_sections_and_a_way_back() -> None:
+def test_sections_screen_lists_eight_sections_without_extra_rows() -> None:
     slugs = ["fire", "terror", "tech", "nature", "medical", "chem", "rad", "cyber"]
     categories = [_category(slug=slug, title=slug.title()) for slug in slugs]
     screen = render_sections(categories, LOCALE)
 
     parsed = _parsed(screen.html)
-    assert [cb.arg for cb in parsed[:8]] == slugs
-    assert all(cb.action == "cat" for cb in parsed[:8])
-    assert [cb.action for cb in parsed[8:]] == ["menu", "menu"]
-    assert screen.html.index("‹ Назад") < screen.html.rindex("Меню")
+    assert [cb.arg for cb in parsed] == slugs
+    assert all(cb.action == "cat" for cb in parsed)
+    assert "‹ Назад" not in screen.html
+    assert "b1:menu" not in _data(screen.html)
 
 
-def test_every_screen_but_the_menu_ends_with_one_menu_button() -> None:
+def test_every_screen_but_the_menu_ends_with_one_success_menu_button() -> None:
     screens = [
-        render_sections([_category()], LOCALE),
         render_chat(LOCALE),
         render_category(_category(), [_threat()], LOCALE, 1, 1),
         render_card(_card(), LOCALE, page=1, has_quiz=True),
@@ -489,11 +487,10 @@ def test_every_screen_but_the_menu_ends_with_one_menu_button() -> None:
         render_not_found(LOCALE),
     ]
     for screen in screens:
-        rows = _rows(screen.html)
-        last = rows[-1]
-        assert len(last) == 1 and last[0]["data"] == "b1:menu"
-        assert last[0]["label"] == "🏠 Меню"
-        assert "style" not in last[0]
+        menu = [button for button in _buttons(screen.html) if button.get("data") == "b1:menu"]
+        assert len(menu) == 1
+        assert menu[0]["label"] == "🏠 Меню" and menu[0]["style"] == "success"
+        assert _rows(screen.html)[-1][-1]["data"] == "b1:menu"
 
 
 def test_menu_itself_has_no_menu_button() -> None:
@@ -502,7 +499,7 @@ def test_menu_itself_has_no_menu_button() -> None:
     assert "b1:menu" not in _data(screen.html)
 
 
-def test_menu_button_is_neutral_even_beside_a_primary_cta() -> None:
+def test_menu_button_is_success_even_beside_a_primary_cta() -> None:
     for screen in (
         render_card(_card(), LOCALE, page=1, has_quiz=True),
         render_question(_quiz(), "fire-home", 1, 3, "a3f1", LOCALE, chosen=0),
@@ -514,7 +511,7 @@ def test_menu_button_is_neutral_even_beside_a_primary_cta() -> None:
         render_result(2, 3, "fire-home", LOCALE),
     ):
         menu = [b for b in _buttons(screen.html) if b["label"] == "🏠 Меню"]
-        assert len(menu) == 1 and "style" not in menu[0]
+        assert len(menu) == 1 and menu[0]["style"] == "success"
 
 
 def test_menu_shows_the_shared_header_and_brand() -> None:
@@ -570,7 +567,12 @@ def test_card_emphasis_marks_test_primary_and_game_success() -> None:
     styles = [
         (button["label"].split(" ", 1)[-1], button["style"]) for button in _emphasized(html)
     ]
-    assert styles == [("Тест", "primary"), ("Играть", "success")]
+    assert styles == [
+        ("Тест", "primary"),
+        ("Играть", "success"),
+        ("‹ Назад", "danger"),
+        ("Меню", "success"),
+    ]
 
 
 def test_card_without_widgets_keeps_one_primary_test_button() -> None:
@@ -596,8 +598,8 @@ def test_inline_keyboard_fallback_keeps_plain_text_and_the_id() -> None:
 
 def test_menu_never_exceeds_seven_buttons() -> None:
     categories = [_category(slug=f"c{i}", title=f"Раздел {i}") for i in range(9)]
-    screen = render_menu(categories, LOCALE, is_admin=True)
-    assert len(_data(screen.html)) == 7
+    assert len(_data(render_menu(categories, LOCALE).html)) == 5
+    assert len(_data(render_menu(categories, LOCALE, is_admin=True).html)) == 6
 
 
 def test_sections_screen_never_exceeds_eight_categories() -> None:
@@ -614,7 +616,8 @@ def test_chat_screen_carries_the_heading_lead_and_two_ways_out() -> None:
     assert [len(row) for row in rows] == [1, 1]
     assert [button["data"] for button in rows[0]] == ["b1:chat_exit"]
     assert [button["data"] for button in rows[1]] == ["b1:menu"]
-    assert all("style" not in button for row in rows for button in row)
+    assert "style" not in rows[0][0]
+    assert rows[1][0]["style"] == "success"
     assert rows[1][0]["label"].endswith("Меню")
 
 
@@ -666,6 +669,20 @@ def test_card_has_a_details_block_per_step() -> None:
 
 def test_card_marks_ru_fallback() -> None:
     assert "RU" in render_card(_card(fallback=True), LOCALE, page=1, has_quiz=False).html
+
+
+def test_card_footer_names_sources_without_links() -> None:
+    card = dataclasses.replace(
+        _card(),
+        contacts=("101", "https://mchs.gov.ru/contacts"),
+        source="МЧС России (https://mchs.gov.ru)",
+    )
+    html = render_card(card, LOCALE, page=1, has_quiz=False).html
+    footer = html[html.rindex("<footer>") : html.rindex("</footer>")]
+
+    assert "http" not in footer
+    assert "mchs.gov.ru" not in footer
+    assert "МЧС России" in footer and "101" in footer
 
 
 def test_card_buttons_are_quiz_back_and_share() -> None:
@@ -755,8 +772,8 @@ def test_result_shows_score_and_one_emphasized_retry() -> None:
     buttons = _buttons(screen.html)
     assert len(buttons) == 2
     emphasized = _emphasized(screen.html)
-    assert len(emphasized) == 1
-    assert emphasized[0]["style"] == "success"
+    assert [button["style"] for button in emphasized] == ["success", "success"]
+    assert emphasized[0]["data"].startswith("b1:quiz_next:")
     parsed = parse_cb(emphasized[0]["data"])
     assert parsed is not None and parsed.action == "quiz_next" and parsed.arg == "fire-home"
     assert [cb.action for cb in _parsed(screen.html)][1] == "menu"
@@ -764,28 +781,43 @@ def test_result_shows_score_and_one_emphasized_retry() -> None:
 
 def test_failed_result_keeps_the_retry_primary() -> None:
     screen = render_result(correct=1, total=3, slug="fire-home", locale=LOCALE)
-    assert [button["style"] for button in _emphasized(screen.html)] == ["primary"]
+    assert [button["style"] for button in _emphasized(screen.html)] == ["primary", "success"]
 
 
-def test_navigation_screens_stay_neutral() -> None:
+def test_navigation_screens_keep_only_the_menu_emphasized() -> None:
     for screen in (
         render_category(_category(), [_threat()], LOCALE, 1, 1),
         search_screen("пожар", [_threat()], LOCALE),
     ):
-        assert not _emphasized(screen.html)
+        emphasized = _emphasized(screen.html)
+        assert [(button["data"], button["style"]) for button in emphasized] == [
+            ("b1:menu", "success")
+        ]
 
 
 def test_quiz_styles_per_screen() -> None:
     card = render_card(_card(), LOCALE, page=1, has_quiz=True, can_game=True)
-    assert [button["style"] for button in _emphasized(card.html)] == ["primary", "success"]
+    assert [button["style"] for button in _emphasized(card.html)] == [
+        "primary",
+        "success",
+        "danger",
+        "success",
+    ]
 
     question = render_question(_quiz(), "fire-home", 1, 3, "a3f1", LOCALE)
-    assert not _emphasized(question.html)
+    assert [(button["data"], button["style"]) for button in _emphasized(question.html)] == [
+        ("b1:menu", "success")
+    ]
 
     answered = render_question(_quiz(), "fire-home", 1, 3, "a3f1", LOCALE, chosen=1)
     styles = [button.get("style") for button in _buttons(answered.html)]
     assert styles[:4] == ["success", "danger", None, None]
-    assert [button["style"] for button in _emphasized(answered.html)] == ["success", "danger", "primary"]
+    assert [button["style"] for button in _emphasized(answered.html)] == [
+        "success",
+        "danger",
+        "primary",
+        "success",
+    ]
 
 
 # --- search --------------------------------------------------------------
@@ -841,7 +873,8 @@ def test_keyboard_from_rich_rebuilds_the_same_controls() -> None:
     assert rows[0][0].callback_data is not None
     assert parse_cb(rows[0][0].callback_data).action == "quiz_next"
     assert rows[0][0].style == "primary"
-    assert rows[1][1].url.startswith("https://t.me/share/url?")
+    assert rows[1][0].url.startswith("https://t.me/share/url?")
+    assert rows[2][1].callback_data == "b1:menu" and rows[2][1].style == "success"
     assert "<tg-button" not in strip_rich_buttons(screen.html)
 
 

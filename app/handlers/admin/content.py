@@ -13,8 +13,8 @@ from app.handlers.admin.common import (
     FIELD_LABELS,
     TOAST_CANCELLED,
     TOAST_SAVED,
+    _back_menu_row,
     _esc,
-    _menu_row,
     _repo,
     router,
 )
@@ -84,10 +84,7 @@ def content_screen(categories: list[content_admin.CategoryItem]) -> RichScreen:
             )
         )
     )
-    rows.append(
-        rich_row(rich_button("Назад", data=cb_admin(), icon=("back", "🏠")))
-    )
-    rows.append(_menu_row())
+    rows.append(_back_menu_row(cb_admin()))
     html = (
         f"<h1>{premium('catalog', '📂')} Контент</h1>"
         "<p>Раздел → карточки → поля. Правки переживают пересев.</p><hr/>"
@@ -109,10 +106,7 @@ def add_category_screen(categories: list[content_admin.CategoryItem]) -> RichScr
     ]
     if not rows:
         rows.append("<p>Разделов пока нет.</p>")
-    rows.append(
-        rich_row(rich_button("Назад", data=cb_admin_content(), icon=("back", "🏠")))
-    )
-    rows.append(_menu_row())
+    rows.append(_back_menu_row(cb_admin_content()))
     html = (
         f"<h1>{premium('new', '🆕')} Добавить карточку</h1>"
         "<p>Выберите раздел новой карточки.</p><hr/>"
@@ -146,10 +140,7 @@ def threats_screen(
             )
         )
     )
-    rows.append(
-        rich_row(rich_button("Назад", data=cb_admin_content(), icon=("back", "🏠")))
-    )
-    rows.append(_menu_row())
+    rows.append(_back_menu_row(cb_admin_content()))
     html = (
         f"<h1>{premium('catalog', '📂')} {_esc(category)}</h1>"
         f"<p>{premium('stats', '🔢')} Карточек: <b>{len(threats)}</b></p><hr/>"
@@ -180,8 +171,7 @@ def category_editor_screen(item: content_admin.CategoryItem) -> RichScreen:
                 icon=("mute", "🔕") if item.enabled else ("done", "✅"),
             )
         ),
-        rich_row(rich_button("Назад", data=cb_admin_content(), icon=("back", "🏠"))),
-        _menu_row(),
+        _back_menu_row(cb_admin_content()),
     ]
     html = (
         f"<h1>{premium('category', '🏷')} {_esc(item.title)}</h1>"
@@ -205,12 +195,7 @@ def quiz_screen(
     ]
     if not rows:
         rows.append("<p>Вопросов на этом языке нет.</p>")
-    rows.append(
-        rich_row(
-            rich_button("Назад", data=cb_admin_threat(slug, locale), icon=("back", "🏠"))
-        )
-    )
-    rows.append(_menu_row())
+    rows.append(_back_menu_row(cb_admin_threat(slug, locale)))
     html = (
         f"<h1>{premium('test', '✅')} Тесты</h1>"
         f"<p>{premium('stats', '🔢')} Вопросов: <b>{len(quizzes)}</b>"
@@ -255,14 +240,7 @@ def quiz_question_screen(
                 icon=("digest", "📝"),
             ),
         ),
-        rich_row(
-            rich_button(
-                "Назад",
-                data=cb_admin_quiz(quiz.slug, quiz.locale),
-                icon=("back", "🏠"),
-            )
-        ),
-        _menu_row(),
+        _back_menu_row(cb_admin_quiz(quiz.slug, quiz.locale)),
     ]
     html = (
         f"<h1>{premium('test', '✅')} Вопрос {index}/{total}</h1>"
@@ -346,11 +324,10 @@ def threat_editor_screen(detail: content_admin.ThreatDetail) -> RichScreen:
                 data=cb_admin_toggle(detail.slug, detail.locale),
                 style="danger" if detail.enabled else "success",
                 icon=("mute", "🔕") if detail.enabled else ("done", "✅"),
-            ),
-            rich_button("Назад", data=cb_admin_threats(detail.category_slug), icon=("back", "🏠")),
+            )
         )
     )
-    rows.append(_menu_row())
+    rows.append(_back_menu_row(cb_admin_threats(detail.category_slug)))
     missing = (
         ""
         if detail.exact

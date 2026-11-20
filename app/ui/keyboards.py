@@ -93,8 +93,8 @@ def rich_row(*buttons: str) -> str:
     return f"<tg-button-row>{''.join(buttons)}</tg-button-row>"
 
 
-def menu_button(locale: str, style: Style | None = None) -> str:
-    """The one way home, appended as the last row of every screen but the menu."""
+def menu_button(locale: str, style: Style | None = "success") -> str:
+    """The one way home, green on every screen that is not the menu."""
     return rich_button(t(locale, "button.menu"), data=cb_menu(), style=style, icon=MENU_ICON)
 
 

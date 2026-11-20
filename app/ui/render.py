@@ -13,6 +13,7 @@ only cap drops whole card list items when a message would pass Telegram's
 from __future__ import annotations
 
 import math
+import re
 import secrets
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
@@ -30,8 +31,6 @@ from app.services.callbacks import (
     cb_chat_exit,
     cb_game,
     cb_lang,
-    cb_lang_menu,
-    cb_menu,
     cb_quiz,
     cb_quiz_next,
     cb_random,
@@ -66,6 +65,16 @@ class RichScreen:
 
 def _esc(text: object) -> str:
     return escape(str(text), quote=False)
+
+
+LINK = re.compile(r"https?://\S+")
+
+
+def _no_links(value: object) -> str:
+    """The text without URLs: a footer names organizations, never links."""
+    text = LINK.sub("", str(value))
+    text = re.sub(r"\(\s*\)", "", text)
+    return re.sub(r"\s{2,}", " ", text).strip(" ·,;—()-")
 
 
 def _utf16(text: str) -> int:
@@ -123,7 +132,7 @@ def _header(slug: str, heading: str, lead: str = "") -> str:
 
 
 def render_menu(categories: list[CategoryView], locale: str, is_admin: bool = False) -> RichScreen:
-    """Banner, heading, one lead line, six rows at most (seven with admin).
+    """Banner, heading, one lead line, four rows (five with admin).
 
     The eight sections live one tap deeper: the menu stays a doorway, not a
     catalog. There is no menu button here, because this is the menu.
@@ -158,15 +167,10 @@ def render_menu(categories: list[CategoryView], locale: str, is_admin: bool = Fa
         ),
         rich_row(
             rich_button(
-                t(locale, "button.language"),
-                data=cb_lang_menu(),
-                icon=("lang", "🌐"),
-            ),
-            rich_button(
                 t(locale, "button.settings"),
                 data=cb_settings(),
                 icon=("gear", "⚙"),
-            ),
+            )
         ),
     ]
     if is_admin:
@@ -187,7 +191,7 @@ def render_menu(categories: list[CategoryView], locale: str, is_admin: bool = Fa
 
 
 def render_sections(categories: list[CategoryView], locale: str) -> RichScreen:
-    """The eight sections, one per row, plus a way back and the menu button."""
+    """The eight sections, one per row: the menu itself is the only way back."""
     rows = [
         rich_row(
             rich_button(
@@ -198,16 +202,6 @@ def render_sections(categories: list[CategoryView], locale: str) -> RichScreen:
         )
         for item in categories[:8]
     ]
-    rows.append(
-        rich_row(
-            rich_button(
-                t(locale, "button.back"),
-                data=cb_menu(),
-                icon=("back", "🏠"),
-            )
-        )
-    )
-    rows.append(rich_row(menu_button(locale)))
     heading = f"{premium('catalog', '📂')} {_esc(t(locale, 'button.sections'))}"
     html = _header("hero", heading, f"<p>{_esc(t(locale, 'sections.lead'))}</p>")
     return RichScreen(html + "\n".join(rows))
@@ -317,9 +311,11 @@ def _card_html(card: CardView, locale: str, shown: list[int], summary: str | Non
             strict=True,
         )
     )
-    contacts = [_esc(item) for item in card.contacts[: shown[5]]]
+    contacts = [_no_links(item) for item in card.contacts[: shown[5]]]
+    contacts = [item for item in contacts if item]
     if len(card.contacts) > shown[5]:
         contacts.append("…")
+    source = _no_links(card.source) if card.source else ""
     text = card.summary if summary is None else summary
     brand = t(locale, "brand.footer")
     return (
@@ -343,7 +339,7 @@ def _card_html(card: CardView, locale: str, shown: list[int], summary: str | Non
             [
                 f"{premium('duck', '🦆')} {_esc(brand)}",
                 *contacts,
-                *([_esc(card.source)] if card.source else []),
+                *([_esc(source)] if source else []),
             ]
         )
         + "</footer>"
@@ -421,18 +417,23 @@ def render_card(
     rows.append(
         rich_row(
             rich_button(
-                t(locale, "button.back"),
-                data=cb_cat(card.category_slug, page),
-                icon=("back", "🏠"),
-            ),
-            rich_button(
                 t(locale, "button.share"),
                 url=share_url(username, card),
                 icon=("send", "📤"),
-            ),
+            )
         )
     )
-    rows.append(rich_row(menu_button(locale)))
+    rows.append(
+        rich_row(
+            rich_button(
+                t(locale, "button.back"),
+                data=cb_cat(card.category_slug, page),
+                style="danger",
+                icon=("back", "🏠"),
+            ),
+            menu_button(locale),
+        )
+    )
 
     groups = (card.signs, card.before, card.during, card.after, card.forbidden, card.contacts)
     shown = [len(group) for group in groups]
