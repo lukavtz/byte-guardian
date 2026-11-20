@@ -104,7 +104,9 @@ def render_menu(categories: list[CategoryView], locale: str) -> RichScreen:
             rich_button(f"{emoji('language', '🌐')} {t(locale, 'button.language')}", data=cb_lang_menu()),
         )
     )
-    return RichScreen(html, markup(rows))
+    heading = f"{emoji('shield', '🛡️')} {_esc(t(locale, 'menu.title'))}"
+    html = _header("hero", heading, f"<p>{_esc(t(locale, 'menu.lead'))}</p>")
+    return RichScreen(html + "\n".join(rows))
 
 
 def render_category(
@@ -126,7 +128,10 @@ def render_category(
         f"{t(locale, 'category.count', n=category.threat_count)}"
         f" · {t(locale, 'category.page', page=page, pages=pages)}"
     )
-    return RichScreen(html, markup(rows))
+    heading = f"{emoji(category.slug, _esc(category.emoji))} {_esc(_clip(category.title, TITLE))}"
+    detail = f"{lead} · {t(locale, 'category.lead')}"
+    html = _header(category.slug, heading, f"<p>{_esc(detail)}</p>")
+    return RichScreen(html + "\n".join(rows))
 
 
 def render_card(card: CardView, locale: str, page: int, has_quiz: bool) -> RichScreen:

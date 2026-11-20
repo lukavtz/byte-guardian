@@ -11,6 +11,7 @@ from app.content.repository import CategoryRow, ContentRepository, Snapshot, Tex
 from app.handlers import inline as inline_handler
 from app.handlers import search as search_handler
 from app.services.callbacks import parse_cb
+from app.ui.keyboards import keyboard_from_rich
 
 SLUGS = ("fire", "terror", "tech", "nature", "medical", "chem", "rad", "cyber")
 LOCALE = "ru"
@@ -75,7 +76,7 @@ def _actions(screen: object) -> list[tuple[str, str]]:
     markup = keyboard_from_rich(screen.html) or screen.keyboard
     assert markup is not None
     parsed = []
-    for row in keyboard.inline_keyboard:
+    for row in markup.inline_keyboard:
         for button in row:
             callback = parse_cb(button.callback_data)
             if callback is not None:

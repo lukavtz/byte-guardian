@@ -8,12 +8,10 @@ from aiogram.types import Message, User
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.content.repository import ContentRepository
-from app.services.callbacks import cb_cat
 from app.services.i18n import resolve_locale
 from app.services.user_locale import get_locale
 from app.ui.delivery import show
-from app.ui.keyboards import button, markup, paired
-from app.ui.render import RichScreen, search_screen
+from app.ui.render import search_screen
 
 router = Router(name="search")
 
