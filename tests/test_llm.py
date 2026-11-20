@@ -150,11 +150,23 @@ def test_strip_html_escapes_plain_text_and_removes_script() -> None:
     assert "&lt;" in cleaned and "&amp;" in cleaned
 
 
-def test_strip_html_caps_at_700_visible_chars_and_closes_tags() -> None:
-    cleaned = service.strip_html("<b>" + "а" * 800 + "</b>")
+def test_strip_html_caps_at_1200_visible_chars_with_an_ellipsis() -> None:
+    assert service.TEXT_LIMIT == 1200
+    cleaned = service.strip_html("<b>" + "а" * 1400 + "</b>")
     visible = re.sub(r"<[^>]+>", "", cleaned)
-    assert len(visible) == service.TEXT_LIMIT
-    assert cleaned.startswith("<b>") and cleaned.endswith("</b>")
+    assert visible == "а" * service.TEXT_LIMIT + "…"
+    assert cleaned.startswith("<b>") and cleaned.endswith("…</b>")
+
+
+def test_strip_html_leaves_an_answer_inside_the_cap_untouched() -> None:
+    exact = "а" * service.TEXT_LIMIT
+    assert service.strip_html(exact) == exact
+    assert "…" not in service.strip_html(exact)
+
+
+def test_strip_html_marks_an_overflow_that_spans_nodes() -> None:
+    cleaned = service.strip_html("<b>" + "а" * service.TEXT_LIMIT + "</b> хвост")
+    assert cleaned == "<b>" + "а" * service.TEXT_LIMIT + "</b>…"
 
 
 def test_strip_html_rejects_unknown_tags_but_keeps_text() -> None:

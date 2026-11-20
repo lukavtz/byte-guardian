@@ -27,7 +27,7 @@ RETRY_DELAY = 0.5
 RETRY_STATUS = frozenset({429, 500, 502, 503, 504})
 CARD_LIMIT = 3
 FIELD_LIMIT = 300
-TEXT_LIMIT = 700
+TEXT_LIMIT = 1200
 ALLOWED_TAGS = frozenset({"b", "i", "u", "s", "code", "br"})
 VOID_TAGS = frozenset({"br"})
 
@@ -214,6 +214,7 @@ class _Cleaner(HTMLParser):
         self.open: list[str] = []
         self.visible = 0
         self.done = False
+        self.cut = False
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         if self.done:
@@ -238,17 +239,26 @@ class _Cleaner(HTMLParser):
             if current == tag:
                 return
 
+    def _ellipsis(self) -> None:
+        # Only an answer the model actually overran carries the mark; a cut
+        # that lands exactly on the cap is still the whole answer.
+        if not self.cut:
+            self.cut = True
+            self.parts.append("…")
+
     def handle_data(self, data: str) -> None:
         if self.done or not data:
             return
         room = TEXT_LIMIT - self.visible
         if room <= 0:
+            self._ellipsis()
             self.done = True
             return
         chunk = data[:room]
         self.parts.append(escape(chunk, quote=False))
         self.visible += len(chunk)
         if len(data) > room:
+            self._ellipsis()
             self.done = True
 
     def close(self) -> None:
@@ -258,7 +268,7 @@ class _Cleaner(HTMLParser):
 
 
 def strip_html(text: str) -> str:
-    """Keep b/i/u/s/code, turn br into a newline, escape the rest, cap 700 chars."""
+    """Keep b/i/u/s/code, turn br into a newline, escape the rest, cap 1200 chars."""
     cleaner = _Cleaner()
     cleaner.feed(text or "")
     cleaner.close()
