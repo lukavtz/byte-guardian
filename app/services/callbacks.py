@@ -15,7 +15,13 @@ Screens are stateless: everything needed to redraw arrives in the callback.
     b1:lang_menu
     b1:search_hint
     b1:admin
+    b1:admin:content
     b1:admin:cat:<slug>
+    b1:admin:threats:<category>
+    b1:admin:threat:<slug>:<locale>
+    b1:admin:edit:<slug>:<locale>:<field>
+    b1:admin:add:<category>
+    b1:admin:cancel:<slug>:<locale>
     b1:admin:bc
     b1:admin:hint
     b1:bc:<yes|no>
@@ -29,6 +35,9 @@ Screens are stateless: everything needed to redraw arrives in the callback.
 from __future__ import annotations
 
 from dataclasses import dataclass
+
+from app.services.content_admin import EDIT_FIELDS as _EDIT_FIELDS
+from app.services.content_admin import LOCALES as _LOC
 
 PREFIX = "b1"
 MAX_LEN = 64
@@ -180,6 +189,42 @@ def cb_admin_category(slug: str) -> str:
     return _pack("admin", "cat", _slug(slug))
 
 
+def cb_admin_content() -> str:
+    return _pack("admin", "content")
+
+
+def cb_admin_threats(category: str) -> str:
+    return _pack("admin", "threats", _slug(category))
+
+
+def _locale(code: str) -> str:
+    if code not in _LOC:
+        raise ValueError(f"bad locale: {code!r}")
+    return code
+
+
+def cb_admin_threat(slug: str, locale: str = "ru") -> str:
+    return _pack("admin", "threat", _slug(slug), _locale(locale))
+
+
+def cb_admin_edit(slug: str, locale: str, field: str) -> str:
+    if field not in _EDIT_FIELDS:
+        raise ValueError(f"bad field: {field!r}")
+    return _pack("admin", "edit", _slug(slug), _locale(locale), field)
+
+
+def cb_admin_add(category: str) -> str:
+    return _pack("admin", "add", _slug(category))
+
+
+def cb_admin_cancel(slug: str, locale: str = "ru") -> str:
+    return _pack("admin", "cancel", _slug(slug), _locale(locale))
+
+
+def cb_admin_toggle(slug: str, locale: str = "ru") -> str:
+    return _pack("admin", "toggle", _slug(slug), _locale(locale))
+
+
 def cb_admin_broadcast() -> str:
     return _pack("admin", "bc")
 
@@ -234,8 +279,18 @@ def parse_cb(data: str | None) -> Callback | None:
             return Callback(action)
         if len(args) == 1 and args[0] in _ADMIN_BARE:
             return Callback(action, arg=args[0])
-        if len(args) == 2 and args[0] == "cat" and args[1]:
-            return Callback(action, arg=args[1], extra=("cat",))
+        if len(args) == 1 and args[0] == "content":
+            return Callback(action, arg="content")
+        if len(args) == 2 and args[0] in {"cat", "threats", "add"} and args[1]:
+            return Callback(action, arg=args[1], extra=(args[0],))
+        if len(args) == 3 and args[0] in {"threat", "cancel", "toggle"} and args[1]:
+            if args[2] not in _LOC:
+                return None
+            return Callback(action, arg=args[1], extra=(args[0], args[2]))
+        if len(args) == 4 and args[0] == "edit" and args[1] and args[3] in _EDIT_FIELDS:
+            if args[2] not in _LOC:
+                return None
+            return Callback(action, arg=args[1], extra=("edit", args[2], args[3]))
         return None
 
     if action == "search":

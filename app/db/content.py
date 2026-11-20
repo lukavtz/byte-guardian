@@ -34,6 +34,7 @@ class Category(Base):
     enabled: Mapped[bool] = mapped_column(
         Boolean, nullable=False, server_default="true"
     )
+    edited_at: Mapped[dt.datetime | None] = mapped_column(DateTime(timezone=True))
 
 
 class Threat(Base):
@@ -54,6 +55,7 @@ class Threat(Base):
     content_version: Mapped[int] = mapped_column(
         Integer, nullable=False, server_default="0"
     )
+    edited_at: Mapped[dt.datetime | None] = mapped_column(DateTime(timezone=True))
 
 
 class ThreatText(Base):
@@ -78,6 +80,10 @@ class ThreatText(Base):
     content_version: Mapped[int] = mapped_column(
         Integer, nullable=False, server_default="0"
     )
+    admin_version: Mapped[int] = mapped_column(
+        Integer, nullable=False, server_default="0"
+    )
+    edited_at: Mapped[dt.datetime | None] = mapped_column(DateTime(timezone=True))
 
 
 class QuizQuestion(Base):
@@ -98,6 +104,10 @@ class QuizQuestion(Base):
     content_version: Mapped[int] = mapped_column(
         Integer, nullable=False, server_default="0"
     )
+    admin_version: Mapped[int] = mapped_column(
+        Integer, nullable=False, server_default="0"
+    )
+    edited_at: Mapped[dt.datetime | None] = mapped_column(DateTime(timezone=True))
 
 
 class QuizAnswer(Base):

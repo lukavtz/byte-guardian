@@ -35,9 +35,13 @@ class FakeDB:
             key = self._key(table, row)
             current = store.get(key)
             if current is None:
-                store[key] = {**row, "enabled": True}
+                store[key] = {**row, "enabled": True, "admin_version": 0}
                 continue
             if versioned and row["content_version"] <= current["content_version"]:
+                continue
+            if versioned and current.get("admin_version", 0) > 0:
+                continue
+            if table == "category" and current.get("edited_at"):
                 continue
             merged = {**current, **row}
             merged["enabled"] = current["enabled"]
@@ -45,6 +49,14 @@ class FakeDB:
 
     def count(self, table: str) -> int:
         return len(self.tables[table])
+
+
+class _Count:
+    def __init__(self, value: int) -> None:
+        self.value = value
+
+    def scalar(self) -> int:
+        return self.value
 
 
 class FakeSession:
@@ -57,9 +69,21 @@ class FakeSession:
     async def __aexit__(self, *exc: object) -> bool:
         return False
 
-    async def execute(self, statement: Any, rows: list[dict[str, Any]] | None = None) -> None:
+    async def execute(self, statement: Any, rows: list[dict[str, Any]] | None = None) -> Any:
         if rows is not None:
             await self.db.apply(statement.table.name, rows)
+            return None
+        sql = " ".join(str(statement).split())
+        if "FROM category" in sql:
+            edited = sum(
+                1 for row in self.db.tables["category"].values() if row.get("edited_at")
+            )
+        else:
+            table = "threat_text" if "threat_text" in sql else "quiz_question"
+            edited = sum(
+                1 for row in self.db.tables[table].values() if row.get("admin_version", 0)
+            )
+        return _Count(edited)
 
     async def commit(self) -> None:
         return None
@@ -182,6 +206,79 @@ async def test_missing_directory_reports_error(tmp_path: Path) -> None:
 
     assert report.files == 0
     assert report.errors
+
+
+def _text_row(title: str = "План") -> dict[str, Any]:
+    return {
+        "title": title,
+        "summary": "Дым и огонь.",
+        "signs": ["Дым"],
+        "before": ["Датчик"],
+        "during": ["Звоните 101"],
+        "after": ["Не входите"],
+        "forbidden": ["Не открывайте окна"],
+        "contacts": ["101"],
+        "source": "МЧС России",
+    }
+
+
+async def test_admin_edited_text_survives_higher_seed_version(tmp_path: Path) -> None:
+    db = FakeDB()
+    factory = lambda: FakeSession(db)  # noqa: E731
+    _write(tmp_path, "fire.json", _doc(version=1, title="Из JSON"))
+    await seed_content(factory, tmp_path)
+
+    edited = db.tables["threat_text"][("fire-home", "ru")]
+    edited["title"] = "Из панели"
+    edited["admin_version"] = 1
+
+    _write(tmp_path, "fire.json", _doc(version=9, title="Новее JSON"))
+    report = await seed_content(factory, tmp_path)
+
+    assert db.tables["threat_text"][("fire-home", "ru")]["title"] == "Из панели"
+    assert db.tables["threat_text"][("fire-home", "ru")]["content_version"] == 1
+    assert report.skipped == 1
+
+
+async def test_admin_edited_category_survives_reseed(tmp_path: Path) -> None:
+    db = FakeDB()
+    factory = lambda: FakeSession(db)  # noqa: E731
+    _write(tmp_path, "fire.json", _doc(version=1))
+    await seed_content(factory, tmp_path)
+
+    db.tables["category"][("fire",)]["titles"] = {"ru": "Из панели"}
+    db.tables["category"][("fire",)]["edited_at"] = "now"
+    _write(tmp_path, "fire.json", _doc(version=2))
+    report = await seed_content(factory, tmp_path)
+
+    assert db.tables["category"][("fire",)]["titles"] == {"ru": "Из панели"}
+    assert report.skipped == 1
+
+
+async def test_untouched_rows_still_update_next_to_edited_ones(tmp_path: Path) -> None:
+    db = FakeDB()
+    factory = lambda: FakeSession(db)  # noqa: E731
+    doc = _doc(version=1, title="Старое")
+    doc["threats"].append(
+        {
+            "slug": "fire-plan",
+            "severity": 1,
+            "texts": {"ru": _text_row()},
+        }
+    )
+    _write(tmp_path, "fire.json", doc)
+    await seed_content(factory, tmp_path)
+
+    db.tables["threat_text"][("fire-home", "ru")]["admin_version"] = 1
+    doc["version"] = 2
+    doc["threats"][0]["texts"]["ru"]["title"] = "Новое из JSON"
+    doc["threats"][1]["texts"]["ru"]["title"] = "План v2"
+    _write(tmp_path, "fire.json", doc)
+
+    await seed_content(factory, tmp_path)
+
+    assert db.tables["threat_text"][("fire-home", "ru")]["title"] == "Старое"
+    assert db.tables["threat_text"][("fire-plan", "ru")]["title"] == "План v2"
 
 
 def _sql(statement: Any) -> str:

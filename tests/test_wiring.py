@@ -43,7 +43,7 @@ def _dispatcher(monkeypatch: pytest.MonkeyPatch, repo: FakeRepo) -> Any:
 def _fake_seed(repo: FakeRepo):
     async def seed(session_factory: Any, path: Path) -> Any:
         repo.calls.append("seed")
-        return SimpleNamespace(errors=[])
+        return SimpleNamespace(errors=[], skipped=0)
 
     return seed
 

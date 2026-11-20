@@ -12,6 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 DRAFT_TTL_SECONDS = 3600
 DRAFT_KEY_PREFIX = "broadcast_draft:"
 CHAT_MODE_PREFIX = "chat_mode:"
+EDIT_KEY_PREFIX = "admin_edit:"
 
 SELECT_SQL = text("SELECT value FROM settings WHERE key = :key")
 UPSERT_SQL = text(
@@ -60,6 +61,42 @@ def draft_key(admin_id: int) -> str:
 
 def chat_mode_key(tg_id: int) -> str:
     return CHAT_MODE_PREFIX + str(tg_id)
+
+
+def edit_key(tg_id: int) -> str:
+    return EDIT_KEY_PREFIX + str(tg_id)
+
+
+async def edit_pending_save(
+    session_factory: async_sessionmaker[AsyncSession], tg_id: int, value: dict[str, str]
+) -> None:
+    await settings_set(session_factory, edit_key(tg_id), value)
+
+
+async def edit_pending(
+    session_factory: async_sessionmaker[AsyncSession], tg_id: int
+) -> dict[str, str] | None:
+    value = await settings_get(session_factory, edit_key(tg_id))
+    if not isinstance(value, dict):
+        return None
+    if not all(isinstance(item, str) for item in value.values()):
+        return None
+    return value
+
+
+async def edit_pending_take(
+    session_factory: async_sessionmaker[AsyncSession], tg_id: int
+) -> dict[str, str] | None:
+    value = await edit_pending(session_factory, tg_id)
+    if value is not None:
+        await settings_delete(session_factory, edit_key(tg_id))
+    return value
+
+
+async def edit_pending_discard(
+    session_factory: async_sessionmaker[AsyncSession], tg_id: int
+) -> None:
+    await settings_delete(session_factory, edit_key(tg_id))
 
 
 async def chat_mode_on(

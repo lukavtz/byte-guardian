@@ -51,6 +51,10 @@ async def initialize_content(
     else:
         for error in report.errors:
             logger.warning("content seed: %s", error)
+        if report.skipped:
+            logger.info(
+                "content seed: %s admin-edited rows kept", report.skipped
+            )
     try:
         await repo.load()
     except Exception:

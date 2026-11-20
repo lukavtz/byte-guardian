@@ -8,6 +8,7 @@ from html import escape
 from typing import Any
 
 from aiogram import Bot, Dispatcher, F, Router
+from aiogram.dispatcher.event.bases import SkipHandler
 from aiogram.filters import Command
 from aiogram.types import CallbackQuery, Message
 from sqlalchemy import text
@@ -17,11 +18,20 @@ from app.config import Settings
 from app.content.repository import ContentRepository
 from app.middlewares.allowlist import is_admin
 from app.runtime.health import Probe, probe
+from app.services import content_admin
+from app.services import settings as settings_service
 from app.services.callbacks import (
     cb_admin,
+    cb_admin_add,
     cb_admin_broadcast,
+    cb_admin_cancel,
     cb_admin_category,
+    cb_admin_content,
+    cb_admin_edit,
     cb_admin_hint,
+    cb_admin_threat,
+    cb_admin_threats,
+    cb_admin_toggle,
     cb_broadcast_status,
     cb_menu,
     parse_cb,
@@ -41,6 +51,21 @@ STATUS_LABELS = {
     name: t(DEFAULT_LOCALE, "broadcasts.state." + name)
     for name in ("pending", "running", "done", "failed")
 }
+# Field -> (label, icon, prompt). The short keys are the callback payload.
+FIELD_LABELS: dict[str, tuple[str, str, str]] = {
+    "title": ("Название", "description", "Пришлите новое название."),
+    "summary": ("Кратко", "digest", "Пришлите новое краткое описание (до 300 символов)."),
+    "signs": ("Признаки", "eyes", "Пришлите признаки: по одному в строке (2–5)."),
+    "before": ("До", "hourglass", "Пришлите шаги «до»: по одному в строке (2–5)."),
+    "during": ("Во время", "fire", "Пришлите шаги «во время»: по одному в строке (2–5)."),
+    "after": ("После", "refresh", "Пришлите шаги «после»: по одному в строке (2–5)."),
+    "forbidden": ("Нельзя", "cancel", "Пришлите запреты: по одному в строке (2–5)."),
+    "contacts": ("Контакты", "support", "Пришлите контакты через запятую."),
+    "source": ("Источник", "link", "Пришлите источник."),
+}
+PROMPT_TEXT = "Пришлите новый текст."
+TOAST_SAVED = "Сохранено"
+TOAST_CANCELLED = "Отменено"
 
 STATS_SQL = text(
     """
@@ -198,6 +223,14 @@ def home_screen(
         parts.append("<p>Разделов пока нет.</p>")
     parts.extend(
         (
+            f"<h2>{premium('catalog', '📂')} Контент</h2>",
+            rich_row(
+                rich_button(
+                    "Контент",
+                    data=cb_admin_content(),
+                    icon=("catalog", "📂"),
+                )
+            ),
             f"<h2>{premium('broadcast', '📣')} Рассылка</h2>",
             rich_row(
                 rich_button(
@@ -263,6 +296,164 @@ def broadcast_screen(audience: int, last: Mapping[str, Any] | None) -> RichScree
     return RichScreen(html)
 
 
+def content_screen(categories: list[content_admin.CategoryItem]) -> RichScreen:
+    """Every section, including the disabled ones, with its card count."""
+    rows = [
+        rich_row(
+            rich_button(
+                f"{item.title} · {item.active}/{item.total}",
+                data=cb_admin_threats(item.slug),
+                icon=("catalog", _esc(item.emoji)),
+            )
+        )
+        for item in categories
+    ]
+    if not rows:
+        rows.append("<p>Разделов пока нет.</p>")
+    rows.append(
+        rich_row(rich_button("Назад", data=cb_admin(), icon=("back", "🏠")))
+    )
+    html = (
+        f"<h1>{premium('catalog', '📂')} Контент</h1>"
+        "<p>Раздел → карточки → поля. Правки переживают пересев.</p><hr/>"
+    )
+    return RichScreen(html + "\n".join(rows))
+
+
+def threats_screen(
+    category: str, threats: list[content_admin.ThreatItem]
+) -> RichScreen:
+    """Cards of one section; a disabled card keeps its row, marked."""
+    rows = [
+        rich_row(
+            rich_button(
+                f"{'●' * item.severity}{'○' * (3 - item.severity)} {item.title}",
+                data=cb_admin_threat(item.slug),
+                icon=("done", "✅") if item.enabled else ("cancel", "⛔"),
+            )
+        )
+        for item in threats
+    ]
+    if not rows:
+        rows.append("<p>Карточек пока нет.</p>")
+    rows.append(
+        rich_row(
+            rich_button(
+                "Добавить карточку",
+                data=cb_admin_add(category),
+                style="primary",
+                icon=("new", "🆕"),
+            )
+        )
+    )
+    rows.append(
+        rich_row(rich_button("Назад", data=cb_admin_content(), icon=("back", "🏠")))
+    )
+    html = (
+        f"<h1>{premium('catalog', '📂')} {_esc(category)}</h1>"
+        f"<p>{premium('stats', '🔢')} Карточек: <b>{len(threats)}</b></p><hr/>"
+    )
+    return RichScreen(html + "\n".join(rows))
+
+
+def _field_block(title: str, items: tuple[str, ...]) -> str:
+    if not items:
+        return f"<h3>{_esc(title)}</h3><p>—</p>"
+    lines = "<br/>".join(f"• {_esc(item)}" for item in items)
+    return f"<h3>{_esc(title)}</h3><p>{lines}</p>"
+
+
+def threat_editor_screen(detail: content_admin.ThreatDetail) -> RichScreen:
+    """The card as stored, every field one tap away from replacement."""
+    flags = f"{'●' * detail.severity}{'○' * (3 - detail.severity)}"
+    state = "включена" if detail.enabled else "выключена"
+    rows: list[str] = []
+    if len(detail.locales) > 1:
+        rows.append(
+            rich_row(
+                *(
+                    rich_button(
+                        code,
+                        data=cb_admin_threat(detail.slug, code),
+                        icon=("done", "✅") if code == detail.locale else ("lang", "🌐"),
+                    )
+                    for code in detail.locales
+                )
+            )
+        )
+    buttons = [
+        rich_button(
+            label,
+            data=cb_admin_edit(detail.slug, detail.locale, field),
+            icon=(icon, FIELD_ICONS[icon]),
+        )
+        for field, (label, icon, _prompt) in FIELD_LABELS.items()
+    ]
+    rows.extend(rich_row(*buttons[index : index + 2]) for index in range(0, len(buttons), 2))
+    rows.append(
+        rich_row(
+            rich_button(
+                "Выключить" if detail.enabled else "Включить",
+                data=cb_admin_toggle(detail.slug, detail.locale),
+                style="danger" if detail.enabled else "success",
+                icon=("mute", "🔕") if detail.enabled else ("done", "✅"),
+            ),
+            rich_button("Назад", data=cb_admin_threats(detail.category_slug), icon=("back", "🏠")),
+        )
+    )
+    missing = (
+        ""
+        if detail.exact
+        else f"<p>{premium('error', '❗')} Текста на <code>{_esc(detail.locale)}</code>"
+        " нет: показан ru. Сохранение создаст перевод.</p>"
+    )
+    html = "".join(
+        (
+            f"<h1>{premium('description', '📖')} {_esc(detail.title)}</h1>",
+            f"<p>{flags} · {_esc(detail.category_slug)} · {_esc(state)}</p>",
+            missing,
+            f"<p>{_esc(detail.summary) or '—'}</p><hr/>",
+            _field_block("Признаки", detail.signs),
+            _field_block("До", detail.before),
+            _field_block("Во время", detail.during),
+            _field_block("После", detail.after),
+            _field_block("Нельзя", detail.forbidden),
+            _field_block("Контакты", detail.contacts),
+            f"<h3>Источник</h3><p>{_esc(detail.source) or '—'}</p><hr/>",
+        )
+    )
+    return RichScreen(html + "\n".join(rows))
+
+
+def prompt_screen(text: str, cancel_data: str) -> RichScreen:
+    """One short instruction and the way out; the next message is the value."""
+    return RichScreen(
+        "\n".join(
+            (
+                f"<h1>{premium('description', '📖')} Правка</h1>",
+                f"<p>{_esc(PROMPT_TEXT)}</p>",
+                f"<p>{_esc(text)}</p>",
+                rich_row(
+                    rich_button("Отмена", data=cancel_data, icon=("cancel", "❌"))
+                ),
+            )
+        )
+    )
+
+
+FIELD_ICONS = {
+    "description": "📖",
+    "digest": "📝",
+    "eyes": "👀",
+    "hourglass": "⏳",
+    "fire": "🔥",
+    "refresh": "🔄",
+    "cancel": "❌",
+    "support": "💬",
+    "link": "🔗",
+}
+
+
 def _repo(dispatcher: Dispatcher) -> ContentRepository | None:
     """The live index, registered in `workflow_data` next to the probes."""
     value = dispatcher.workflow_data.get("repo")
@@ -284,6 +475,14 @@ async def _home(
         health_checks(_probes(dispatcher)),
     )
     return home_screen(stats, categories, health)
+
+
+async def _send_new(query: CallbackQuery, bot: Bot, screen: RichScreen) -> None:
+    """The prompt is a second message: the editor card stays where it is."""
+    message = query.message
+    chat_id = getattr(getattr(message, "chat", None), "id", None)
+    if chat_id is not None:
+        await show(bot, chat_id, screen)
 
 
 async def _redraw(
@@ -327,6 +526,7 @@ async def admin_callback(
     if not is_admin(user_id, settings.admin_id_set):
         await query.answer(ADMIN_ONLY_ALERT, show_alert=True)
         return
+    assert user_id is not None
 
     callback = parse_cb(query.data)
     if callback is None or callback.action != "admin":
@@ -351,6 +551,94 @@ async def admin_callback(
         await query.answer(BROADCAST_HINT, show_alert=True)
         return
 
+    if callback.arg == "content":
+        await query.answer()
+        await _redraw(
+            query, bot, content_screen(await content_admin.list_categories(session_factory))
+        )
+        return
+
+    kind = callback.extra[0] if callback.extra else ""
+
+    if kind == "threats":
+        threats = await content_admin.list_threats(session_factory, callback.arg)
+        await query.answer()
+        await _redraw(query, bot, threats_screen(callback.arg, threats))
+        return
+
+    if kind == "threat":
+        detail = await content_admin.get_threat(
+            session_factory, callback.arg, callback.extra[1]
+        )
+        if detail is None:
+            await query.answer("Карточка не найдена.", show_alert=True)
+            return
+        await query.answer()
+        await _redraw(query, bot, threat_editor_screen(detail))
+        return
+
+    if kind == "edit":
+        _kind, locale, field = callback.extra
+        await settings_service.edit_pending_save(
+            session_factory,
+            user_id,
+            {"slug": callback.arg, "locale": locale, "field": field},
+        )
+        await query.answer()
+        await _send_new(
+            query,
+            bot,
+            prompt_screen(
+                FIELD_LABELS[field][2], cb_admin_cancel(callback.arg, locale)
+            ),
+        )
+        return
+
+    if kind == "add":
+        await settings_service.edit_pending_save(
+            session_factory,
+            user_id,
+            {"slug": "", "locale": "ru", "field": "new_slug", "category": callback.arg},
+        )
+        await query.answer()
+        await _send_new(
+            query,
+            bot,
+            prompt_screen(
+                "Пришлите slug новой карточки: a-z, 0-9 и дефис, 3–32 символа.",
+                cb_admin_threats(callback.arg),
+            ),
+        )
+        return
+
+    if kind == "toggle":
+        detail = await content_admin.get_threat(
+            session_factory, callback.arg, callback.extra[1]
+        )
+        if detail is None:
+            await query.answer("Карточка не найдена.", show_alert=True)
+            return
+        now_enabled = await content_admin.set_threat_enabled(
+            session_factory, _repo(dispatcher), callback.arg, not detail.enabled
+        )
+        await query.answer("Карточка включена" if now_enabled else "Карточка выключена")
+        fresh = await content_admin.get_threat(
+            session_factory, callback.arg, callback.extra[1]
+        )
+        if fresh is not None:
+            await _redraw(query, bot, threat_editor_screen(fresh))
+        return
+
+    if kind == "cancel":
+        await settings_service.edit_pending_discard(session_factory, user_id)
+        await query.answer(TOAST_CANCELLED)
+        detail = await content_admin.get_threat(
+            session_factory, callback.arg, callback.extra[1]
+        )
+        if detail is not None:
+            await _redraw(query, bot, threat_editor_screen(detail))
+        return
+
     if callback.extra != ("cat",) or not SLUG_PATTERN.fullmatch(callback.arg):
         await query.answer("Неизвестный раздел.", show_alert=True)
         return
@@ -366,6 +654,75 @@ async def admin_callback(
         await repo.load()
     await query.answer("Раздел включён" if enabled else "Раздел выключен")
     await _redraw(query, bot, await _home(session_factory, dispatcher))
+
+
+@router.message(F.text, ~F.text.startswith("/"))
+async def admin_edit_text(
+    message: Message,
+    bot: Bot,
+    session_factory: async_sessionmaker[AsyncSession],
+    settings: Settings,
+    dispatcher: Dispatcher,
+) -> None:
+    """The next plain message from an admin with a pending field, before AI chat."""
+    user = message.from_user
+    if user is None or not is_admin(user.id, settings.admin_id_set):
+        raise SkipHandler()
+    pending = await settings_service.edit_pending_take(session_factory, user.id)
+    if pending is None:
+        raise SkipHandler()
+    raw = (message.text or "").strip()
+    field = pending.get("field", "")
+
+    if field == "new_slug":
+        if not content_admin.SLUG_PATTERN.fullmatch(raw):
+            await message.answer("Slug: 3–32 символа a-z, 0-9 и дефис. Пришлите снова.")
+            await settings_service.edit_pending_save(session_factory, user.id, pending)
+            return
+        pending = {
+            "slug": raw,
+            "locale": "ru",
+            "field": "new_title",
+            "category": pending.get("category", ""),
+        }
+        await settings_service.edit_pending_save(session_factory, user.id, pending)
+        await message.answer("Пришлите название новой карточки.")
+        return
+
+    if field == "new_title":
+        try:
+            detail = await content_admin.create_threat(
+                session_factory,
+                _repo(dispatcher),
+                pending.get("category", ""),
+                pending.get("slug", ""),
+                2,
+                title=raw,
+            )
+        except content_admin.ContentError as error:
+            await message.answer(f"{error} Начните добавление заново.")
+            return
+        await message.answer(TOAST_SAVED)
+        await show(bot, message.chat.id, threat_editor_screen(detail))
+        return
+
+    if field not in content_admin.EDIT_FIELDS:
+        raise SkipHandler()
+    try:
+        detail = await content_admin.save_threat(
+            session_factory,
+            _repo(dispatcher),
+            pending.get("slug", ""),
+            pending.get("locale", content_admin.DEFAULT_LOCALE),
+            {field: content_admin.parse_field_input(field, raw)},
+        )
+    except content_admin.ContentError as error:
+        # Keep the pending key: the admin can fix the text and send it again.
+        await message.answer(str(error))
+        await settings_service.edit_pending_save(session_factory, user.id, pending)
+        return
+    await message.answer(TOAST_SAVED)
+    await show(bot, message.chat.id, threat_editor_screen(detail))
 
 
 def register(dp: Dispatcher, _bot: Bot) -> None:

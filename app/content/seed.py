@@ -7,7 +7,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from sqlalchemy import Insert
+from sqlalchemy import Insert, func, select
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
@@ -19,6 +19,8 @@ class SeedReport:
     files: int = 0
     threats: int = 0
     quizzes: int = 0
+    # Rows an admin edited: the upsert's WHERE keeps them as they are.
+    skipped: int = 0
     errors: list[str] = field(default_factory=list)
 
 
@@ -32,6 +34,7 @@ def category_upsert() -> Insert:
             "emoji": excluded.emoji,
             "titles": excluded.titles,
         },
+        where=Category.edited_at.is_(None),
     )
 
 
@@ -67,7 +70,8 @@ def threat_text_upsert() -> Insert:
             "source": excluded.source,
             "content_version": excluded.content_version,
         },
-        where=excluded.content_version > ThreatText.content_version,
+        where=(excluded.content_version > ThreatText.content_version)
+        & (ThreatText.admin_version == 0),
     )
 
 
@@ -87,7 +91,8 @@ def quiz_upsert() -> Insert:
             "explanation": excluded.explanation,
             "content_version": excluded.content_version,
         },
-        where=excluded.content_version > QuizQuestion.content_version,
+        where=(excluded.content_version > QuizQuestion.content_version)
+        & (QuizQuestion.admin_version == 0),
     )
 
 
@@ -284,7 +289,21 @@ async def seed_content(
     )
     async with session_factory() as session:
         for key, statement in statements:
-            if rows[key]:
-                await session.execute(statement, rows[key])
+            if not rows[key]:
+                continue
+            await session.execute(statement, rows[key])
         await session.commit()
+        # The upsert silently keeps edited rows; report how many so a reseed
+        # never looks like it replaced the owner's text. COUNT runs after the
+        # upsert because edited rows are exactly the ones it did not touch.
+        for model, guard in (
+            (Category, Category.edited_at.is_not(None)),
+            (ThreatText, ThreatText.admin_version > 0),
+            (QuizQuestion, QuizQuestion.admin_version > 0),
+        ):
+            result = await session.execute(
+                select(func.count()).select_from(model).where(guard)
+            )
+            if result is not None:
+                report.skipped += int(result.scalar() or 0)
     return report
