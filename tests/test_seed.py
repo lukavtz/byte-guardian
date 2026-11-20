@@ -6,6 +6,8 @@ from typing import Any
 
 from sqlalchemy.dialects import postgresql
 
+from app.content.seed import SeedReport, category_upsert, quiz_upsert, seed_content, threat_text_upsert, threat_upsert
+
 
 class FakeDB:
     def __init__(self) -> None:
