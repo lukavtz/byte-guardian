@@ -21,6 +21,7 @@ from app.services.callbacks import (
     cb_admin_broadcast,
     cb_admin_category,
     cb_admin_hint,
+    cb_broadcast_status,
     cb_menu,
     parse_cb,
 )
@@ -247,7 +248,14 @@ def broadcast_screen(audience: int, last: Mapping[str, Any] | None) -> RichScree
                     style="primary",
                     icon=("broadcast", "📣"),
                 ),
-                rich_button("Назад", data=cb_admin(), icon=("back", "🏠")),
+                rich_button(
+                    "Ход рассылки",
+                    data=cb_broadcast_status(),
+                    icon=("hourglass", "⏳"),
+                ),
+            ),
+            rich_row(
+                rich_button("Назад", data=cb_admin(), icon=("back", "🏠"))
             ),
         )
     )

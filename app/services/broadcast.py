@@ -30,11 +30,19 @@ AUDIENCE_SQL = text(
 AUDIENCE_FALLBACK_SQL = text(
     "SELECT id FROM users WHERE id > :after_id ORDER BY id LIMIT :limit"
 )
+AUDIENCE_COUNT_SQL = text("SELECT count(*) FROM users WHERE broadcasts_opt_in IS TRUE")
+AUDIENCE_COUNT_FALLBACK_SQL = text("SELECT count(*) FROM users")
 CREATE_SQL = text(
-    "INSERT INTO broadcasts (text, created_by) VALUES (:text, :created_by) RETURNING id"
+    "INSERT INTO broadcasts (text, created_by, total) "
+    "VALUES (:text, :created_by, :total) RETURNING id"
 )
 STATUS_SQL = text(
-    "SELECT status, last_user_id, sent, failed FROM broadcasts WHERE id = :broadcast_id"
+    "SELECT status, last_user_id, sent, failed, total, created_at, finished_at "
+    "FROM broadcasts WHERE id = :broadcast_id"
+)
+LATEST_SQL = text(
+    "SELECT id, status, last_user_id, sent, failed, total, created_at, finished_at "
+    "FROM broadcasts ORDER BY created_at DESC LIMIT 1"
 )
 START_SQL = text(
     "UPDATE broadcasts SET status = 'running', finished_at = NULL WHERE id = :broadcast_id"
@@ -112,13 +120,33 @@ async def broadcast_page(
     return await _fetch_page(session_factory, after_id, limit)
 
 
+async def audience_size(session_factory: async_sessionmaker[AsyncSession]) -> int:
+    """Opted-in users right now, with the same schema-gap fallback as pages."""
+    try:
+        return await _scalar(session_factory, AUDIENCE_COUNT_SQL)
+    except (ProgrammingError, asyncpg.UndefinedColumnError) as error:
+        if "broadcasts_opt_in" not in str(error):
+            raise
+        return await _scalar(session_factory, AUDIENCE_COUNT_FALLBACK_SQL)
+
+
+async def _scalar(session_factory: async_sessionmaker[AsyncSession], sql: Any) -> int:
+    async with session_factory() as session:
+        async with session.begin():
+            row = (await session.execute(sql)).first()
+    return int(row[0]) if row is not None else 0
+
+
 async def create_broadcast(
     session_factory: async_sessionmaker[AsyncSession], html: str, created_by: int
 ) -> str:
+    total = await audience_size(session_factory)
     async with session_factory() as session:
         async with session.begin():
             row = (
-                await session.execute(CREATE_SQL, {"text": html, "created_by": created_by})
+                await session.execute(
+                    CREATE_SQL, {"text": html, "created_by": created_by, "total": total}
+                )
             ).first()
     if row is None:
         raise RuntimeError("broadcast insert failed")
@@ -133,6 +161,16 @@ async def broadcast_status(
             row = (
                 await session.execute(STATUS_SQL, {"broadcast_id": broadcast_id})
             ).mappings().first()
+    return dict(row) if row is not None else None
+
+
+async def latest_broadcast(
+    session_factory: async_sessionmaker[AsyncSession],
+) -> dict[str, Any] | None:
+    """The newest broadcast, for the status card opened without an id."""
+    async with session_factory() as session:
+        async with session.begin():
+            row = (await session.execute(LATEST_SQL)).mappings().first()
     return dict(row) if row is not None else None
 
 

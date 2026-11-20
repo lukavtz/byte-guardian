@@ -17,6 +17,8 @@ Screens are stateless: everything needed to redraw arrives in the callback.
     b1:admin:bc
     b1:admin:hint
     b1:bc:<yes|no>
+    b1:bc_status
+    b1:bc_status:<uuid>
     b1:ask:<slug>
     b1:chat
     b1:chat_exit
@@ -42,6 +44,7 @@ ACTIONS = frozenset(
         "search_hint",
         "admin",
         "bc",
+        "bc_status",
         "ask",
         "chat",
         "chat_exit",
@@ -107,6 +110,12 @@ def _lang(code: str) -> str:
     return code
 
 
+def _uuid(raw: str) -> str:
+    if len(raw) != 36 or raw.count("-") != 4 or not set(raw) <= _HEX | {"-"}:
+        raise ValueError(f"bad uuid: {raw!r}")
+    return raw
+
+
 def cb_menu() -> str:
     return _pack("menu")
 
@@ -163,6 +172,11 @@ def cb_broadcast(confirm: bool) -> str:
     return _pack("bc", "yes" if confirm else "no")
 
 
+def cb_broadcast_status(broadcast_id: str = "") -> str:
+    """Open the progress card: the given broadcast, or the newest one."""
+    return _pack("bc_status", _uuid(broadcast_id)) if broadcast_id else _pack("bc_status")
+
+
 def cb_ask(slug: str) -> str:
     return _pack("ask", _slug(slug))
 
@@ -202,6 +216,16 @@ def parse_cb(data: str | None) -> Callback | None:
             return Callback(action, arg=args[0])
         if len(args) == 2 and args[0] == "cat" and args[1]:
             return Callback(action, arg=args[1], extra=("cat",))
+        return None
+
+    if action == "bc_status":
+        if not args:
+            return Callback(action)
+        if len(args) == 1:
+            try:
+                return Callback(action, arg=_uuid(args[0]))
+            except ValueError:
+                return None
         return None
 
     if action in _BARE:
