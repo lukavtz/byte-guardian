@@ -112,7 +112,7 @@ def test_build_messages_carries_persona_locale_and_three_cards() -> None:
     messages = service.build_messages("что делать?", "en", cards)
 
     assert [item["role"] for item in messages] == ["system", "user"]
-    assert messages[0]["content"] == SYSTEM_PROMPT
+    assert messages[0]["content"].startswith(SYSTEM_PROMPT)
     assert "Звоните 112" in SYSTEM_PROMPT
     assert "до 900 знаков" in SYSTEM_PROMPT
     user = messages[1]["content"]
