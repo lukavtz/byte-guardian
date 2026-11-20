@@ -11,7 +11,16 @@ import pytest
 from app.content.types import CardView, CategoryView, QuizView, ThreatView
 from app.services.callbacks import parse_cb
 from app.ui import emoji as emoji_mod
-from app.ui.emoji import DEFAULT_IDS, plain_emoji, premium, strip_premium
+from app.ui.emoji import (
+    DEFAULT_IDS,
+    FALLBACKS,
+    ICONS,
+    PACK,
+    PACK_IDS,
+    plain_emoji,
+    premium,
+    strip_premium,
+)
 from app.ui.keyboards import PAGE_SIZE, keyboard_from_rich, strip_rich_buttons
 from app.ui.render import (
     ART,
@@ -32,6 +41,7 @@ LOCALE = "ru"
 BUTTON = re.compile(r"<tg-button(?=[\s>])([^>]*)>(.*?)</tg-button>", re.DOTALL)
 ROW = re.compile(r"<tg-button-row\b[^>]*>(.*?)</tg-button-row>", re.DOTALL)
 ATTRIBUTE = re.compile(r'([\w-]+)="([^"]*)"')
+BARE_EMOJI = re.compile(r"[\U0001F000-\U0001FAFF\u2600-\u27BF\u2B00-\u2BFF]")
 
 
 def _category(slug: str = "fire", title: str = "Пожар") -> CategoryView:
@@ -149,9 +159,35 @@ def test_emoji_uses_a_pinned_id(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_vetted_defaults_are_installed() -> None:
-    assert DEFAULT_IDS["search"] == "5258274739041883702"
-    assert DEFAULT_IDS["test"] == "5219899949281453881"
-    assert DEFAULT_IDS["admin"] == "6021401276904905698"
+    assert PACK == "TgAndroidIcons"
+    assert DEFAULT_IDS["search"] == PACK_IDS["🔎"]
+    assert DEFAULT_IDS["test"] == PACK_IDS["✅"]
+    assert DEFAULT_IDS["admin"] == PACK_IDS["🛠"]
+
+
+def test_every_default_id_comes_from_the_one_pack() -> None:
+    pack_ids = set(PACK_IDS.values())
+    assert set(DEFAULT_IDS.values()) <= pack_ids
+    assert set(FALLBACKS.values()) == set(ICONS.values()) <= set(PACK_IDS)
+    assert {"fire", "terror", "tech", "nature", "medical", "chem", "rad", "cyber"} <= set(
+        DEFAULT_IDS
+    )
+
+
+def test_no_screen_shows_a_bare_emoji_or_a_foreign_id(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(emoji_mod, "CUSTOM", dict(DEFAULT_IDS))
+    pack_ids = set(PACK_IDS.values())
+    for screen in _screens():
+        assert set(re.findall(r'emoji-id="(\d+)"', screen.html)) <= pack_ids
+        assert not BARE_EMOJI.findall(re.sub(r"<tg-emoji\b[^>]*>.*?</tg-emoji>", "", screen.html, flags=re.DOTALL))
+
+
+def test_unknown_name_keeps_its_plain_character(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(emoji_mod, "CUSTOM", dict(DEFAULT_IDS))
+    assert premium("no-such-name", "❓") == "❓"
+    assert premium("no-such-name") == ""
 
 
 def test_every_screen_carries_premium_tags_when_ids_configured(

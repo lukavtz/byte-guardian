@@ -12,6 +12,7 @@ from app.handlers import admin
 from app.services import settings as settings_service
 from app.services.callbacks import Callback, cb_admin, cb_admin_broadcast, cb_admin_category, cb_admin_hint, parse_cb
 from app.services.i18n import DEFAULT_LOCALE, t
+from app.ui.emoji import DEFAULT_IDS
 
 
 class _Result:
@@ -198,7 +199,7 @@ def test_home_screen_has_table_values_and_premium_tags() -> None:
     assert "<td>7</td><td>12</td><td>30</td><td>99</td>" in html
     assert "<h1>" in html and "Админ-панель" in html
     assert "Только для администраторов" in html
-    assert 'emoji-id="6021401276904905698"' in html  # panel
+    assert f'emoji-id="{DEFAULT_IDS["admin"]}"' in html  # panel
     assert "b1:admin:cat:fire" in html
     assert "b1:admin:cat:cyber" in html
     assert "✅" in html and "⛔" in html

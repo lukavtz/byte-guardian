@@ -1,10 +1,13 @@
 """Custom emoji: a name becomes a `<tg-emoji>` tag, or the plain character.
 
-The vetted ids come from the MIT-licensed catalogue
-https://github.com/abbosahmad/telegram-premium-emojis (packs TgAndroidIcons,
-vector_icons_by_fStikBot, tgmacicons, NewsEmoji). Every id was checked against
-a live bot: `sendMessage` with a `custom_emoji` entity keeps the entity, so
-Telegram accepts it for this bot.
+Every default id comes from one pack, `PACK` (`TgAndroidIcons`, 515 stickers),
+so a screen never mixes drawing styles. The pack is read live with
+`getStickerSet`; `PACK_IDS` is the vendored char -> id map, and `DEFAULT_IDS`
+is the semantic name layer on top of it.
+
+A few semantic names have no exact glyph in the pack. They borrow the closest
+one from the same pack; the comment on each says what was borrowed. No id from
+another pack is ever installed.
 
 `TELEGRAM_EMOJI_IDS` as `name:id,name:id` overrides any name here, including an
 empty `name:`. Without an id the character is used, so every screen is complete
@@ -20,118 +23,130 @@ import re
 TAG = re.compile(r"<tg-emoji\b[^>]*>(.*?)</tg-emoji>", re.DOTALL)
 ATTRIBUTE = re.compile(r'emoji-id="(\d+)"')
 
-# name -> custom emoji id, vendored from the catalogue above.
-DEFAULT_IDS: dict[str, str] = {
-    "find": "5258274739041883702",
-    "catalog": "6017174676898321263",
-    "site": "5879585266426973039",
-    "support": "5886666250158870040",
-    "hot": "6008118472066732010",
-    "new": "5886306834410640699",
-    "panel": "6021401276904905698",
-    "back": "5967822972931542886",
-    "package": "5924720918826848520",
-    "download": "5886451926995833684",
-    "error": "5220197908342648622",
-    "hourglass": "5258113901106580375",
-    "lock": "5832546462478635761",
-    "channel": "5260268501515377807",
-    "refresh": "5292226786229236118",
-    "done": "5219899949281453881",
-    "link": "5877465816030515018",
-    "category": "5854776233950188167",
-    "description": "5897850551156084824",
-    "duck": "5400233063261151534",
-    "arrow": "5875008416132370818",
-    "eyes": "5260341314095947411",
-    "help": "5260535596941582167",
-    "stats": "5226513232549664618",
-    "health": "6023704302793528745",
-    "publish": "5260268501515377807",
-    "links": "6021788373717358680",
-    "trash": "5258130763148172425",
-    "cancel": "5258226313285607065",
-    "menu": "5257963315258204021",
-    "top": "5258336354642697821",
-    "digest": "5257965174979042426",
-    "broadcast": "5258500422393415126",
-    "bell": "6021536113108196448",
-    "mute": "6021440013214948027",
-    "people": "5915556996215476302",
-    "preview": "5960714428394507968",
-    "send": "5877540355187937244",
-    # Bot aliases: the screen names map onto a vetted id. The fallback is the
-    # character the reader expects in that slot, not the source pack's glyph.
-    "fire": "6008118472066732010",  # hot
-    "terror": "5832546462478635761",  # lock
-    "tech": "6021401276904905698",  # panel
-    "nature": "5292226786229236118",  # refresh
-    "medical": "6023704302793528745",  # health
-    "chem": "5897850551156084824",  # description
-    "rad": "5220197908342648622",  # error
-    "cyber": "5832546462478635761",  # lock
-    "search": "5258274739041883702",  # find
-    "game": "5258336354642697821",  # top
-    "test": "5219899949281453881",  # done
-    "lang": "5879585266426973039",  # site
-    "admin": "6021401276904905698",  # panel
+PACK = "TgAndroidIcons"
+
+# char -> custom emoji id, vendored from `getStickerSet?name=TgAndroidIcons`.
+PACK_IDS: dict[str, str] = {
+    "🔎": "5874960879434338403",
+    "📂": "6017174676898321263",
+    "🌐": "5879585266426973039",
+    "💬": "5886666250158870040",
+    "🔥": "6008118472066732010",
+    "🆕": "5886306834410640699",
+    "🛠": "5988023995125993550",
+    "🏠": "5967822972931542886",
+    "📦": "5924720918826848520",
+    "⬇️": "5886451926995833684",
+    "❗️": "5879813604068298387",
+    "⏲": "5877613700344450910",
+    "🔒": "5832546462478635761",
+    "📢": "5771695636411847302",
+    "🔄": "5839200986022812209",
+    "✅": "5776375003280838798",
+    "🔗": "5877465816030515018",
+    "📎": "5877495434124988415",
+    "🏷": "5854776233950188167",
+    "📖": "5897850551156084824",
+    "🐻": "5967800016331346187",
+    "👁": "5960714428394507968",
+    "📊": "5877485980901971030",
+    "❤️": "5992453811510186287",
+    "🗑": "5879896690210639947",
+    "❌": "5778527486270770928",
+    "🏡": "6010362983320916413",
+    "🔽": "5875008416132370818",
+    "📝": "5886330010054168711",
+    "🔔": "5909201569898827582",
+    "🔕": "5909123362839335003",
+    "👥": "5915556996215476302",
+    "👤": "5771887475421090729",
+    "📤": "5877540355187937244",
+    "🛡": "5926783847453692661",
+    "🎲": "5960608239623082921",
+    "💊": "5933768993285345899",
+    "🧪": "5897607722295103204",
+    "⚠️": "5881702736843511327",
+    "⚡️": "5843553939672274145",
+    "🕓": "5776213190387961618",
+    "⚙": "5877260593903177342",
 }
 
-# What each name draws. The alternative text is what a client without custom
-# emoji support shows, so it has to be the character the reader expects.
-FALLBACKS: dict[str, str] = {
-    "find": "🔍",
+# Semantic name -> pack character. The right-hand character is also the
+# fallback the client without custom emoji support shows.
+ICONS: dict[str, str] = {
+    "find": "🔎",
+    "search": "🔎",
     "catalog": "📂",
     "site": "🌐",
+    "lang": "🌐",
+    "globe": "🌐",
     "support": "💬",
+    "help": "💬",
+    "chat": "💬",
     "hot": "🔥",
+    "fire": "🔥",
     "new": "🆕",
     "panel": "🛠",
+    "tech": "🛠",
+    "admin": "🛠",
+    "tools": "🛠",
     "back": "🏠",
+    "home": "🏠",
     "package": "📦",
     "download": "⬇️",
-    "error": "❗",
-    "hourglass": "⏳",
+    "arrow": "⬇️",
+    "error": "❗️",
+    "hourglass": "⏲",
     "lock": "🔒",
-    "channel": "📣",
+    "cyber": "🔒",
+    "channel": "📢",
+    "broadcast": "📢",
+    "publish": "📢",
+    "megaphone": "📢",
     "refresh": "🔄",
     "done": "✅",
+    "test": "✅",
+    "check": "✅",
     "link": "🔗",
+    "links": "📎",
     "category": "🏷",
     "description": "📖",
-    "duck": "🦆",
-    "arrow": "🔽",
-    "eyes": "👀",
-    "help": "💬",
-    "stats": "🔢",
-    "health": "💓",
-    "publish": "📣",
-    "links": "📎",
+    "duck": "🐻",  # no waterfowl in the pack; closest mascot animal
+    "eyes": "👁",
+    "preview": "👁",
+    "stats": "📊",
+    "health": "❤️",
     "trash": "🗑",
     "cancel": "❌",
-    "menu": "🏘",
-    "top": "⬇️",
+    "menu": "🏡",
+    "top": "🔽",
     "digest": "📝",
-    "broadcast": "🎤",
     "bell": "🔔",
     "mute": "🔕",
     "people": "👥",
-    "preview": "👁",
+    "user": "👤",
     "send": "📤",
-    "fire": "🔥",
-    "terror": "🔒",
-    "tech": "🛠",
-    "nature": "🌪",
-    "medical": "🩺",
-    "chem": "☣",
-    "rad": "☢",
-    "cyber": "🔐",
-    "search": "🔍",
-    "game": "🎮",
-    "test": "✅",
-    "lang": "🌐",
-    "admin": "🛠",
+    "shield": "🛡",
+    "terror": "🛡",
+    "game": "🎲",
+    "medical": "💊",  # no stethoscope; pill is the closest health glyph
+    "first-aid": "💊",
+    "chem": "🧪",  # no biohazard; test tube is the closest lab glyph
+    "hazard": "⚠️",
+    "rad": "⚠️",  # no radiation trefoil; hazard triangle carries the warning
+    "radiation": "⚠️",
+    "warning": "⚠️",
+    "nature": "⚡️",  # no tornado; storm bolt is the closest weather glyph
+    "storm": "⚡️",
+    "clock": "🕓",
 }
+
+# name -> custom emoji id, resolved through the one pack.
+DEFAULT_IDS: dict[str, str] = {name: PACK_IDS[char] for name, char in ICONS.items()}
+
+# What each name draws. The alternative text is what a client without custom
+# emoji support shows, so it has to be the character the reader expects.
+FALLBACKS: dict[str, str] = dict(ICONS)
 
 
 def _parse(raw: str) -> dict[str, str]:
