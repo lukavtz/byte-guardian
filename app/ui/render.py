@@ -51,8 +51,7 @@ BUTTON_WORDS = 8
 WORD = re.compile(r"\w+")
 SEVERITIES = {1: "low", 2: "medium", 3: "high"}
 ART = "https://raw.githubusercontent.com/lukavtz/byte-guardian/main/assets/art"
-BANNER = "https://raw.githubusercontent.com/lukavtz/byte-guardian/main/assets/banner.jpg"
-ARTS = frozenset({"fire", "terror", "tech", "nature", "medical", "chem", "rad", "cyber"})
+ARTS = frozenset({"fire", "terror", "tech", "nature", "medical", "chem", "rad", "cyber", "chat"})
 
 
 @dataclass(frozen=True, slots=True)
@@ -142,10 +141,8 @@ def _badge(card: CardView, locale: str) -> str:
 
 
 def _art(slug: str) -> str:
-    """One picture above the heading: the brand banner for the menu, else the
-    section art; an unknown section borrows the hero."""
-    if slug == "menu":
-        return f'<img src="{BANNER}"/>'
+    """One picture above the heading: the section art; an unknown section
+    borrows the hero. The menu is text-only and calls no art."""
     return f'<img src="{ART}/{slug if slug in ARTS else "hero"}.png"/>'
 
 
@@ -207,7 +204,7 @@ def render_menu(categories: list[CategoryView], locale: str, is_admin: bool = Fa
             )
         )
     heading = f"{premium('shield', '🛡️')} {_esc(t(locale, 'menu.title'))}"
-    html = _header("menu", heading, f"<p>{_esc(t(locale, 'menu.lead'))}</p>")
+    html = f"<h1>{heading}</h1><p>{_esc(t(locale, 'menu.lead'))}</p><hr/>"
     return RichScreen(html + "\n".join(rows))
 
 
@@ -228,7 +225,7 @@ def render_chat(locale: str) -> RichScreen:
         )
     ]
     heading = f"{premium('support', '💬')} {_esc(t(locale, 'chat.title'))}"
-    html = _header("hero", heading, f"<p>{_esc(t(locale, 'chat.lead'))}</p>")
+    html = _header("chat", heading, f"<p>{_esc(t(locale, 'chat.lead'))}</p>")
     return RichScreen(html + "\n".join(rows))
 
 

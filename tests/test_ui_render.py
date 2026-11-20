@@ -3,6 +3,7 @@ from __future__ import annotations
 import dataclasses
 import re
 from html import unescape
+from pathlib import Path
 
 import pytest
 
@@ -198,7 +199,7 @@ def test_screens_have_at_most_one_primary_button() -> None:
 
 def test_screens_have_one_artwork_image_at_most() -> None:
     for screen in _screens():
-        assert screen.html.count("<img ") == 1
+        assert screen.html.count("<img ") <= 1
 
 
 def test_screens_fit_the_rich_message_limit() -> None:
@@ -273,11 +274,23 @@ def test_category_artwork_matches_the_section(slug: str) -> None:
     assert f'<img src="{ART}/{slug}.png"/>' in screen.html
 
 
-def test_menu_uses_the_brand_banner() -> None:
+def test_menu_is_text_only() -> None:
     html = render_menu([_category()], LOCALE).html
-    assert 'src="https://raw.githubusercontent.com/lukavtz/byte-guardian/main/assets/banner.jpg"' in html
+    assert "<img" not in html
     assert "menu.png" not in html
-    assert f'<img src="{ART}/hero.png"/>' not in html
+
+
+def test_chat_uses_its_own_artwork() -> None:
+    assert f'<img src="{ART}/chat.png"/>' in render_chat(LOCALE).html
+
+
+def test_no_source_references_the_removed_banner() -> None:
+    root = Path(__file__).resolve().parents[1]
+    banned = "banner" + ".jpg"
+    files = [root / "README.md", *root.joinpath("app").rglob("*.py"), *root.joinpath("tests").rglob("*.py")]
+    files += list(root.joinpath("docs").rglob("*.md"))
+    offenders = [path.relative_to(root).as_posix() for path in files if banned in path.read_text(encoding="utf-8")]
+    assert not offenders
 
 
 def test_unknown_section_falls_back_to_the_hero() -> None:
@@ -316,7 +329,7 @@ def test_menu_shows_the_shared_header_and_brand() -> None:
     headings = re.findall(r"<h1>(.*?)</h1>", html)
     assert len(headings) == 1 and headings[0].endswith("Байт")
     assert "Помощник по безопасности жизнедеятельности ТИСБИ" in html
-    assert html.index("<img ") < html.index("<h1>") < html.index("<hr/>")
+    assert html.index("<h1>") < html.index("<hr/>")
 
 
 def test_menu_chat_is_the_only_primary() -> None:

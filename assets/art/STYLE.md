@@ -1,7 +1,7 @@
 # Байт — Brand & Illustration Style
 
 Source of truth for colour: `docs/BRAND.md` and the official site values in
-`docs/BRAND-RESEARCH.md`. Reference renders: `assets/banner.jpg` (1254×627) and
+`docs/BRAND-RESEARCH.md`. Reference renders: `assets/art/hero.png` (1536×1024) and
 `assets/byte.jpg` (1145×1374); their JPEG-sampled `#0237BB` is retired — it is not
 the university blue.
 
