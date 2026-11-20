@@ -1,54 +1,202 @@
+"""Ask Byte: one RAG answer per question, with search as the fallback."""
+
 from __future__ import annotations
 
-from typing import Any
+import logging
 
-from aiogram import Bot, Dispatcher, Router
+from aiogram import Bot, Dispatcher, F, Router
+from aiogram.dispatcher.event.bases import SkipHandler
 from aiogram.filters import Command, CommandObject
-from aiogram.types import Message, Update
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
-from app.runtime.queue import Queue
+from app.config import Settings
+from app.content.repository import ContentRepository
+from app.services import llm as llm_service
+from app.services.i18n import resolve_locale, t
+from app.services.llm import (
+    RateLimiter,
+    build_messages,
+    context_cards,
+    is_addressed,
+    strip_html,
+    strip_mention,
+)
+from app.ui.delivery import show
+from app.ui.render import search_screen
 
-KIND = "llm.request"
-USAGE_TEXT = "Usage: /llm <prompt>"
-WORKING_TEXT = "Working on it."
+logger = logging.getLogger(__name__)
+
+BOT_USERNAME: str | None = None
+
+LIMITER = RateLimiter()
+
+USAGE = {
+    "ru": "Напишите вопрос: /ask <вопрос>.",
+    "en": "Ask a question: /ask <question>.",
+    "zh": "请提问：/ask <问题>。",
+    "tt": "Сорау языгыз: /ask <сорау>.",
+}
+RATE = {
+    "ru": "Слишком часто. Подождите минуту и спросите снова.",
+    "en": "Too many questions. Wait a minute and ask again.",
+    "zh": "提问太频繁。请稍后再试。",
+    "tt": "Бик еш. Бер минут көтеп, яңадан сорагыз.",
+}
+FALLBACK = {
+    "ru": "ИИ сейчас недоступен — вот результаты поиска.",
+    "en": "The assistant is unavailable right now — here are search results.",
+    "zh": "助手暂不可用——这是搜索结果。",
+    "tt": "ИИ хәзер эшләми — эзләү нәтиҗәләре.",
+}
 
 router = Router(name="llm")
 
 
-async def enqueue_llm(
-    queue: Queue,
+def locale_of(message: Message) -> str:
+    user = message.from_user
+    return resolve_locale(user.language_code if user else None)
+
+
+def _is_group(message: Message) -> bool:
+    return str(message.chat.type) in {"group", "supergroup"}
+
+
+def _question(text: str, bot_username: str | None) -> str:
+    value = text.strip()
+    if value.lower().startswith("/ask"):
+        value = value[4:]
+        head, sep, tail = value.partition(" ")
+        if not sep:
+            value = ""
+        else:
+            value = tail
+    return strip_mention(value, bot_username)
+
+
+def _card_keyboard(card, bot_username: str | None, locale: str) -> InlineKeyboardMarkup | None:
+    if card is None or not bot_username:
+        return None
+    url = f"https://t.me/{bot_username}?start=card_{card.slug}"
+    return InlineKeyboardMarkup(
+        inline_keyboard=[[InlineKeyboardButton(text=t(locale, "button.card"), url=url)]]
+    )
+
+
+async def _send(message: Message, text: str, *, group: bool, markup: InlineKeyboardMarkup | None = None) -> None:
+    if group:
+        await message.reply(text, reply_markup=markup)
+    else:
+        await message.answer(text, reply_markup=markup)
+
+
+async def _fallback(
+    message: Message,
+    question: str,
     *,
-    chat_id: int,
-    prompt: str,
-    reply_to_message_id: int | None,
-    update_id: int,
-) -> str:
-    payload: dict[str, Any] = {"chatId": chat_id, "prompt": prompt, "updateId": update_id}
-    if reply_to_message_id is not None:
-        payload["replyToMessageId"] = reply_to_message_id
-    return await queue.enqueue(KIND, payload, idempotency_key="llm:" + str(update_id))
+    bot: Bot,
+    repository: ContentRepository | None,
+    locale: str,
+    group: bool,
+) -> None:
+    results = repository.search(question, locale, limit=5) if repository is not None else []
+    try:
+        await show(bot, message.chat.id, search_screen(question, results, locale))
+    except Exception:
+        logger.exception("failed to show search fallback")
+    await _send(message, FALLBACK[locale], group=group)
 
 
-@router.message(Command("llm"))
-async def llm_command(
+async def respond(
+    message: Message,
+    question: str,
+    *,
+    bot: Bot,
+    settings: Settings,
+    repository: ContentRepository | None = None,
+    bot_username: str | None = None,
+) -> None:
+    locale = locale_of(message)
+    group = _is_group(message)
+    question = question.strip()
+    if not question:
+        await _send(message, USAGE[locale], group=group)
+        return
+    user = message.from_user
+    if not LIMITER.allow(
+        user_id=user.id if user else 0,
+        chat_id=message.chat.id,
+        group=group,
+    ):
+        await _send(message, RATE[locale], group=group)
+        return
+    cards = context_cards(repository, question, locale)
+    client = llm_service.client_for(settings)
+    if client is None:
+        await _fallback(message, question, bot=bot, repository=repository, locale=locale, group=group)
+        return
+    messages = build_messages(question, locale, cards)
+    try:
+        async with client:
+            raw = await llm_service.answer(client, messages, settings.llm_model)
+    except llm_service.LlmUnavailable:
+        await _fallback(message, question, bot=bot, repository=repository, locale=locale, group=group)
+        return
+    text = strip_html(raw)
+    if not text:
+        await _fallback(message, question, bot=bot, repository=repository, locale=locale, group=group)
+        return
+    markup = _card_keyboard(cards[0] if cards else None, bot_username or BOT_USERNAME, locale)
+    await _send(message, text, group=group, markup=markup)
+
+
+@router.message(Command("ask"))
+async def ask_command(
     message: Message,
     command: CommandObject,
-    queue: Queue,
-    event_update: Update,
+    bot: Bot,
+    settings: Settings,
+    repo: ContentRepository | None = None,
 ) -> None:
-    prompt = (command.args or "").strip()
-    if not prompt:
-        await message.answer(USAGE_TEXT)
-        return
-    await enqueue_llm(
-        queue,
-        chat_id=message.chat.id,
-        prompt=prompt,
-        reply_to_message_id=message.message_id,
-        update_id=event_update.update_id,
+    await respond(
+        message,
+        command.args or "",
+        bot=bot,
+        settings=settings,
+        repository=repo,
+        bot_username=BOT_USERNAME,
     )
-    await message.answer(WORKING_TEXT)
+
+
+@router.message(F.chat.type.in_({"group", "supergroup"}), F.text)
+async def group_question(
+    message: Message,
+    bot: Bot,
+    settings: Settings,
+    repo: ContentRepository | None = None,
+) -> None:
+    username = BOT_USERNAME
+    if not is_addressed(message, username, bot.id):
+        raise SkipHandler()
+    await respond(
+        message,
+        _question(message.text or "", username),
+        bot=bot,
+        settings=settings,
+        repository=repo,
+        bot_username=username,
+    )
+
+
+async def remember_username(bot: Bot) -> None:
+    global BOT_USERNAME
+    try:
+        me = await bot.get_me()
+    except Exception:
+        logger.warning("could not resolve bot username; mention triggers stay off")
+        return
+    BOT_USERNAME = me.username
 
 
 def register(dp: Dispatcher, _bot: Bot) -> None:
     dp.include_router(router)
+    dp.startup.register(remember_username)
