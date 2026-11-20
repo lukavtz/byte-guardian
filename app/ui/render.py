@@ -12,9 +12,11 @@ only cap drops whole card list items when a message would pass Telegram's
 
 from __future__ import annotations
 
+import math
 import secrets
 from dataclasses import dataclass
 from html import escape
+from urllib.parse import urlencode
 
 from aiogram.types import InlineKeyboardMarkup
 
@@ -30,6 +32,8 @@ from app.services.callbacks import (
     cb_menu,
     cb_quiz,
     cb_quiz_next,
+    cb_random,
+    cb_search,
     cb_search_hint,
 )
 from app.services.i18n import t
@@ -38,6 +42,8 @@ from app.ui.keyboards import PAGE_SIZE, Style, rich_button, rich_row
 
 RESULTS = 7
 CARD_CAP = 30000
+SHARE = "https://t.me/share/url?"
+BAR_CELLS = 10
 SEVERITIES = {1: "low", 2: "medium", 3: "high"}
 ART = "https://raw.githubusercontent.com/lukavtz/byte-guardian/main/assets/art"
 ARTS = frozenset({"fire", "terror", "tech", "nature", "medical", "chem", "rad", "cyber", "chat"})
@@ -133,6 +139,15 @@ def render_menu(categories: list[CategoryView], locale: str, is_admin: bool = Fa
     rows.append(
         rich_row(
             rich_button(
+                t(locale, "button.random"),
+                data=cb_random(),
+                icon=("refresh", "🎲"),
+            )
+        )
+    )
+    rows.append(
+        rich_row(
+            rich_button(
                 t(locale, "button.search"),
                 data=cb_search_hint(),
                 icon=("search", "🔍"),
@@ -180,6 +195,19 @@ def render_chat(locale: str) -> RichScreen:
     heading = f"{premium('support', '💬')} {_esc(t(locale, 'chat.title'))}"
     html = _header("chat", heading, f"<p>{_esc(t(locale, 'chat.lead'))}</p>")
     return RichScreen(html + "\n".join(rows))
+
+
+def render_not_found(locale: str) -> RichScreen:
+    """A stale card or section: say so, and keep both ways forward."""
+    rows = rich_row(
+        rich_button(t(locale, "button.menu"), data=cb_menu(), icon=("menu", "🏘")),
+        rich_button(
+            t(locale, "button.search"), data=cb_search_hint(), icon=("search", "🔍")
+        ),
+    )
+    heading = f"{premium('error', '❗')} {_esc(t(locale, 'card.not_found.title'))}"
+    html = _header("hero", heading, f"<p>{_esc(t(locale, 'card.not_found.lead'))}</p>")
+    return RichScreen(html + rows)
 
 
 def render_category(
@@ -258,8 +286,33 @@ def _card_html(card: CardView, locale: str, shown: list[int], summary: str | Non
     )
 
 
+def _one_line(value: str, limit: int = 140) -> str:
+    text = " ".join(value.split())
+    return text if len(text) <= limit else text[: limit - 1].rstrip() + "…"
+
+
+def share_url(username: str | None, card: CardView) -> str:
+    """`t.me/share/url` with the deep link and a one-line reason to open it.
+
+    Both values are URL-encoded; a URL button has no 64-byte callback ceiling.
+    Without a resolved username the card is still shareable, only the deep
+    link is dropped rather than pointing at the wrong bot.
+    """
+    why = _one_line(card.summary)
+    text = f"{card.title} — {why}" if why else card.title
+    params = {"text": text}
+    if username:
+        params = {"url": f"https://t.me/{username}?start=card_{card.slug}", **params}
+    return SHARE + urlencode(params)
+
+
 def render_card(
-    card: CardView, locale: str, page: int, has_quiz: bool, can_game: bool = False
+    card: CardView,
+    locale: str,
+    page: int,
+    has_quiz: bool,
+    can_game: bool = False,
+    username: str | None = None,
 ) -> RichScreen:
     """Art, heading, severity, signs, three steps, bans, brand footer.
 
@@ -298,7 +351,7 @@ def render_card(
             ),
             rich_button(
                 t(locale, "button.share"),
-                query=card.title,
+                url=share_url(username, card),
                 icon=("send", "📤"),
             ),
         )
@@ -381,7 +434,20 @@ def render_question(
     return RichScreen(html + "\n".join(rows))
 
 
-def render_result(correct: int, total: int, slug: str, locale: str) -> RichScreen:
+def _bar(correct: int, total: int) -> str:
+    """Ten cells for the session: the score at a glance, no extra text."""
+    filled = 0 if not total else min(BAR_CELLS, max(0, round(correct / total * BAR_CELLS)))
+    return "▰" * filled + "▱" * (BAR_CELLS - filled)
+
+
+def render_result(
+    correct: int,
+    total: int,
+    slug: str,
+    locale: str,
+    streak: int | None = None,
+    best: int | None = None,
+) -> RichScreen:
     verdict = "perfect" if total and correct == total else ("partial" if correct else "zero")
     passed = bool(total) and correct * 3 >= total * 2
     rows = [
@@ -408,6 +474,12 @@ def render_result(correct: int, total: int, slug: str, locale: str) -> RichScree
         )
         + f"<h2>{premium('stats', '🔢')} {_esc(t(locale, 'quiz.score', correct=correct, total=total))}</h2>"
         + f"<p>{_esc(t(locale, f'quiz.result.{verdict}'))}</p>"
+        + f"<p><code>{_bar(correct, total)}</code></p>"
+        + (
+            f"<p>{_esc(t(locale, 'quiz.streak', streak=streak, best=best))}</p>"
+            if streak is not None and best is not None
+            else ""
+        )
         + _brand(locale)
     )
     return RichScreen(html + "\n".join(rows))
@@ -418,16 +490,41 @@ def search_screen(
     results: list[ThreatView],
     locale: str,
     hints: list[CategoryView] | None = None,
+    *,
+    page: int = 1,
+    total: int | None = None,
+    digest: str | None = None,
 ) -> RichScreen:
-    if results:
+    """One page of hits; ``total`` is every hit, so the count covers the tail.
+
+    ``digest`` is the key the query is stored under, so «Показать ещё» carries
+    8 hex characters instead of text that could exceed Telegram's 64-byte
+    callback ceiling.
+    """
+    found = len(results) if total is None else max(total, len(results))
+    pages = max(1, math.ceil(found / RESULTS))
+    page = min(max(page, 1), pages)
+    visible = results[(page - 1) * RESULTS : page * RESULTS]
+    if visible:
         rows = [
             rich_row(
                 rich_button(f"{_dots(item.severity)} {item.title}", data=cb_card(item.slug))
             )
-            for item in results[:RESULTS]
+            for item in visible
         ]
+        if digest and page < pages:
+            rows.append(
+                rich_row(
+                    rich_button(
+                        t(locale, "button.more"),
+                        data=cb_search(digest, page + 1),
+                        icon=("arrow", "🔽"),
+                    )
+                )
+            )
     else:
-        # No match: the eight sections are the useful next tap, in the message.
+        # No match: the eight sections are the useful next tap, in the message,
+        # plus the one tap that never depends on knowing what to type.
         rows = [
             rich_row(
                 rich_button(
@@ -438,6 +535,15 @@ def search_screen(
             )
             for item in (hints or [])[:8]
         ]
+        rows.append(
+            rich_row(
+                rich_button(
+                    t(locale, "button.random"),
+                    data=cb_random(),
+                    icon=("refresh", "🎲"),
+                )
+            )
+        )
     rows.append(
         rich_row(
             rich_button(
@@ -448,8 +554,8 @@ def search_screen(
         )
     )
     clean = " ".join(query.split())
-    if results:
-        body = f"<p>{_esc(t(locale, 'search.found', n=len(results)))}</p>"
+    if visible:
+        body = f"<p>{_esc(t(locale, 'search.found', n=found))}</p>"
     else:
         body = f"<p>{_esc(t(locale, 'search.empty'))}</p><p>{_esc(t(locale, 'search.hint'))}</p>"
     quote = f"<p><code>{_esc(clean)}</code></p>" if clean else ""

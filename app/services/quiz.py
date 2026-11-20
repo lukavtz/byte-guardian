@@ -19,7 +19,7 @@ QUESTIONS = 3
 
 _OWNER_SQL = text(
     """
-    SELECT telegram_id FROM quiz_answer
+    SELECT telegram_id, chosen FROM quiz_answer
     WHERE threat_slug = :threat_slug
       AND question_id = :question_id
       AND session_seed = :session_seed
@@ -36,6 +36,14 @@ _INSERT_SQL = text(
       (:telegram_id, :threat_slug, :question_id, :session_seed, :chosen, :correct)
     ON CONFLICT (threat_slug, question_id, session_seed) DO NOTHING
     RETURNING id
+    """
+)
+
+_STREAK_SQL = text(
+    """
+    SELECT correct FROM quiz_answer
+    WHERE telegram_id = :telegram_id
+    ORDER BY created_at, id
     """
 )
 
@@ -64,14 +72,22 @@ def pick_questions(
     return random.Random(seed).sample(ordered, min(n, len(ordered)))
 
 
+async def answer_of(
+    session_factory: SessionFactory, slug: str, qid: str, seed: str
+) -> tuple[int, int] | None:
+    """``(telegram_id, chosen)`` for this seeded question, if it was answered."""
+    params = {"threat_slug": slug, "question_id": qid, "session_seed": seed}
+    async with session_factory() as session:
+        row = (await session.execute(_OWNER_SQL, params)).first()
+    return (int(row[0]), int(row[1])) if row is not None else None
+
+
 async def owner_of(
     session_factory: SessionFactory, slug: str, qid: str, seed: str
 ) -> int | None:
     """Telegram id that answered this question under this seed, if any."""
-    params = {"threat_slug": slug, "question_id": qid, "session_seed": seed}
-    async with session_factory() as session:
-        row = (await session.execute(_OWNER_SQL, params)).first()
-    return int(row[0]) if row is not None else None
+    answer = await answer_of(session_factory, slug, qid, seed)
+    return answer[0] if answer is not None else None
 
 
 async def record_answer(
@@ -110,4 +126,28 @@ async def score(
     return (int(row["answered"]), int(row["total"]))
 
 
-__all__ = ["owner_of", "pick_questions", "record_answer", "score"]
+async def streaks(
+    session_factory: SessionFactory, tg_id: int
+) -> tuple[int, int]:
+    """``(current, best)`` runs of correct answers across every card.
+
+    Ordered by answer time, so a wrong answer resets the current run and the
+    best run is the longest one ever recorded for this user.
+    """
+    async with session_factory() as session:
+        rows = (await session.execute(_STREAK_SQL, {"telegram_id": tg_id})).all()
+    current = best = 0
+    for (correct,) in rows:
+        current = current + 1 if correct else 0
+        best = max(best, current)
+    return current, best
+
+
+__all__ = [
+    "answer_of",
+    "owner_of",
+    "pick_questions",
+    "record_answer",
+    "score",
+    "streaks",
+]

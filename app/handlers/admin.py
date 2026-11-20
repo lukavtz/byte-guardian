@@ -14,6 +14,7 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.config import Settings
+from app.content.repository import ContentRepository
 from app.middlewares.allowlist import is_admin
 from app.runtime.health import Probe, probe
 from app.services.callbacks import (
@@ -262,6 +263,12 @@ def broadcast_screen(audience: int, last: Mapping[str, Any] | None) -> RichScree
     return RichScreen(html)
 
 
+def _repo(dispatcher: Dispatcher) -> ContentRepository | None:
+    """The live index, registered in `workflow_data` next to the probes."""
+    value = dispatcher.workflow_data.get("repo")
+    return value if isinstance(value, ContentRepository) else None
+
+
 def _probes(dispatcher: Dispatcher) -> Mapping[str, Probe | None]:
     value = dispatcher.workflow_data.get("readiness_probes", {})
     return value if isinstance(value, Mapping) else {}
@@ -352,6 +359,11 @@ async def admin_callback(
     if enabled is None:
         await query.answer("Неизвестный раздел.", show_alert=True)
         return
+    repo = _repo(dispatcher)
+    if repo is not None:
+        # The DB already holds the new flag; rebuild the index so menu, cards
+        # and search stop offering the section in the same breath.
+        await repo.load()
     await query.answer("Раздел включён" if enabled else "Раздел выключен")
     await _redraw(query, bot, await _home(session_factory, dispatcher))
 

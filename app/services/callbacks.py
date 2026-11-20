@@ -6,6 +6,8 @@ Screens are stateless: everything needed to redraw arrives in the callback.
     b1:menu
     b1:cat:<slug>:<page>
     b1:card:<slug>:<page>
+    b1:random
+    b1:search:<hash>:<page>
     b1:game:<slug>
     b1:quiz:<slug>:<qid>:<option>:<seed>
     b1:quiz_next:<slug>:<qid>:<seed>
@@ -36,6 +38,8 @@ ACTIONS = frozenset(
         "menu",
         "cat",
         "card",
+        "random",
+        "search",
         "game",
         "quiz",
         "quiz_next",
@@ -51,7 +55,7 @@ ACTIONS = frozenset(
     }
 )
 _BARE = frozenset(
-    {"menu", "lang_menu", "search_hint", "chat", "chat_exit"}
+    {"menu", "random", "lang_menu", "search_hint", "chat", "chat_exit"}
 )
 _ADMIN_BARE = frozenset({"bc", "hint"})
 _PAGES = frozenset({"cat", "card"})
@@ -104,6 +108,13 @@ def _seed(seed: str) -> str:
     return seed
 
 
+def _digest(raw: str) -> str:
+    """An 8-hex sha1 prefix: the query itself never rides in callback data."""
+    if len(raw) != 8 or not set(raw) <= _HEX:
+        raise ValueError(f"bad query digest: {raw!r}")
+    return raw
+
+
 def _lang(code: str) -> str:
     if not code or ":" in code:
         raise ValueError(f"bad lang: {code!r}")
@@ -126,6 +137,15 @@ def cb_cat(slug: str, page: int = 1) -> str:
 
 def cb_card(slug: str, page: int = 1) -> str:
     return _pack("card", _slug(slug), _page(page))
+
+
+def cb_random() -> str:
+    """Draw the card at tap time: the slug is unknown when the row is built."""
+    return _pack("random")
+
+
+def cb_search(digest: str, page: int = 1) -> str:
+    return _pack("search", _digest(digest), _page(page))
 
 
 def cb_game(slug: str) -> str:
@@ -217,6 +237,12 @@ def parse_cb(data: str | None) -> Callback | None:
         if len(args) == 2 and args[0] == "cat" and args[1]:
             return Callback(action, arg=args[1], extra=("cat",))
         return None
+
+    if action == "search":
+        if len(args) not in (1, 2) or len(args[0]) != 8 or not set(args[0]) <= _HEX:
+            return None
+        page = 1 if len(args) == 1 else _page_arg(args[1])
+        return Callback(action, arg=args[0], page=page) if page is not None else None
 
     if action == "bc_status":
         if not args:

@@ -400,3 +400,26 @@ async def test_settings_value_json_is_parsed() -> None:
     db.settings["legacy"] = {"a": 1}
 
     assert await settings_service.settings_get(db.factory(), "legacy") == {"a": 1}
+
+async def test_toggle_reloads_the_repo_from_workflow_data() -> None:
+    """The menu and search never keep showing a section the owner just turned off."""
+    from app.content.repository import ContentRepository, Snapshot
+
+    loaded: list[int] = []
+
+    async def loader() -> Snapshot:
+        loaded.append(1)
+        return [], [], [], []
+
+    repo = ContentRepository(loader=loader, aliases_path=None)
+    db = FakeDB(categories=[("fire", True, "Пожар", "🔥")])
+    dispatcher = make_dispatcher(_probes())
+    dispatcher.workflow_data["repo"] = repo
+    query = make_query(user_id=42, data="b1:admin:cat:fire")
+    bot = FakeBot()
+
+    await admin.admin_callback(query, bot, db.factory(), make_settings(), dispatcher)
+
+    assert db.categories == [("fire", False, "Пожар", "🔥")]
+    assert loaded == [1]
+    assert repo.categories() == []

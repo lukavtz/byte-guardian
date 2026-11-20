@@ -60,10 +60,11 @@ def rich_button(
     *,
     data: str | None = None,
     style: Style | Literal["link"] | None = None,
+    url: str | None = None,
     query: str | None = None,
     icon: tuple[str, str] | None = None,
 ) -> str:
-    """One `<tg-button>`: `data` is callback data, `query` an inline search.
+    """One `<tg-button>`: `data` callback data, `url` a link, `query` an inline search.
 
     `icon` is a `(name, fallback)` pair: the premium tag stays markup, the
     label is still escaped. Its id rides along into the inline-keyboard
@@ -71,10 +72,12 @@ def rich_button(
     """
     if data is not None:
         attributes = f'type="callback_data" data="{escape(data, quote=True)}"'
+    elif url is not None:
+        attributes = f'type="url" url="{escape(url, quote=True)}"'
     elif query is not None:
         attributes = f'type="switch_inline_query_current_chat" query="{escape(query, quote=True)}"'
     else:
-        raise ValueError("a rich button needs callback data or an inline query")
+        raise ValueError("a rich button needs callback data, a URL or an inline query")
     if style:
         attributes += f' style="{style}"'
     lead = premium(*icon) + " " if icon else ""
@@ -120,6 +123,12 @@ def _inline_button(attributes: str, label: str) -> InlineKeyboardButton | None:
             text=text,
             callback_data=unescape(values.get("data", "")),
             style=style,  # type: ignore[arg-type]
+            icon_custom_emoji_id=icon,
+        )
+    if values.get("type") == "url":
+        return InlineKeyboardButton(
+            text=text,
+            url=unescape(values.get("url", "")),
             icon_custom_emoji_id=icon,
         )
     if values.get("type") == "switch_inline_query_current_chat":

@@ -2,15 +2,18 @@
 
 from __future__ import annotations
 
+import datetime as dt
+import json
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
+from aiogram.types import CallbackQuery, Chat, Message, User
 
 from app.content.repository import CategoryRow, ContentRepository, Snapshot, TextRow, ThreatRow
 from app.handlers import inline as inline_handler
 from app.handlers import search as search_handler
-from app.services.callbacks import parse_cb
+from app.services.callbacks import cb_search, parse_cb
 from app.ui.keyboards import keyboard_from_rich
 
 SLUGS = ("fire", "terror", "tech", "nature", "medical", "chem", "rad", "cyber")
@@ -51,6 +54,72 @@ async def _repo(titles: dict[str, str] | None = None) -> ContentRepository:
     repo = ContentRepository(loader=load, aliases_path=None)
     await repo.load()
     return repo
+
+
+class _Result:
+    def __init__(self, rows: list) -> None:
+        self.rows = rows
+
+    def first(self):
+        return self.rows[0] if self.rows else None
+
+
+class FakeSessions:
+    """The `settings` table, enough for the query cache."""
+
+    def __init__(self) -> None:
+        self.values: dict[str, object] = {}
+
+    def __call__(self) -> FakeSessions:
+        return self
+
+    async def __aenter__(self) -> FakeSessions:
+        return self
+
+    async def __aexit__(self, *exc: object) -> bool:
+        return False
+
+    def begin(self) -> FakeSessions:
+        return self
+
+    async def execute(self, statement, params: dict | None = None) -> _Result:
+        params = params or {}
+        sql = " ".join(str(statement).split())
+        if sql.startswith("INSERT INTO settings"):
+            self.values[params["key"]] = json.loads(params["value"])
+            return _Result([])
+        if sql.startswith("SELECT locale, locale_chosen FROM users"):
+            return _Result([])
+        if sql.startswith("SELECT value FROM settings"):
+            key = params["key"]
+            return _Result([(self.values[key],)] if key in self.values else [])
+        raise AssertionError("unexpected SQL: " + sql)
+
+
+class _PageBot:
+    """Just enough bot for `CallbackQuery.answer`; `show` is stubbed."""
+
+    def __init__(self) -> None:
+        self.calls: list[tuple[str, dict]] = []
+
+    async def __call__(self, method) -> bool:
+        self.calls.append((type(method).__name__, method.model_dump()))
+        return True
+
+
+def _page_query(data: str, bot: _PageBot) -> CallbackQuery:
+    return CallbackQuery(
+        id="cb-page",
+        from_user=User(id=7, is_bot=False, first_name="Tester"),
+        chat_instance="ci",
+        data=data,
+        message=Message(
+            message_id=10,
+            date=dt.datetime.now(dt.UTC),
+            chat=Chat(id=42, type="private"),
+            text="card",
+        ),
+    ).as_(bot)
 
 
 def _message(text: str, locale: str = "ru") -> MagicMock:
@@ -150,7 +219,9 @@ async def test_search_uses_the_saved_locale(shown: list, monkeypatch: pytest.Mon
         return "en"
 
     monkeypatch.setattr(search_handler, "get_locale", saved_locale)
-    await search_handler.on_text(_message("пожар"), await _repo(), None, object())  # type: ignore[arg-type]
+    await search_handler.on_text(
+        _message("пожар"), await _repo(), None, FakeSessions()  # type: ignore[arg-type]
+    )
 
     assert "Search" in shown[0].html
 
@@ -198,3 +269,76 @@ async def test_inline_caps_results_and_keeps_html_small() -> None:
     for article in kwargs["results"]:
         assert len(article.input_message_content.message_text) <= 4096
         assert len(article.title) <= 120
+
+
+# --- paging ---------------------------------------------------------------
+
+
+def _wide_repo(count: int = 9) -> ContentRepository:
+    categories = [CategoryRow(slug="fire", sort=1, emoji="🔥", titles={LOCALE: "Пожар"})]
+    threats = [
+        ThreatRow(slug=f"fire-{index}", category_slug="fire", severity=3, sort=index)
+        for index in range(count)
+    ]
+    texts = [_text(f"fire-{index}", f"Пожар номер {index}") for index in range(count)]
+
+    async def load() -> Snapshot:
+        return categories, threats, texts, []
+
+    repo = ContentRepository(loader=load, aliases_path=None)
+    return repo
+
+
+async def test_more_than_seven_hits_page_and_keep_the_total(shown: list) -> None:
+    repo = _wide_repo()
+    await repo.load()
+    sessions = FakeSessions()
+
+    await search_handler.on_text(_message("пожар"), repo, None, sessions)  # type: ignore[arg-type]
+
+    first = shown[0]
+    assert "Найдено: 9" in first.html
+    assert len([1 for action, _ in _actions(first) if action == "card"]) == 7
+    page = [action for action in _actions(first) if action[0] == "search"]
+    assert page and page[0][1] == search_handler.digest_of("пожар")
+    assert cb_search(page[0][1], 2) in first.html
+    assert sessions.values  # the query is stored, not carried in callback data
+
+
+async def test_show_more_draws_the_rest_of_the_hits(shown: list) -> None:
+    repo = _wide_repo()
+    await repo.load()
+    sessions = FakeSessions()
+    await search_handler.on_text(_message("пожар"), repo, None, sessions)  # type: ignore[arg-type]
+
+    query = _page_query(cb_search(search_handler.digest_of("пожар"), 2), _PageBot())
+    await search_handler.on_page(query, None, repo, sessions)  # type: ignore[arg-type]
+
+    assert len(shown) == 2
+    assert "Найдено: 9" in shown[1].html
+    cards = [action for action in _actions(shown[1]) if action[0] == "card"]
+    assert len(cards) == 2
+    assert not [action for action in _actions(shown[1]) if action[0] == "search"]
+
+
+def test_search_callback_stays_inside_telegram_limit() -> None:
+    for page in (1, 9, 99, 999):
+        assert len(cb_search("0123abcd", page).encode("utf-8")) <= 64
+    assert parse_cb(cb_search("0123abcd", 2)).page == 2
+    assert parse_cb("b1:search:xyz:1") is None
+
+
+async def test_expired_query_offers_a_fresh_search(shown: list, monkeypatch: pytest.MonkeyPatch) -> None:
+    sessions = FakeSessions()
+    sessions.values[search_handler.QUERY_PREFIX + "abcd1234"] = {
+        "query": "пожар",
+        "created_at": 1.0,
+    }
+    monkeypatch.setattr(search_handler.time, "time", lambda: 1.0 + search_handler.QUERY_TTL_SECONDS + 1)
+
+    query = _page_query(cb_search("abcd1234", 2), _PageBot())
+    await search_handler.on_page(query, None, await _repo(), sessions)  # type: ignore[arg-type]
+
+    assert "search.hint" not in shown[0].html
+    assert "Попробуйте" in shown[0].html or "Напишите" in shown[0].html
+    assert any(action[0] == "random" for action in _actions(shown[0]))

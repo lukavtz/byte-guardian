@@ -18,6 +18,7 @@ from app.services.callbacks import (
     cb_chat_exit,
     cb_lang_menu,
     cb_menu,
+    cb_random,
     cb_search_hint,
     parse_cb,
 )
@@ -349,7 +350,8 @@ async def test_card_back_button_keeps_page() -> None:
     buttons = _buttons(bot.edited[0])
     datas = [item.callback_data for item in buttons if item.callback_data]
     assert "b1:cat:fire:2" in datas
-    assert any(item.switch_inline_query_current_chat for item in buttons)
+    share = [item for item in buttons if item.url and item.url.startswith("https://t.me/share/url?")]
+    assert len(share) == 1
 
 
 @pytest.mark.asyncio
@@ -575,6 +577,80 @@ def test_chat_callbacks_fit_telegram() -> None:
     assert parse_cb(cb_chat_exit()) == Callback("chat_exit")
 
 
-def test_settings_has_exactly_one_primary_toggle() -> None:
+def test_settings_primary_is_navigation_not_the_destructive_toggle() -> None:
     buttons = _screen_buttons(nav.settings_screen("ru", True))
-    assert [item.style for item in buttons].count("primary") == 1
+    primary = [item for item in buttons if item.style == "primary"]
+    assert len(primary) == 1
+    assert primary[0].callback_data == cb_menu()
+    toggle = next(item for item in buttons if item.callback_data == nav.OPT_IN_OFF)
+    assert toggle.style is None
+
+
+def test_menu_offers_a_neutral_random_card_row() -> None:
+    screen = nav.render_menu(FakeRepo().categories(), "ru")
+    buttons = _screen_buttons(screen)
+    random = [item for item in buttons if item.callback_data == cb_random()]
+    assert len(random) == 1
+    assert random[0].style is None
+    assert random[0].text.endswith("Случайная карточка")
+
+
+@pytest.mark.asyncio
+async def test_random_callback_draws_an_enabled_card(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(nav.secrets, "choice", lambda slugs: "fire-0")
+    bot = FakeBot()
+    query = _query(cb_random())
+
+    await nav.on_random(query, bot, FakeRepo(), FakeDB().factory())
+
+    query.answer.assert_awaited_once()
+    html = bot.edited[0]["rich_message"].html
+    assert "Пожар в квартире" in html
+    assert "Карточка не найдена" not in html
+
+
+@pytest.mark.asyncio
+async def test_random_without_content_says_so_instead_of_guessing() -> None:
+    repo = FakeRepo()
+    repo._threats = []
+    bot = FakeBot()
+    query = _query(cb_random())
+
+    await nav.on_random(query, bot, repo, FakeDB().factory())
+
+    assert "Карточка не найдена" in bot.edited[0]["rich_message"].html
+
+
+@pytest.mark.asyncio
+async def test_stale_card_opens_an_explicit_not_found_screen() -> None:
+    bot = FakeBot()
+    query = _query(cb_card("gone-card", 1))
+
+    await nav.on_card(query, bot, FakeRepo(), FakeDB().factory())
+
+    html = bot.edited[0]["rich_message"].html
+    assert "Карточка не найдена" in html
+    datas = [item.callback_data for item in _buttons(bot.edited[0]) if item.callback_data]
+    assert {cb_menu(), cb_search_hint()} <= set(datas)
+
+
+@pytest.mark.asyncio
+async def test_stale_section_opens_the_same_not_found_screen() -> None:
+    bot = FakeBot()
+    query = _query(cb_cat("gone-section", 1))
+
+    await nav.on_category(query, bot, FakeRepo(), FakeDB().factory())
+
+    assert "Карточка не найдена" in bot.edited[0]["rich_message"].html
+
+
+def test_help_screen_lists_commands_with_icons_and_a_way_back() -> None:
+    screen = nav.help_screen("ru")
+    buttons = _screen_buttons(screen)
+
+    assert "<h2>" in screen.html and "Команды:" in screen.html
+    assert "/start" in screen.html and "/help" in screen.html and "/settings" in screen.html
+    assert "<tg-emoji" in screen.html
+    assert [item.callback_data for item in buttons] == [cb_menu()]

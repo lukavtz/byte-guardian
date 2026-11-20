@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import logging
 import math
+import secrets
 
 import asyncpg
 from aiogram import Bot, F, Router
@@ -26,6 +27,7 @@ from app.services.callbacks import (
     cb_lang,
     cb_lang_menu,
     cb_menu,
+    cb_random,
     cb_search_hint,
     parse_cb,
 )
@@ -41,6 +43,7 @@ from app.ui.render import (
     render_category,
     render_chat,
     render_menu,
+    render_not_found,
 )
 
 logger = logging.getLogger(__name__)
@@ -109,20 +112,47 @@ def is_admin_id(settings: Settings | None, user_id: int | None) -> bool:
 
 
 def settings_screen(locale: str, opted_in: bool) -> RichScreen:
+    """Toggles stay neutral; the primary is the way back into the bot.
+
+    The state shown comes from the caller's read of the DB, never from the
+    button that was tapped.
+    """
     toggle = OPT_IN_OFF if opted_in else OPT_IN_ON
     label = t(locale, "settings.broadcast.disable" if opted_in else "settings.broadcast.enable")
-    rows: list[list] = [
-        [button(t(locale, "button.language"), cb_lang_menu(), icon_custom_emoji_id=custom_id("lang"))]
-    ]
-    rows.append([button(label, toggle, "primary", icon_custom_emoji_id=custom_id("broadcast"))])
     status = t(locale, "settings.broadcast.on" if opted_in else "settings.broadcast.off")
+    rows: list[list] = [
+        [button(t(locale, "button.language"), cb_lang_menu(), icon_custom_emoji_id=custom_id("lang"))],
+        [button(label, toggle, icon_custom_emoji_id=custom_id("broadcast"))],
+        [button(t(locale, "button.menu"), cb_menu(), "primary", icon_custom_emoji_id=custom_id("menu"))],
+    ]
     html = (
         f"<h1>{premium('admin', '🛠')} {t(locale, 'settings.title')}</h1>"
-        f"<p>{t(locale, 'settings.language')}: "
+        f"<p>{premium('lang', '🌐')} {t(locale, 'settings.language')}: "
         f"<b>{LANGUAGE_NAMES.get(locale, LANGUAGE_NAMES['ru'])}</b></p>"
-        f"<p>{t(locale, 'settings.broadcasts')}: <b>{status}</b></p>"
+        f"<p>{premium('broadcast', '📣')} {t(locale, 'settings.broadcasts')}: <b>{status}</b></p>"
     )
     return RichScreen(html, markup(rows))
+
+
+HELP_COMMANDS = (("start", "menu", "🏘"), ("help", "help", "💬"), ("settings", "lang", "🌐"))
+
+
+def help_screen(locale: str) -> RichScreen:
+    """The command list as a rich message: h2 block, premium icons, a way back."""
+    lines = "<br/>".join(
+        f"{premium(icon, fallback)} <b>/{name}</b> — {t(locale, f'commands.{name}')}"
+        for name, icon, fallback in HELP_COMMANDS
+    )
+    html = (
+        f"<h1>{premium('help', '💬')} {t(locale, 'help.screen')}</h1>"
+        f"<p>{t(locale, 'menu.lead')}</p><hr/>"
+        f"<h2>{premium('menu', '🏘')} {t(locale, 'help.title')}</h2>"
+        f"<p>{lines}</p>"
+    )
+    rows = rich_row(
+        rich_button(t(locale, "button.menu"), data=cb_menu(), icon=("menu", "🏘"))
+    )
+    return RichScreen(html + rows)
 
 
 def language_screen(locale: str) -> RichScreen:
@@ -180,14 +210,38 @@ async def category_screen(
 
 
 def card_screen(
-    repo: ContentRepository, slug: str, page: int, locale: str, can_game: bool = False
+    repo: ContentRepository,
+    slug: str,
+    page: int,
+    locale: str,
+    can_game: bool = False,
+    username: str | None = None,
 ) -> RichScreen | None:
     card: CardView | None = repo.card(slug, locale)
     if card is None:
         return None
     return render_card(
-        card, locale, max(page, 1), repo.has_quiz(slug, locale), can_game
+        card, locale, max(page, 1), repo.has_quiz(slug, locale), can_game, username
     )
+
+
+def random_slug(repo: ContentRepository, locale: str) -> str | None:
+    """Uniform over every enabled card, across every enabled section."""
+    slugs = [
+        threat.slug
+        for category in repo.categories()
+        for threat in repo.threats(category.slug, locale)
+    ]
+    return secrets.choice(slugs) if slugs else None
+
+
+async def bot_username(bot: Bot) -> str | None:
+    """The bot's @name for a deep link; ``None`` when Telegram will not say."""
+    try:
+        return (await bot.me()).username
+    except Exception:
+        logger.warning("could not resolve bot username for the share link")
+        return None
 
 
 async def _fallback(
@@ -197,8 +251,7 @@ async def _fallback(
     locale: str,
     settings: Settings | None = None,
 ) -> None:
-    admin = is_admin_id(settings, query.from_user.id if query.from_user else None)
-    await _redraw(query, bot, await menu_screen(repo, locale, admin))
+    await _redraw(query, bot, render_not_found(locale))
 
 
 @router.callback_query(F.data == cb_menu())
@@ -254,11 +307,38 @@ async def on_card(
         callback.page,
         locale,
         bool(settings and settings.widgets_enabled and _is_private(query)),
+        await bot_username(bot),
     )
     if screen is None:
         await _fallback(query, bot, repo, locale, settings)
         return
     await _redraw(query, bot, screen)
+
+
+@router.callback_query(F.data == cb_random())
+async def on_random(
+    query: CallbackQuery,
+    bot: Bot,
+    repo: ContentRepository,
+    session_factory: async_sessionmaker[AsyncSession],
+    settings: Settings | None = None,
+) -> None:
+    await query.answer()
+    locale = await user_locale(session_factory, query.from_user)
+    slug = random_slug(repo, locale)
+    screen = (
+        card_screen(
+            repo,
+            slug,
+            1,
+            locale,
+            bool(settings and settings.widgets_enabled and _is_private(query)),
+            await bot_username(bot),
+        )
+        if slug
+        else None
+    )
+    await _redraw(query, bot, screen or render_not_found(locale))
 
 
 @router.callback_query(F.data.startswith("b1:lang:"))

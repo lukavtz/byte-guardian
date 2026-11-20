@@ -10,7 +10,7 @@ from aiogram.types import CallbackQuery, Chat, InputRichMessage, Message, User
 
 from app.content.types import QuizView
 from app.services.callbacks import cb_quiz, cb_quiz_next
-from app.services.quiz import owner_of, pick_questions, record_answer, score
+from app.services.quiz import answer_of, owner_of, pick_questions, record_answer, score, streaks
 
 TG_ID = 1001
 OTHER_ID = 2002
@@ -42,6 +42,9 @@ class _Result:
 
     def mappings(self) -> _Result:
         return self
+
+    def all(self) -> list[Any]:
+        return list(self.rows)
 
     def __iter__(self):
         return iter(self.rows)
@@ -88,15 +91,23 @@ class FakeDB:
                 return _Result([])
             self.rows.append(dict(params))
             return _Result([{"id": "row-1"}])
-        if sql.startswith("SELECT telegram_id FROM quiz_answer"):
+        if sql.startswith("SELECT telegram_id, chosen FROM quiz_answer"):
             for row in self.rows:
                 if (
                     row["threat_slug"] == params["threat_slug"]
                     and row["question_id"] == params["question_id"]
                     and row["session_seed"] == params["session_seed"]
                 ):
-                    return _Result([(row["telegram_id"],)])
+                    return _Result([(row["telegram_id"], row["chosen"])])
             return _Result([])
+        if sql.startswith("SELECT correct FROM quiz_answer"):
+            return _Result(
+                [
+                    (row["correct"],)
+                    for row in self.rows
+                    if row["telegram_id"] == params["telegram_id"]
+                ]
+            )
         if "AS total" in sql:
             picked = [
                 row
@@ -230,6 +241,42 @@ async def test_owner_is_reported() -> None:
     assert await owner_of(factory, SLUG, "q2", SEED) is None
 
 
+@pytest.mark.asyncio
+async def test_streaks_count_runs_across_cards() -> None:
+    db = FakeDB()
+
+    def add(slug: str, correct: bool) -> None:
+        db.rows.append(
+            {
+                "telegram_id": TG_ID,
+                "threat_slug": slug,
+                "question_id": f"q-{len(db.rows)}",
+                "session_seed": SEED,
+                "chosen": 0,
+                "correct": correct,
+            }
+        )
+
+    add("fire-home", True)
+    add("fire-home", True)
+    add("chem-smoke", False)
+    add("rad-leak", True)
+    db.rows.append(
+        {
+            "telegram_id": OTHER_ID,
+            "threat_slug": "rad-leak",
+            "question_id": "q-x",
+            "session_seed": SEED,
+            "chosen": 0,
+            "correct": True,
+        }
+    )
+
+    assert await streaks(db.factory(), TG_ID) == (1, 2)
+    assert await streaks(db.factory(), OTHER_ID) == (1, 1)
+    assert await streaks(db.factory(), 404) == (0, 0)
+
+
 def test_quiz_answer_has_one_row_per_session_question() -> None:
     from sqlalchemy import UniqueConstraint
 
@@ -335,6 +382,37 @@ async def test_repeat_click_does_not_write_twice() -> None:
     html = _screen_html(bot.calls[-1])
     assert quiz.prompt in html
     assert "Вопрос 1 из 3" in html
+
+
+@pytest.mark.asyncio
+async def test_second_tap_on_another_option_keeps_the_stored_verdict() -> None:
+    from app.handlers import quiz as quiz_handler
+
+    db = FakeDB()
+    bot = FakeBot()
+    quiz = pick_questions(_quizzes(), SEED)[0]
+    wrong = (quiz.answer + 1) % len(quiz.options)
+
+    await quiz_handler.quiz_callback(
+        callback=_callback(cb_quiz(SLUG, quiz.question_id, quiz.answer, SEED), bot),
+        bot=bot,
+        repo=FakeRepo(_quizzes()),
+        session_factory=db.factory(),
+    )
+    await quiz_handler.quiz_callback(
+        callback=_callback(cb_quiz(SLUG, quiz.question_id, wrong, SEED), bot),
+        bot=bot,
+        repo=FakeRepo(_quizzes()),
+        session_factory=db.factory(),
+    )
+
+    assert len(db.rows) == 1 and db.rows[0]["chosen"] == quiz.answer
+    html = _screen_html(bot.calls[-1])
+    assert 'style="success"' in html and 'style="danger"' not in html
+    assert await answer_of(db.factory(), SLUG, quiz.question_id, SEED) == (
+        TG_ID,
+        quiz.answer,
+    )
 
 
 @pytest.mark.asyncio

@@ -14,8 +14,10 @@ from app.content.repository import ContentRepository
 from app.handlers.nav import (
     OPT_IN_OFF,
     OPT_IN_ON,
+    bot_username,
     broadcast_opted_in,
     card_screen,
+    help_screen,
     is_admin_id,
     menu_screen,
     pin_initial_locale,
@@ -72,7 +74,14 @@ async def start(
     locale = await pin_initial_locale(session_factory, message.from_user)
     slug = _card_from_payload(command.args or "")
     screen = (
-        card_screen(repo, slug, 1, locale, bool(settings and settings.widgets_enabled))
+        card_screen(
+            repo,
+            slug,
+            1,
+            locale,
+            bool(settings and settings.widgets_enabled),
+            await bot_username(bot),
+        )
         if slug
         else None
     )
@@ -85,12 +94,11 @@ async def start(
 @router.message(Command("help"))
 async def help_command(
     message: Message,
+    bot: Bot,
     session_factory: async_sessionmaker[AsyncSession],
 ) -> None:
     locale = await user_locale(session_factory, message.from_user)
-    await message.answer(
-        t(locale, "help.title") + "\n" + t(locale, "help.commands") + "\n" + t(locale, "settings.command")
-    )
+    await show(bot, message.chat.id, help_screen(locale))
 
 
 @router.message(Command("settings"))
@@ -118,9 +126,11 @@ async def toggle_broadcasts(
     message = query.message
     if user is None or message is None or getattr(message.chat, "type", None) != "private":
         return
-    opted_in = query.data == OPT_IN_ON
-    await set_opt_in(session_factory, user.id, opted_in)
+    await set_opt_in(session_factory, user.id, query.data == OPT_IN_ON)
     locale = await user_locale(session_factory, user)
+    # Redraw from the stored row: a lost write must show what is true, not
+    # what the tapped button claimed.
+    opted_in = await broadcast_opted_in(session_factory, user.id)
     await show(bot, message.chat.id, settings_screen(locale, opted_in), message.message_id)
 
 

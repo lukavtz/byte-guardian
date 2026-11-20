@@ -10,7 +10,7 @@ from app.content.repository import ContentRepository
 from app.content.types import QuizView
 from app.services.callbacks import parse_cb
 from app.services.i18n import t
-from app.services.quiz import owner_of, pick_questions, record_answer, score
+from app.services.quiz import answer_of, pick_questions, record_answer, score, streaks
 from app.services.user_locale import get_locale
 from app.ui.delivery import show
 from app.ui.render import render_question, render_result
@@ -87,8 +87,14 @@ async def quiz_callback(
             chosen == quiz.answer,
         )
         if not inserted:
-            owner = await owner_of(session_factory, slug, quiz.question_id, seed)
-            if owner is not None and owner != callback.from_user.id:
+            # Already answered: the stored verdict is the truth, even when the
+            # second tap lands on a different option.
+            stored = await answer_of(session_factory, slug, quiz.question_id, seed)
+            if stored is None:
+                await _alert(callback, locale)
+                return
+            owner, chosen = stored
+            if owner != callback.from_user.id:
                 await _alert(callback, locale)
                 return
         await callback.answer()
@@ -111,7 +117,8 @@ async def quiz_callback(
         correct, total = await score(
             session_factory, callback.from_user.id, slug, seed
         )
-        screen = render_result(correct, total, slug, locale)
+        current, best = await streaks(session_factory, callback.from_user.id)
+        screen = render_result(correct, total, slug, locale, current, best)
 
     await show(bot, message.chat.id, screen, message.message_id)
 

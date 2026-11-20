@@ -100,14 +100,14 @@ class FakeDB:
                 ):
                     return Result([(row["correct"],)])
             return Result([])
-        if sql.startswith("SELECT telegram_id FROM quiz_answer"):
+        if sql.startswith("SELECT telegram_id, chosen FROM quiz_answer"):
             for row in self.rows:
                 if (
                     row["threat_slug"] == params["threat_slug"]
                     and row["question_id"] == params["question_id"]
                     and row["session_seed"] == params["session_seed"]
                 ):
-                    return Result([(row["telegram_id"],)])
+                    return Result([(row["telegram_id"], row["chosen"])])
             return Result([])
         if "AS total" in sql:
             picked = [

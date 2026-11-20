@@ -49,10 +49,13 @@ def _message() -> SimpleNamespace:
 @pytest.mark.asyncio
 async def test_help_lists_commands() -> None:
     message = _message()
-    await commands.help_command(message, FakeSessions())
-    text = message.answer.await_args.args[0]
-    assert "/start" in text
-    assert "/settings" in text
+    bot = FakeBot()
+    await commands.help_command(message, bot, FakeSessions())
+    html = bot.sent[0]["rich_message"].html
+    assert "/start" in html
+    assert "/settings" in html
+    assert "<h2>" in html
+    assert "b1:menu" in html
 
 
 @pytest.mark.asyncio
