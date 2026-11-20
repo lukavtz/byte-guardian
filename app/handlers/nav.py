@@ -421,6 +421,10 @@ async def on_chat_exit(
     if user is None:
         return
     await set_chat_mode(session_factory, user.id, False)
+    from app.handlers.llm import HISTORY  # local: avoids an import cycle at module load
+
+    chat_id = query.message.chat.id if query.message is not None else 0
+    HISTORY.clear(chat_id=chat_id, user_id=user.id)
     locale = await user_locale(session_factory, user)
     await _redraw(
         query, bot, await menu_screen(repo, locale, is_admin_id(settings, user.id))
