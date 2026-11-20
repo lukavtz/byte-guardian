@@ -61,15 +61,17 @@ jobs:
             sleep 3
           done
 
-      - name: Deploy over SSH
+      - name: Deploy over SSH (retry 3)
         if: steps.preflight.outputs.ok == '1'
         run: |
-          ssh -i ~/.ssh/altare \
-              -p "${{ steps.preflight.outputs.port }}" \
-              -o BatchMode=yes -o ConnectTimeout=15 \
-              -o StrictHostKeyChecking=accept-new \
-              "${{ steps.preflight.outputs.user }}@$ALTARE_HOST" \
-              'bash -s' <<'REMOTE'
+          for attempt in 1 2 3; do
+            echo "deploy attempt $attempt/3"
+            if ssh -i ~/.ssh/altare \
+                -p "${{ steps.preflight.outputs.port }}" \
+                -o BatchMode=yes -o ConnectTimeout=15 \
+                -o StrictHostKeyChecking=accept-new \
+                "${{ steps.preflight.outputs.user }}@$ALTARE_HOST" \
+                'bash -s' <<'REMOTE'
           set -eu
           export PATH=/root/.local/bin:/usr/local/bin:/usr/bin:/bin:$PATH
           cd /opt/bytebot
@@ -93,6 +95,16 @@ jobs:
           tail -n 50 /var/log/bytebot-bot.log >&2 || true
           exit 1
           REMOTE
+            then
+              exit 0
+            fi
+            if [ "$attempt" -lt 3 ]; then
+              echo "deploy attempt $attempt failed (transient SSH banner timeout?), retrying in 12s" >&2
+              sleep 12
+            fi
+          done
+          echo "deploy failed after 3 attempts" >&2
+          exit 1
 
       # Workflow environments create the deployment entry; a status is the only
       # place the API accepts a human description and environment URL.
