@@ -6,6 +6,7 @@ Screens are stateless: everything needed to redraw arrives in the callback.
     b1:menu
     b1:cat:<slug>:<page>
     b1:card:<slug>:<page>
+    b1:game:<slug>
     b1:quiz:<slug>:<qid>:<option>:<seed>
     b1:quiz_next:<slug>:<qid>:<seed>
     b1:lang:<code>
@@ -28,6 +29,7 @@ ACTIONS = frozenset(
         "menu",
         "cat",
         "card",
+        "game",
         "quiz",
         "quiz_next",
         "lang",
@@ -107,6 +109,10 @@ def cb_card(slug: str, page: int = 1) -> str:
     return _pack("card", _slug(slug), _page(page))
 
 
+def cb_game(slug: str) -> str:
+    return _pack("game", _slug(slug))
+
+
 def cb_quiz(slug: str, qid: str, option: int, seed: str) -> str:
     return _pack("quiz", _slug(slug), _qid(qid), _option(option), _seed(seed))
 
@@ -170,7 +176,7 @@ def parse_cb(data: str | None) -> Callback | None:
             return None
         return Callback(action, arg=args[0], page=page)
 
-    if action in ("lang", "ask"):
+    if action in ("lang", "ask", "game"):
         return Callback(action, arg=args[0]) if len(args) == 1 and args[0] else None
 
     if action == "bc":

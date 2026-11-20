@@ -81,7 +81,7 @@ curl -fsS "https://api.telegram.org/bot$BOT_TOKEN/deleteWebhook"
 curl -fsS "https://api.telegram.org/bot$BOT_TOKEN/setWebhook" \
   -d "url=$WEBHOOK_URL/webhook" \
   -d "secret_token=$WEBHOOK_SECRET" \
-  -d 'allowed_updates=["message","callback_query","inline_query"]'
+  -d 'allowed_updates=["message","callback_query","inline_query","widget_query","shared_widget_query"]'
 curl -fsS "https://api.telegram.org/bot$BOT_TOKEN/getWebhookInfo"
 ```
 

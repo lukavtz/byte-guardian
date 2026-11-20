@@ -21,6 +21,7 @@ from app.content.types import CardView, CategoryView, QuizView, ThreatView
 from app.services.callbacks import (
     cb_card,
     cb_cat,
+    cb_game,
     cb_lang_menu,
     cb_menu,
     cb_quiz,
@@ -134,7 +135,9 @@ def render_category(
     return RichScreen(html + "\n".join(rows))
 
 
-def render_card(card: CardView, locale: str, page: int, has_quiz: bool) -> RichScreen:
+def render_card(
+    card: CardView, locale: str, page: int, has_quiz: bool, can_game: bool = True
+) -> RichScreen:
     steps = "".join(
         f"<details><summary>{_esc(t(locale, key))}</summary>{_items(items, locale)}</details>"
         for key, items in (
@@ -163,15 +166,21 @@ def render_card(card: CardView, locale: str, page: int, has_quiz: bool) -> RichS
     )
     rows = []
     if has_quiz:
-        rows.append(
-            rich_row(
+        quiz_buttons = [
+            rich_button(
+                f"{emoji('quiz', '📝')} {t(locale, 'button.quiz')}",
+                data=cb_quiz_next(card.slug, "start", secrets.token_hex(2)),
+                style="primary",
+            )
+        ]
+        if can_game:
+            quiz_buttons.append(
                 rich_button(
-                    f"{emoji('quiz', '📝')} {t(locale, 'button.quiz')}",
-                    data=cb_quiz_next(card.slug, "start", secrets.token_hex(2)),
-                    style="primary",
+                    f"{emoji('game', '🎮')} {t(locale, 'button.game')}",
+                    data=cb_game(card.slug),
                 )
             )
-        )
+        rows.append(rich_row(*quiz_buttons))
     rows.append(
         rich_row(
             rich_button(f"← {t(locale, 'button.back')}", data=cb_cat(card.category_slug, page)),

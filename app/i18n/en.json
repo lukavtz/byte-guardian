@@ -62,5 +62,16 @@
   "button.language": "Language",
   "menu.search_hint": "Describe the situation in one message — we will find a card.",
   "language.hint": "Choose the interface language.",
-  "group.private_only": "Menu and settings live in a private chat: {link}"
+  "group.private_only": "Menu and settings live in a private chat: {link}",
+  "button.game": "Mini-game",
+  "game.title": "Mini-game",
+  "game.caption": "Mini-game: {title}",
+  "game.checking": "Checking…",
+  "game.correct": "Correct",
+  "game.wrong": "Wrong",
+  "game.error": "No answer. Try again.",
+  "game.offline": "Open this in the Telegram app.",
+  "game.finish": "Result",
+  "game.fallback": "This client has no widgets — showing the regular quiz.",
+  "game.private": "The mini-game opens in the private chat with the bot."
 }

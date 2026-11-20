@@ -62,5 +62,16 @@
   "button.language": "Тел",
   "menu.search_hint": "Хәлне бер хәбәр белән языгыз — карточка табабыз.",
   "language.hint": "Интерфейс телен сайлагыз.",
-  "group.private_only": "Меню һәм көйләүләр шәхси чатта: {link}"
+  "group.private_only": "Меню һәм көйләүләр шәхси чатта: {link}",
+  "button.game": "Мини-уен",
+  "game.title": "Мини-уен",
+  "game.caption": "Мини-уен: {title}",
+  "game.checking": "Тикшерелә…",
+  "game.correct": "Дөрес",
+  "game.wrong": "Дөрес түгел",
+  "game.error": "Җавап килмәде. Кабатлап карагыз.",
+  "game.offline": "Мини-уен Telegram кушымтасында эшли.",
+  "game.finish": "Нәтиҗә",
+  "game.fallback": "Бу клиентта мини-уен юк — гади тест ачылды.",
+  "game.private": "Мини-уен бот белән шәхси сөйләшүдә ачыла."
 }

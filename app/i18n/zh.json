@@ -62,5 +62,16 @@
   "button.language": "语言",
   "menu.search_hint": "用一句话描述情况，我们会找到卡片。",
   "language.hint": "请选择界面语言。",
-  "group.private_only": "菜单和设置请在私聊中打开：{link}"
+  "group.private_only": "菜单和设置请在私聊中打开：{link}",
+  "button.game": "小游戏",
+  "game.title": "小游戏",
+  "game.caption": "小游戏：{title}",
+  "game.checking": "检查中…",
+  "game.correct": "正确",
+  "game.wrong": "错误",
+  "game.error": "未收到答复，请重试。",
+  "game.offline": "请在 Telegram 应用内打开。",
+  "game.finish": "结果",
+  "game.fallback": "此客户端不支持小游戏，已打开普通测验。",
+  "game.private": "小游戏在机器人的私聊中打开。"
 }

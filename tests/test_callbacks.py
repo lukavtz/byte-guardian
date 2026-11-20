@@ -10,6 +10,7 @@ from app.services.callbacks import (
     cb_broadcast,
     cb_card,
     cb_cat,
+    cb_game,
     cb_lang,
     cb_menu,
     cb_quiz,
@@ -34,6 +35,7 @@ def test_round_trip_every_builder() -> None:
         (cb_cat(SLUG, 3), Callback("cat", arg=SLUG, page=3)),
         (cb_card(SLUG), Callback("card", arg=SLUG, page=1)),
         (cb_card(SLUG, 2), Callback("card", arg=SLUG, page=2)),
+        (cb_game(SLUG), Callback("game", arg=SLUG)),
         (cb_quiz(SLUG, "q1", 2, SEED), Callback("quiz", arg=SLUG, extra=("q1", "2", SEED))),
         (cb_quiz_next(SLUG, "q1", SEED), Callback("quiz_next", arg=SLUG, extra=("q1", SEED))),
         (cb_lang("tt"), Callback("lang", arg="tt")),
@@ -65,6 +67,7 @@ def test_worst_case_slug_fits_64_bytes() -> None:
         cb_admin(),
         cb_cat(LONG_SLUG, 999),
         cb_card(LONG_SLUG, 999),
+        cb_game(LONG_SLUG),
         cb_quiz(LONG_SLUG, "q1", 3, SEED),
         cb_quiz_next(LONG_SLUG, "q1", SEED),
         cb_lang("tt"),
@@ -98,6 +101,9 @@ def test_worst_case_slug_fits_64_bytes() -> None:
         "b1:lang",
         "b1:lang:",
         "b1:ask",
+        "b2:game:fire-home",
+        "b1:game",
+        "b1:game:fire-home:1",
         "b1:bc:maybe",
         "b1:bc",
         "b1:bc:yes:no",
@@ -112,6 +118,13 @@ def test_worst_case_slug_fits_64_bytes() -> None:
 )
 def test_malformed_returns_none(data: str | None) -> None:
     assert parse_cb(data) is None
+
+
+def test_game_parse() -> None:
+    parsed = parse_cb("b1:game:fire-home")
+    assert parsed == Callback("game", arg="fire-home")
+    assert cb_game(SLUG) == "b1:game:fire-home"
+    assert len(cb_game(LONG_SLUG).encode("utf-8")) <= 64
 
 
 def test_page_defaults() -> None:
