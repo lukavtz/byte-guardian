@@ -42,5 +42,8 @@
   "search.title": "Search",
   "search.found": "Found: {n}",
   "search.empty": "Nothing found.",
-  "search.hint": "Try other words or pick a section in the menu."
+  "search.hint": "Try other words or pick a section in the menu.",
+  "inline.menu.title": "Open categories",
+  "inline.menu.description": "Pick a section in the bot menu.",
+  "inline.open": "Open card",
 }
