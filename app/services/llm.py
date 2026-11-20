@@ -71,12 +71,15 @@ def _clip(value: object, limit: int = FIELD_LIMIT) -> str:
 def _card_block(number: int, card: CardView) -> str:
     during = _clip("; ".join(card.during))
     forbidden = _clip("; ".join(card.forbidden))
-    return (
-        f"{number}. {_clip(card.title)}\n"
-        f"Кратко: {_clip(card.summary)}\n"
-        f"Во время: {during}\n"
-        f"Нельзя: {forbidden}"
-    )
+    lines = [
+        f"{number}. {_clip(card.title)}",
+        f"Кратко: {_clip(card.summary)}",
+        f"Во время: {during}",
+        f"Нельзя: {forbidden}",
+    ]
+    if card.contacts:
+        lines.append(f"Телефоны: {_clip('; '.join(card.contacts))}")
+    return "\n".join(lines)
 
 
 def build_messages(question: str, locale: str, cards: list[CardView]) -> list[dict[str, Any]]:
@@ -216,7 +219,9 @@ class _Cleaner(HTMLParser):
         if self.done:
             return
         if tag in VOID_TAGS:
-            self.parts.append(f"<{tag}/>")
+            if self.visible < TEXT_LIMIT:
+                self.parts.append("\n")
+                self.visible += 1
         elif tag in ALLOWED_TAGS:
             self.parts.append(f"<{tag}>")
             self.open.append(tag)
@@ -253,7 +258,7 @@ class _Cleaner(HTMLParser):
 
 
 def strip_html(text: str) -> str:
-    """Keep b/i/u/s/code/br with no attributes; escape the rest; cap 700 chars."""
+    """Keep b/i/u/s/code, turn br into a newline, escape the rest, cap 700 chars."""
     cleaner = _Cleaner()
     cleaner.feed(text or "")
     cleaner.close()

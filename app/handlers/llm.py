@@ -31,10 +31,10 @@ BOT_USERNAME: str | None = None
 LIMITER = RateLimiter()
 
 USAGE = {
-    "ru": "Напишите вопрос: /ask <вопрос>.",
-    "en": "Ask a question: /ask <question>.",
-    "zh": "请提问：/ask <问题>。",
-    "tt": "Сорау языгыз: /ask <сорау>.",
+    "ru": "Напишите вопрос: /ask &lt;вопрос&gt;.",
+    "en": "Ask a question: /ask &lt;question&gt;.",
+    "zh": "请提问：/ask &lt;问题&gt;。",
+    "tt": "Сорау языгыз: /ask &lt;сорау&gt;.",
 }
 RATE = {
     "ru": "Слишком часто. Подождите минуту и спросите снова.",

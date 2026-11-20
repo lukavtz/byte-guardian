@@ -112,6 +112,7 @@ def test_build_messages_carries_persona_locale_and_three_cards() -> None:
     assert "Пожар 3" not in user
     assert "Звоните 101" in user
     assert "Не открывайте окна" in user
+    assert "Телефоны: 101; 112" in user
 
 
 def test_build_messages_clips_each_field() -> None:
@@ -133,7 +134,12 @@ def test_build_messages_without_cards() -> None:
 
 def test_strip_html_keeps_allowed_tags_and_drops_attributes() -> None:
     raw = '<b onclick="bad()">ok</b> <i>i</i> <a href="http://e">link</a><br/>'
-    assert service.strip_html(raw) == "<b>ok</b> <i>i</i> link<br/>"
+    assert service.strip_html(raw) == "<b>ok</b> <i>i</i> link"
+
+
+def test_strip_html_turns_br_into_newline() -> None:
+    assert service.strip_html("a<br>b<br/>c") == "a\nb\nc"
+    assert "<br" not in service.strip_html("a<br/>b")
 
 
 def test_strip_html_escapes_plain_text_and_removes_script() -> None:
@@ -430,6 +436,39 @@ async def test_respond_falls_back_on_empty_answer(monkeypatch: pytest.MonkeyPatc
     )
 
     handlers.show.assert_awaited_once()
+
+
+async def test_respond_empty_question_sends_html_safe_usage(monkeypatch: pytest.MonkeyPatch) -> None:
+    def boom(settings):
+        raise AssertionError("LLM must not be called for an empty question")
+
+    monkeypatch.setattr(service, "client_for", boom)
+    message = _message("")
+    await handlers.respond(
+        message,
+        "",
+        bot=SimpleNamespace(id=999),
+        settings=_settings(),
+        repository=None,
+    )
+    text = message.answer.await_args.args[0]
+    assert "&lt;вопрос&gt;" in text
+    assert "<вопрос>" not in text
+
+
+async def test_group_bare_mention_replies_html_safe_usage(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(handlers, "BOT_USERNAME", "bytebot")
+    message = _message("@bytebot", chat_type="group")
+    await handlers.group_question(
+        message,
+        bot=SimpleNamespace(id=999),
+        settings=_settings(),
+        repo=None,
+    )
+    message.reply.assert_awaited_once()
+    text = message.reply.await_args.args[0]
+    assert "&lt;вопрос&gt;" in text
+    assert "<вопрос>" not in text
 
 
 async def test_respond_refuses_politely_over_rate_limit() -> None:
