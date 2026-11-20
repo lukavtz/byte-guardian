@@ -46,9 +46,13 @@ async def metrics(_request: web.Request) -> web.Response:
 
 
 def register_health_routes(
-    app: web.Application, probes: dict[str, Probe | None] | None = None
+    app: web.Application,
+    probes: dict[str, Probe | None] | None = None,
+    *,
+    include_metrics: bool = True,
 ) -> None:
     app["readiness_probes"] = probes or {}
     app.router.add_get(HEALTH_PATH, healthz)
     app.router.add_get(READY_PATH, readyz)
-    app.router.add_get(METRICS_PATH, metrics)
+    if include_metrics:
+        app.router.add_get(METRICS_PATH, metrics)

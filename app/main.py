@@ -8,8 +8,9 @@ from aiohttp import web
 from app.bot import create_bot, create_dispatcher, create_redis
 from app.config import Settings, get_settings
 from app.logger import configure_logging
+from app.runtime.health import register_health_routes
 from app.runtime.telemetry import init_telemetry, shutdown_telemetry
-from app.webhook import create_webhook_app
+from app.webhook import create_webhook_app, readiness_probes
 
 SERVICE_NAME = "Байт — БЖД ТИСБИ"
 
@@ -32,13 +33,24 @@ async def run_polling(settings: Settings) -> None:
     bot = create_bot(settings)
     redis = create_redis(settings)
     dispatcher = create_dispatcher(settings, bot, redis)
+    health_app = web.Application()
+    health_app["settings"] = settings
+    register_health_routes(
+        health_app,
+        readiness_probes(dispatcher, redis),
+        include_metrics=settings.metrics_enabled,
+    )
+    runner = web.AppRunner(health_app)
+    await runner.setup()
     try:
+        await web.TCPSite(runner, "0.0.0.0", settings.port).start()
         await dispatcher.start_polling(
             bot,
             allowed_updates=allowed_updates(dispatcher),
             drop_pending_updates=False,
         )
     finally:
+        await runner.cleanup()
         shutdown_telemetry()
         await bot.session.close()
         if redis is not None:

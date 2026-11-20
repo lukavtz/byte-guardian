@@ -10,7 +10,7 @@ from redis.asyncio import Redis
 from sqlalchemy import text
 
 from app.config import Settings
-from app.runtime.health import healthz, metrics, readyz
+from app.runtime.health import register_health_routes
 
 try:
     from app.runtime.miniapp_session import SECURITY_HEADERS
@@ -86,10 +86,11 @@ def create_webhook_app(
         bot=bot,
         secret_token=settings.webhook_secret,
     ).register(app, path=WEBHOOK_PATH)
-    app.router.add_get("/healthz", healthz)
-    app.router.add_get("/readyz", readyz)
-    if settings.metrics_enabled:
-        app.router.add_get("/metrics", metrics)
+    register_health_routes(
+        app,
+        app["readiness_probes"],
+        include_metrics=settings.metrics_enabled,
+    )
     register_miniapp_routes(app, settings)
     setup_application(app, dispatcher, bot=bot)
     return app

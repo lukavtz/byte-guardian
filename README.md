@@ -39,7 +39,7 @@ cp .env.example .env
 # BOT_TOKEN, WEBHOOK_SECRET, POSTGRES_PASSWORD, REDIS_PASSWORD, LLM_API_KEY
 podman compose up -d --build
 podman compose ps
-curl -fsS localhost:8080/healthz   # {"ok": true}
+curl -fsS localhost:8080/healthz   # {"ok": true} — работает в обоих режимах
 ```
 
 Секреты живут только в `.env` (файл в `.gitignore`). Для оркестраторов можно
@@ -47,12 +47,16 @@ curl -fsS localhost:8080/healthz   # {"ok": true}
 `DATABASE_URL_FILE`, `REDIS_URL_FILE`, `LLM_API_KEY_FILE`) — они имеют приоритет над
 переменными.
 
-`compose.yaml` поднимает: `bot` (webhook/polling), `worker` (очередь), `postgres`,
-`redis`, `migrate` (Alembic, разово), `caddy` (TLS и прокси на `bot:8080`).
+`compose.yaml` поднимает: `bot` (webhook/polling, порт 8080), `worker` (очередь),
+`postgres`, `redis`, `migrate` (Alembic, разово) и `caddy` (TLS и прокси на
+`bot:8080`, только профиль `webhook`).
 
 ## Режимы
 
 - `BOT_MODE=polling` (по умолчанию) — локальная разработка, TLS не нужен.
+  `/healthz`, `/readyz`, `/metrics` отдаёт отдельный aiohttp-сервер на
+  `PORT` (8080), поэтому `HEALTHCHECK` образа и `curl localhost:8080/healthz`
+  работают и здесь.
 - `BOT_MODE=webhook` — прод. Нужен `WEBHOOK_URL=https://<домен>`; сервер слушает
   `:8080`, маршрут `/webhook`, секрет проверяется по заголовку
   `X-Telegram-Bot-Api-Secret-Token`.

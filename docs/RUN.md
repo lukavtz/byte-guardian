@@ -39,6 +39,8 @@ podman machine inspect --format '{{.ConnectionInfo.PodmanSocket.Path}}'
 podman compose up -d --build
 podman compose ps
 podman compose logs -f bot
+curl -fsS localhost:8080/healthz
+curl -fsS localhost:8080/readyz
 ```
 
 Порядок: `postgres`/`redis` (healthcheck) → `migrate` (`alembic upgrade head`) →
@@ -55,10 +57,10 @@ podman compose --profile webhook up -d --build   # прод, TLS через Cadd
 podman compose config
 ```
 
-`/healthz`, `/readyz`, `/metrics` поднимает только webhook-режим (aiohttp-сервер
-на `PORT`). В polling HTTP-сервера нет, поэтому `HEALTHCHECK` в образе и
-`curl localhost:8080/healthz` локально падают — это ожидаемо, живость
-проверяется по логу `Run polling for bot @...`.
+`/healthz`, `/readyz`, `/metrics` отдаёт aiohttp-сервер на `PORT` в обоих
+режимах: в webhook это основное приложение, в polling — отдельный сервер рядом
+с long polling. Порт публикуется как `${HEALTH_HOST_PORT:-8080}:${PORT:-8080}`;
+если 8080 занят на хосте, задайте `HEALTH_HOST_PORT=18080`.
 
 ## 4. Режимы
 
@@ -182,3 +184,11 @@ root с `--no-dev`. Образ выставляет `UV_NO_DEV=1`; при пра
 **`rootlessport cannot expose privileged port 80`**
 `caddy` включён профилем `webhook`. Локально:
 `podman compose up -d` (без caddy) — либо `--profile webhook` с портами ≥1024.
+**Порт 8080 на хосте занят**
+Публикация бота — `${HEALTH_HOST_PORT:-8080}:${PORT:-8080}`. Задайте
+`HEALTH_HOST_PORT=18080`, иначе `up` упадёт на конфликте порта.
+
+**pytest падает на `test_webhook_requires_secret` после ручных curl-проверок**
+`set -a; . ./.env` экспортирует `WEBHOOK_SECRET` в шелл, `pydantic-settings`
+читает его раньше `_env_file=None`. Запускайте тесты в чистом окружении
+(`unset WEBHOOK_SECRET` или новый терминал).
