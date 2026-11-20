@@ -14,6 +14,7 @@ from app.ui.emoji import DEFAULT_IDS, plain_emoji, premium, strip_premium
 from app.ui.keyboards import PAGE_SIZE, keyboard_from_rich, strip_rich_buttons
 from app.ui.render import (
     ART,
+    CARD_CAP,
     RichScreen,
     render_card,
     render_category,
@@ -207,28 +208,67 @@ def test_screens_fit_the_rich_message_limit() -> None:
         assert _utf16_len(screen.html) <= 32000
 
 
-def _visible_text(html: str) -> str:
-    return unescape(re.sub(r"<[^>]+>", " ", html))
-
-
 def test_every_screen_has_one_h1() -> None:
     for screen in _screens():
         assert len(re.findall(r"<h1>", screen.html)) == 1
 
 
-def test_card_fits_the_word_budget() -> None:
-    for locale in ("ru", "en", "zh", "tt"):
-        text = _visible_text(render_card(_card(), locale, 1, True).html)
-        assert len(re.findall(r"\w+", text)) <= 120
+def test_card_shows_every_field_without_ellipsis() -> None:
+    card = dataclasses.replace(
+        _card(),
+        summary="Короткое описание. " * 12,
+        signs=tuple(f"Признак {i}" for i in range(6)),
+        before=tuple(f"До {i}" for i in range(6)),
+        during=tuple(f"Во время {i}" for i in range(6)),
+        after=tuple(f"После {i}" for i in range(6)),
+        forbidden=tuple(f"Нельзя {i}" for i in range(6)),
+        contacts=("101", "112", "8 800 000 00 00"),
+    )
+    html = render_card(card, LOCALE, 1, True).html
+    assert "…" not in html
+    for item in (
+        card.summary,
+        *card.signs,
+        *card.before,
+        *card.during,
+        *card.after,
+        *card.forbidden,
+        *card.contacts,
+        card.source,
+    ):
+        assert item in html
 
 
-def test_fat_card_is_trimmed_not_dumped() -> None:
+def test_card_layout_separates_the_summary_signs_and_footer() -> None:
+    html = render_card(_card(), LOCALE, 1, True).html
+    assert html.count("<h1>") == 1
+    assert "<p>●●● Высокая · Пожар</p>" in html
+    assert html.count("<br/>") >= 1
+    assert "</p><br/>" in html
+    assert "Признаки<br/>• Дым из-под двери" in html
+    assert len(re.findall(r"<summary><h2>.*?</h2></summary>", html)) == 4
+    footer = re.search(r"<footer>(.*?)</footer>", html)
+    assert footer is not None
+    assert strip_premium(footer.group(1)).split(" · ")[1:] == ["ТИСБИ", "101", "112", "МЧС России"]
+
+
+def test_oversized_card_drops_whole_items_only() -> None:
+    long = "я" * 160
     fat = dataclasses.replace(
-        _card(), summary="слово " * 400, signs=tuple("слово " * 100 for _ in range(20))
+        _card(),
+        summary="я" * 300,
+        signs=tuple(long for _ in range(60)),
+        before=tuple(long for _ in range(60)),
+        during=tuple(long for _ in range(60)),
+        after=tuple(long for _ in range(60)),
+        forbidden=tuple(long for _ in range(60)),
     )
     html = render_card(fat, LOCALE, 1, True).html
+    assert _utf16_len(html) <= CARD_CAP
     assert "…" in html
-    assert len(re.findall(r"\w+", _visible_text(html))) <= 120
+    bullets = re.findall(r"• ([^<]*)", html)
+    assert bullets and len(bullets) < 300
+    assert all(item.removesuffix(" …") == long for item in bullets)
 
 
 def test_card_footer_carries_the_brand_line() -> None:
@@ -609,6 +649,24 @@ def test_search_empty_state_explains_itself() -> None:
 def test_search_truncates_to_seven_results() -> None:
     screen = search_screen("x", [_threat(slug=f"t{i}") for i in range(50)], LOCALE)
     assert len(_buttons(screen.html)) == 8
+
+
+def test_search_and_quiz_never_clip_normal_text() -> None:
+    title = "Длинное, но настоящее название угрозы с пояснением"
+    threat = dataclasses.replace(_threat(), title=title)
+    assert "…" not in search_screen("пожар", [threat], LOCALE).html
+    assert title in search_screen("пожар", [threat], LOCALE).html
+
+    quiz = dataclasses.replace(
+        _quiz(),
+        prompt="Что делать первым делом при пожаре в квартире?",
+        options=tuple(f"Вариант ответа номер {i}" for i in range(4)),
+        explanation="Сначала вызовите пожарную охрану по номеру 101.",
+    )
+    html = render_question(quiz, "fire-home", 1, 3, "a3f1", LOCALE).html
+    assert "…" not in html
+    for text in (quiz.prompt, *quiz.options):
+        assert text in html
 
 
 # --- degradation helpers -------------------------------------------------

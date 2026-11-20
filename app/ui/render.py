@@ -4,14 +4,14 @@ Every screen is a `RichScreen` whose buttons live inside the rich message
 (`<tg-button-row>`), so the controls scroll with the text and no keyboard is
 attached underneath. `app.ui.delivery.show` puts the screen into a chat.
 
-Content is user-editable JSON, so every field is escaped and clipped here: the
-markup never carries a tag the author did not intend, and no card can push the
-message past Telegram's 32 000 UTF-16 ceiling.
+Content is user-editable JSON, so every field is escaped here: the markup never
+carries a tag the author did not intend. Text is never trimmed for looks; the
+only cap drops whole card list items when a message would pass Telegram's
+32 000 UTF-16 ceiling.
 """
 
 from __future__ import annotations
 
-import re
 import secrets
 from dataclasses import dataclass
 from html import escape
@@ -36,19 +36,8 @@ from app.services.i18n import t
 from app.ui.emoji import premium
 from app.ui.keyboards import PAGE_SIZE, Style, rich_button, rich_row
 
-TITLE = 120
-SUMMARY = 900
-ITEM = 240
-ITEMS = 6
 RESULTS = 7
-CARD_WORDS = 120
-TITLE_WORDS = 8
-SUMMARY_WORDS = 24
-ITEM_WORDS = 6
-CONTACTS = 3
-SOURCE_WORDS = 4
-BUTTON_WORDS = 8
-WORD = re.compile(r"\w+")
+CARD_CAP = 30000
 SEVERITIES = {1: "low", 2: "medium", 3: "high"}
 ART = "https://raw.githubusercontent.com/lukavtz/byte-guardian/main/assets/art"
 ARTS = frozenset({"fire", "terror", "tech", "nature", "medical", "chem", "rad", "cyber", "chat"})
@@ -66,52 +55,16 @@ def _esc(text: object) -> str:
     return escape(str(text), quote=False)
 
 
-def _clip(text: object, limit: int) -> str:
-    value = " ".join(str(text).split())
-    return value if len(value) <= limit else value[: limit - 1].rstrip() + "…"
+def _utf16(text: str) -> int:
+    return len(text.encode("utf-16-le")) // 2
 
 
-def _words(text: object) -> int:
-    return len(WORD.findall(str(text)))
-
-
-def _clip_words(text: object, limit: int) -> str:
-    """`text` on one line, cut on a word boundary with «…»."""
-    value = " ".join(str(text).split())
-    words = value.split(" ")
-    return value if len(words) <= limit else " ".join(words[: max(limit, 1)]).rstrip(".,;:—-") + "…"
-
-
-def _clip_sentences(text: object, limit: int) -> str:
-    value = " ".join(str(text).split())
-    parts = re.split(r"(?<=[.!?…])\s+", value)
-    return value if len(parts) <= limit else " ".join(parts[:limit]).rstrip(".") + "…"
-
-
-def _bullets(items: tuple[str, ...], allowance: int) -> tuple[str, int]:
-    """Bulleted items within `allowance` words; a dropped tail ends with «…»."""
-    lines: list[str] = []
-    left = allowance
-    for item in items[:ITEMS]:
-        if left <= 1:
-            break
-        text = _clip_words(_clip(item, ITEM), min(ITEM_WORDS, left - 1))
-        cost = _words(text) + 1
-        if cost > left:
-            break
-        lines.append(f"• {_esc(text)}")
-        left -= cost
-    if lines and len(lines) < len(items):
+def _items(items: tuple[str, ...], shown: int) -> str:
+    """One item per line; a dropped tail leaves a single «…» marker."""
+    lines = [f"• {_esc(item)}" for item in items[:shown]]
+    if lines and shown < len(items):
         lines[-1] += " …"
-        left -= 1
-    return "<br/>".join(lines), max(left, 0)
-
-
-def _share(budget: int, blocks: int) -> int:
-    """A fair share of the words left, never starving a later block."""
-    if budget <= 0:
-        return 0
-    return min(budget, max(2, budget // blocks))
+    return "<br/>".join(lines)
 
 
 def _details(key: str, body: str, locale: str, opened: bool = False, icon: tuple[str, str] | None = None) -> str:
@@ -137,7 +90,7 @@ def _dots(severity: int) -> str:
 
 
 def _badge(card: CardView, locale: str) -> str:
-    return f" · <b>{_esc(t(locale, 'badge.fallback'))}</b>" if card.fallback else ""
+    return f" · {_esc(t(locale, 'badge.fallback'))}" if card.fallback else ""
 
 
 def _art(slug: str) -> str:
@@ -160,7 +113,7 @@ def render_menu(categories: list[CategoryView], locale: str, is_admin: bool = Fa
     rows = [
         rich_row(
             rich_button(
-                _clip(item.title, TITLE),
+                item.title,
                 data=cb_cat(item.slug),
                 icon=(item.slug, _esc(item.emoji)),
             )
@@ -233,7 +186,7 @@ def render_category(
     category: CategoryView, threats: list[ThreatView], locale: str, page: int, pages: int
 ) -> RichScreen:
     rows = [
-        rich_row(rich_button(f"{_dots(item.severity)} {_clip(item.title, TITLE)}", data=cb_card(item.slug, page)))
+        rich_row(rich_button(f"{_dots(item.severity)} {item.title}", data=cb_card(item.slug, page)))
         for item in threats[:PAGE_SIZE]
     ]
     nav = []
@@ -257,61 +210,35 @@ def render_category(
         f"{premium('stats', '🔢')} {_esc(t(locale, 'category.count', n=category.threat_count))}"
         f" · {premium('catalog', '📂')} {_esc(t(locale, 'category.page', page=page, pages=pages))}"
     )
-    heading = f"{premium(category.slug, _esc(category.emoji))} {_esc(_clip(category.title, TITLE))}"
+    heading = f"{premium(category.slug, _esc(category.emoji))} {_esc(category.title)}"
     html = _header(category.slug, heading, f"<p>{_esc(lead)}</p>") + f"<footer>{meta}</footer>"
     return RichScreen(html + "\n".join(rows))
 
 
-def render_card(
-    card: CardView, locale: str, page: int, has_quiz: bool, can_game: bool = False
-) -> RichScreen:
-    """Art, heading, severity, signs, three steps, bans, brand footer.
-
-    ``can_game`` is off by default: Telegram closed HTML widgets for general
-    bots, so the card carries one primary «Тест» unless WIDGETS_ENABLED is set.
-    """
-    budget = CARD_WORDS - BUTTON_WORDS
-
-    title = _clip_words(_clip(card.title, TITLE), TITLE_WORDS)
-    budget -= _words(title)
-
-    category = _clip_words(_clip(card.category_title, TITLE), TITLE_WORDS)
-    severity = _severity(card.severity, locale)
-    badge = 1 if card.fallback else 0
-    budget -= _words(severity) + _words(category) + badge
-
-    summary = _clip_words(
-        _clip_sentences(_clip(card.summary, SUMMARY), 2), min(SUMMARY_WORDS, budget)
+def _card_html(card: CardView, locale: str, shown: list[int], summary: str | None = None) -> str:
+    """The card markup, with the first `shown[n]` items of each list."""
+    signs, before, during, after, forbidden = (
+        _items(group, count)
+        for group, count in zip(
+            (card.signs, card.before, card.during, card.after, card.forbidden),
+            shown[:5],
+            strict=True,
+        )
     )
-    budget -= _words(summary)
-
+    contacts = [_esc(item) for item in card.contacts[: shown[5]]]
+    if len(card.contacts) > shown[5]:
+        contacts.append("…")
+    text = card.summary if summary is None else summary
     brand = t(locale, "brand.footer")
-    contacts = [_clip_words(_clip(item, ITEM), 2) for item in card.contacts[:CONTACTS]]
-    source = _clip_words(_clip(card.source, ITEM), SOURCE_WORDS)
-    budget -= _words(brand) + sum(map(_words, contacts)) + _words(source)
-
-    labels = ("card.signs", "card.before", "card.during", "card.after", "card.forbidden")
-    budget -= sum(_words(t(locale, key)) for key in labels)
-
-    groups = (card.signs, card.before, card.during, card.after, card.forbidden)
-    bodies: list[str] = []
-    for index, group in enumerate(groups):
-        allowance = _share(budget, len(groups) - index)
-        body, left = _bullets(group, allowance)
-        budget -= allowance - left
-        bodies.append(body)
-    signs, before, during, after, forbidden = bodies
-
-    html = (
+    return (
         _header(
             card.category_slug,
-            f"{premium(card.category_slug, _esc(card.icon))} {_esc(title)}",
-            f"<p>{severity} · {_esc(category)}{_badge(card, locale)}</p>",
+            f"{premium(card.category_slug, _esc(card.icon))} {_esc(card.title)}",
+            f"<p>{_severity(card.severity, locale)} · {_esc(card.category_title)}{_badge(card, locale)}</p>",
         )
-        + (f"<p>{_esc(summary)}</p>" if summary else "")
+        + (f"<p>{_esc(text)}</p><br/>" if text else "")
         + (
-            f"<blockquote><b>{premium('eyes', '👀')} {_esc(t(locale, 'card.signs'))}</b>"
-            f"<br/>{signs}</blockquote>"
+            f"<blockquote>{premium('eyes', '👀')} {_esc(t(locale, 'card.signs'))}<br/>{signs}</blockquote>"
             if signs
             else ""
         )
@@ -321,10 +248,27 @@ def render_card(
         + _details("card.forbidden", forbidden, locale, icon=("cancel", "❌"))
         + "<footer>"
         + " · ".join(
-            [f"{premium('duck', '🦆')} {_esc(brand)}", *(_esc(part) for part in (*contacts, source) if part)]
+            [
+                f"{premium('duck', '🦆')} {_esc(brand)}",
+                *contacts,
+                *([_esc(card.source)] if card.source else []),
+            ]
         )
         + "</footer>"
     )
+
+
+def render_card(
+    card: CardView, locale: str, page: int, has_quiz: bool, can_game: bool = False
+) -> RichScreen:
+    """Art, heading, severity, signs, three steps, bans, brand footer.
+
+    Every field is shown whole. The only trim is the ceiling guard: whole list
+    items fall off the tail until the markup fits, and then «…» marks the cut.
+
+    ``can_game`` is off by default: Telegram closed HTML widgets for general
+    bots, so the card carries one primary «Тест» unless WIDGETS_ENABLED is set.
+    """
     rows = []
     if has_quiz:
         quiz_buttons = [
@@ -354,12 +298,34 @@ def render_card(
             ),
             rich_button(
                 t(locale, "button.share"),
-                query=_clip(card.title, TITLE),
+                query=card.title,
                 icon=("send", "📤"),
             ),
         )
     )
-    return RichScreen(html + "\n".join(rows))
+
+    groups = (card.signs, card.before, card.during, card.after, card.forbidden, card.contacts)
+    shown = [len(group) for group in groups]
+    # Least critical first: bans and later steps go before signs, the open
+    # step, and the phones.
+    drop_order = (4, 3, 1, 0, 2, 5)
+
+    def screen(summary: str | None = None) -> str:
+        return _card_html(card, locale, shown, summary) + "\n" + "\n".join(rows)
+
+    html = screen()
+    while _utf16(html) > CARD_CAP:
+        for index in drop_order:
+            if shown[index]:
+                shown[index] -= 1
+                break
+        else:
+            # Unreachable for seeded content (a summary is bounded far below
+            # the cap); the footer and every heading still reach the reader.
+            html = screen("")
+            break
+        html = screen()
+    return RichScreen(html)
 
 
 def render_question(
@@ -383,7 +349,7 @@ def render_question(
         rows.append(
             rich_row(
                 rich_button(
-                    f"{number + 1}. {_clip(option, ITEM)}",
+                    f"{number + 1}. {option}",
                     data=cb_quiz(slug, quiz.question_id, number, seed),
                     style=style,
                 )
@@ -391,8 +357,8 @@ def render_question(
         )
     if chosen is not None:
         tail = (
-            f"<blockquote><b>{premium('description', '📖')} {_esc(t(locale, 'quiz.explanation'))}</b><br/>"
-            f"{_esc(_clip(quiz.explanation, SUMMARY))}</blockquote>"
+            f"<blockquote>{premium('description', '📖')} {_esc(t(locale, 'quiz.explanation'))}<br/>"
+            f"{_esc(quiz.explanation)}</blockquote>"
         )
         rows.append(
             rich_row(
@@ -409,7 +375,7 @@ def render_question(
     html = (
         _header(_art_of_threat(slug), f"{premium('test', '📝')} {_esc(t(locale, 'quiz.heading'))}")
         + f"<h2>{premium('hourglass', '⏳')} {_esc(t(locale, 'quiz.title', index=index, total=total))}</h2>"
-        + f"<p>{_esc(_clip_sentences(_clip(quiz.prompt, SUMMARY), 2))}</p>"
+        + f"<p>{_esc(quiz.prompt)}</p>"
         + tail
     )
     return RichScreen(html + "\n".join(rows))
@@ -456,7 +422,7 @@ def search_screen(
     if results:
         rows = [
             rich_row(
-                rich_button(f"{_dots(item.severity)} {_clip(item.title, TITLE)}", data=cb_card(item.slug))
+                rich_button(f"{_dots(item.severity)} {item.title}", data=cb_card(item.slug))
             )
             for item in results[:RESULTS]
         ]
@@ -465,7 +431,7 @@ def search_screen(
         rows = [
             rich_row(
                 rich_button(
-                    _clip(item.title, TITLE),
+                    item.title,
                     data=cb_cat(item.slug),
                     icon=(item.slug, _esc(item.emoji)),
                 )
@@ -481,7 +447,7 @@ def search_screen(
             )
         )
     )
-    clean = _clip(query, TITLE)
+    clean = " ".join(query.split())
     if results:
         body = f"<p>{_esc(t(locale, 'search.found', n=len(results)))}</p>"
     else:
