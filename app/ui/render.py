@@ -11,6 +11,7 @@ message past Telegram's 32 000 UTF-16 ceiling.
 
 from __future__ import annotations
 
+import re
 import secrets
 from dataclasses import dataclass
 from html import escape
@@ -37,6 +38,14 @@ SUMMARY = 900
 ITEM = 240
 ITEMS = 6
 RESULTS = 7
+CARD_WORDS = 120
+TITLE_WORDS = 8
+SUMMARY_WORDS = 24
+ITEM_WORDS = 6
+CONTACTS = 3
+SOURCE_WORDS = 4
+BUTTON_WORDS = 8
+WORD = re.compile(r"\w+")
 SEVERITIES = {1: "low", 2: "medium", 3: "high"}
 ART = "https://raw.githubusercontent.com/lukavtz/byte-guardian/main/assets/art"
 ARTS = frozenset({"fire", "terror", "tech", "nature", "medical", "chem", "rad", "cyber"})
@@ -59,6 +68,60 @@ def _clip(text: object, limit: int) -> str:
     return value if len(value) <= limit else value[: limit - 1].rstrip() + "…"
 
 
+def _words(text: object) -> int:
+    return len(WORD.findall(str(text)))
+
+
+def _clip_words(text: object, limit: int) -> str:
+    """`text` on one line, cut on a word boundary with «…»."""
+    value = " ".join(str(text).split())
+    words = value.split(" ")
+    return value if len(words) <= limit else " ".join(words[: max(limit, 1)]).rstrip(".,;:—-") + "…"
+
+
+def _clip_sentences(text: object, limit: int) -> str:
+    value = " ".join(str(text).split())
+    parts = re.split(r"(?<=[.!?…])\s+", value)
+    return value if len(parts) <= limit else " ".join(parts[:limit]).rstrip(".") + "…"
+
+
+def _bullets(items: tuple[str, ...], allowance: int) -> tuple[str, int]:
+    """Bulleted items within `allowance` words; a dropped tail ends with «…»."""
+    lines: list[str] = []
+    left = allowance
+    for item in items[:ITEMS]:
+        if left <= 1:
+            break
+        text = _clip_words(_clip(item, ITEM), min(ITEM_WORDS, left - 1))
+        cost = _words(text) + 1
+        if cost > left:
+            break
+        lines.append(f"• {_esc(text)}")
+        left -= cost
+    if lines and len(lines) < len(items):
+        lines[-1] += " …"
+        left -= 1
+    return "<br/>".join(lines), max(left, 0)
+
+
+def _share(budget: int, blocks: int) -> int:
+    """A fair share of the words left, never starving a later block."""
+    if budget <= 0:
+        return 0
+    return min(budget, max(2, budget // blocks))
+
+
+def _details(key: str, body: str, locale: str, opened: bool = False) -> str:
+    if not body:
+        return ""
+    flag = " open" if opened else ""
+    return f"<details{flag}><summary><h2>{_esc(t(locale, key))}</h2></summary>{body}</details>"
+
+
+def _brand(locale: str) -> str:
+    return f"<footer>{_esc(t(locale, 'brand.footer'))}</footer>"
+
+
 def _severity(severity: int, locale: str) -> str:
     level = min(max(severity, 1), 3)
     return f"{'●' * level}{'○' * (3 - level)} {t(locale, f'severity.{SEVERITIES[level]}')}"
@@ -67,10 +130,6 @@ def _severity(severity: int, locale: str) -> str:
 def _dots(severity: int) -> str:
     level = min(max(severity, 1), 3)
     return f"{'●' * level}{'○' * (3 - level)}"
-
-
-def _items(items: tuple[str, ...], locale: str) -> str:
-    return "<br/>".join(f"• {_esc(_clip(item, ITEM))}" for item in items[:ITEMS])
 
 
 def _badge(card: CardView, locale: str) -> str:
@@ -125,44 +184,69 @@ def render_category(
     if nav:
         rows.append(rich_row(*nav))
     rows.append(rich_row(rich_button(f"{emoji('menu', '📂')} {t(locale, 'button.menu')}", data=cb_menu())))
-    lead = (
+    lead = t(locale, "category.lead")
+    meta = (
         f"{t(locale, 'category.count', n=category.threat_count)}"
         f" · {t(locale, 'category.page', page=page, pages=pages)}"
     )
     heading = f"{emoji(category.slug, _esc(category.emoji))} {_esc(_clip(category.title, TITLE))}"
-    detail = f"{lead} · {t(locale, 'category.lead')}"
-    html = _header(category.slug, heading, f"<p>{_esc(detail)}</p>")
+    html = _header(category.slug, heading, f"<p>{_esc(lead)}</p>") + f"<footer>{_esc(meta)}</footer>"
     return RichScreen(html + "\n".join(rows))
 
 
 def render_card(
     card: CardView, locale: str, page: int, has_quiz: bool, can_game: bool = True
 ) -> RichScreen:
-    steps = "".join(
-        f"<details><summary>{_esc(t(locale, key))}</summary>{_items(items, locale)}</details>"
-        for key, items in (
-            ("card.before", card.before),
-            ("card.during", card.during),
-            ("card.after", card.after),
-        )
+    """Art, heading, severity, signs, three steps, bans, brand footer."""
+    budget = CARD_WORDS - BUTTON_WORDS
+
+    title = _clip_words(_clip(card.title, TITLE), TITLE_WORDS)
+    budget -= _words(title)
+
+    category = _clip_words(_clip(card.category_title, TITLE), TITLE_WORDS)
+    severity = _severity(card.severity, locale)
+    badge = 1 if card.fallback else 0
+    budget -= _words(severity) + _words(category) + badge
+
+    summary = _clip_words(
+        _clip_sentences(_clip(card.summary, SUMMARY), 2), min(SUMMARY_WORDS, budget)
     )
-    forbidden = (
-        f"<details><summary>{_esc(t(locale, 'card.forbidden'))}</summary>"
-        f"{_items(card.forbidden, locale)}</details>"
-    )
-    contacts = " · ".join(_esc(_clip(item, ITEM)) for item in card.contacts[:ITEMS])
+    budget -= _words(summary)
+
+    brand = t(locale, "brand.footer")
+    contacts = [_clip_words(_clip(item, ITEM), 2) for item in card.contacts[:CONTACTS]]
+    source = _clip_words(_clip(card.source, ITEM), SOURCE_WORDS)
+    budget -= _words(brand) + sum(map(_words, contacts)) + _words(source)
+
+    labels = ("card.signs", "card.before", "card.during", "card.after", "card.forbidden")
+    budget -= sum(_words(t(locale, key)) for key in labels)
+
+    groups = (card.signs, card.before, card.during, card.after, card.forbidden)
+    bodies: list[str] = []
+    for index, group in enumerate(groups):
+        allowance = _share(budget, len(groups) - index)
+        body, left = _bullets(group, allowance)
+        budget -= allowance - left
+        bodies.append(body)
+    signs, before, during, after, forbidden = bodies
+
     html = (
         _header(
             card.category_slug,
-            f"{emoji(card.category_slug, _esc(card.icon))} {_esc(_clip(card.title, TITLE))}",
-            f"<p>{_severity(card.severity, locale)}"
-            f" · {_esc(_clip(card.category_title, TITLE))}{_badge(card, locale)}</p>",
+            f"{emoji(card.category_slug, _esc(card.icon))} {_esc(title)}",
+            f"<p>{severity} · {_esc(category)}{_badge(card, locale)}</p>",
         )
-        + f"<p>{_esc(_clip(card.summary, SUMMARY))}</p>"
-        + f"<blockquote><b>{_esc(t(locale, 'card.signs'))}</b><br/>{_items(card.signs, locale)}</blockquote>"
-        + steps
-        + forbidden
-        + f"<footer>{contacts} · {_esc(_clip(card.source, ITEM))}</footer>"
+        + (f"<p>{_esc(summary)}</p>" if summary else "")
+        + (
+            f"<blockquote><b>{_esc(t(locale, 'card.signs'))}</b><br/>{signs}</blockquote>"
+            if signs
+            else ""
+        )
+        + _details("card.before", before, locale)
+        + _details("card.during", during, locale, opened=True)
+        + _details("card.after", after, locale)
+        + _details("card.forbidden", forbidden, locale)
+        + "<footer>" + " · ".join(_esc(part) for part in (brand, *contacts, source) if part) + "</footer>"
     )
     rows = []
     if has_quiz:
@@ -232,13 +316,11 @@ def render_question(
             )
         )
     else:
-        tail = f"<p>{_esc(t(locale, 'quiz.hint'))}</p>"
+        tail = ""
     html = (
-        _header(
-            _art_of_threat(slug),
-            f"{emoji('quiz', '📝')} {_esc(t(locale, 'quiz.title', index=index, total=total))}",
-            f"<h3>{_esc(_clip(quiz.prompt, SUMMARY))}</h3>",
-        )
+        _header(_art_of_threat(slug), f"{emoji('quiz', '📝')} {_esc(t(locale, 'quiz.heading'))}")
+        + f"<h2>{_esc(t(locale, 'quiz.title', index=index, total=total))}</h2>"
+        + f"<p>{_esc(_clip_sentences(_clip(quiz.prompt, SUMMARY), 2))}</p>"
         + tail
     )
     return RichScreen(html + "\n".join(rows))
@@ -257,10 +339,14 @@ def render_result(correct: int, total: int, slug: str, locale: str) -> RichScree
         ),
         rich_row(rich_button(f"{emoji('menu', '📂')} {t(locale, 'button.menu')}", data=cb_menu())),
     ]
-    html = _header(
-        _art_of_threat(slug),
-        f"{emoji('done', '✅')} {correct}/{total}",
-        f"<p>{_esc(t(locale, f'quiz.result.{verdict}'))}</p>",
+    html = (
+        _header(
+            _art_of_threat(slug),
+            f"{emoji('done', '✅')} {_esc(t(locale, 'quiz.result.title'))}",
+        )
+        + f"<h2>{_esc(t(locale, 'quiz.score', correct=correct, total=total))}</h2>"
+        + f"<p>{_esc(t(locale, f'quiz.result.{verdict}'))}</p>"
+        + _brand(locale)
     )
     return RichScreen(html + "\n".join(rows))
 
@@ -290,7 +376,7 @@ def search_screen(
         body = f"<p>{_esc(t(locale, 'search.found', n=len(results)))}</p>"
     else:
         body = f"<p>{_esc(t(locale, 'search.empty'))}</p><p>{_esc(t(locale, 'search.hint'))}</p>"
-    quote = f"<blockquote>{_esc(clean)}</blockquote>" if clean else ""
+    quote = f"<p><code>{_esc(clean)}</code></p>" if clean else ""
     html = _header("hero", f"{emoji('search', '🔎')} {_esc(t(locale, 'search.title'))}")
     html += quote + body
     return RichScreen(html + "\n".join(rows))

@@ -415,7 +415,7 @@ async def test_refused_widget_falls_back_to_the_rich_quiz() -> None:
     edits = [payload for name, payload in bot.calls if name == "edit_message_text"]
     assert len(edits) == 1
     html = edits[0]["rich_message"].html
-    assert "Вопрос 1/3" in html
+    assert "Вопрос 1 из 3" in html
     assert "Мини-игра сейчас недоступна" in html
 
 

@@ -272,7 +272,7 @@ async def test_three_answers_walk_to_the_result() -> None:
         assert answer_call[1]["message_id"] == 10
         html = _screen_html(answer_call)
         assert quiz.prompt in html
-        assert f"Вопрос {position + 1}/3" in html
+        assert f"Вопрос {position + 1} из 3" in html
         assert quiz.explanation in html
 
         await quiz_handler.quiz_callback(
@@ -284,9 +284,9 @@ async def test_three_answers_walk_to_the_result() -> None:
         html = _screen_html(bot.calls[-1])
         if position < len(questions) - 1:
             assert questions[position + 1].prompt in html
-            assert f"Вопрос {position + 2}/3" in html
+            assert f"Вопрос {position + 2} из 3" in html
         else:
-            assert "3/3" in html
+            assert "3 из 3" in html
 
     assert len(db.rows) == 3
     assert all(row["correct"] for row in db.rows)
@@ -334,7 +334,7 @@ async def test_repeat_click_does_not_write_twice() -> None:
     assert len(db.rows) == 1
     html = _screen_html(bot.calls[-1])
     assert quiz.prompt in html
-    assert "Вопрос 1/3" in html
+    assert "Вопрос 1 из 3" in html
 
 
 @pytest.mark.asyncio
@@ -416,7 +416,7 @@ async def test_retry_starts_a_fresh_seed() -> None:
 
     assert db.rows == []
     html = _screen_html(bot.calls[-1])
-    assert "Вопрос 1/3" in html
+    assert "Вопрос 1 из 3" in html
     assert pick_questions(_quizzes(), "ffff")[0].prompt in html
 
 

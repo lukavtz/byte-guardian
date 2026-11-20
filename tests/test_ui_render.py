@@ -186,6 +186,62 @@ def test_screens_fit_the_rich_message_limit() -> None:
         assert _utf16_len(screen.html) <= 32000
 
 
+def _visible_text(html: str) -> str:
+    return unescape(re.sub(r"<[^>]+>", " ", html))
+
+
+def test_every_screen_has_one_h1() -> None:
+    for screen in _screens():
+        assert len(re.findall(r"<h1>", screen.html)) == 1
+
+
+def test_card_fits_the_word_budget() -> None:
+    for locale in ("ru", "en", "zh", "tt"):
+        text = _visible_text(render_card(_card(), locale, 1, True).html)
+        assert len(re.findall(r"\w+", text)) <= 120
+
+
+def test_fat_card_is_trimmed_not_dumped() -> None:
+    fat = dataclasses.replace(
+        _card(), summary="слово " * 400, signs=tuple("слово " * 100 for _ in range(20))
+    )
+    html = render_card(fat, LOCALE, 1, True).html
+    assert "…" in html
+    assert len(re.findall(r"\w+", _visible_text(html))) <= 120
+
+
+def test_card_footer_carries_the_brand_line() -> None:
+    html = render_card(_card(), LOCALE, page=1, has_quiz=False).html
+    assert "<footer>Байт · ТИСБИ · 101 · 112 · МЧС России</footer>" in html
+
+
+def test_screens_stay_on_the_brand_palette() -> None:
+    for screen in _screens():
+        lowered = screen.html.lower()
+        assert "teal" not in lowered
+        assert "purple" not in lowered
+        assert "cyan" not in lowered
+
+
+def test_action_buttons_are_verbs_without_trailing_dots() -> None:
+    labels = {
+        re.sub(r"^[^\w]+", "", button["label"])
+        for screen in _screens()
+        for button in _buttons(screen.html)
+    }
+    assert {"Тест", "Играть", "Назад", "Поделиться", "Меню"} <= labels
+    assert not any(label.endswith(".") for label in labels)
+
+    answered = render_question(_quiz(), "fire-home", 1, 3, "a3f1", LOCALE, chosen=0)
+    answered_labels = {re.sub(r"^[^\w]+", "", b["label"]) for b in _buttons(answered.html)}
+    result_labels = {
+        re.sub(r"^[^\w]+", "", b["label"])
+        for b in _buttons(render_result(2, 3, "fire-home", LOCALE).html)
+    }
+    assert "Дальше" in answered_labels
+    assert "Ещё раз" in result_labels
+
+
 # --- artwork -------------------------------------------------------------
 
 
@@ -229,7 +285,9 @@ def test_menu_has_one_button_per_category_and_the_service_row() -> None:
 
 def test_menu_shows_the_shared_header_and_brand() -> None:
     html = render_menu([_category()], LOCALE).html
-    assert "Байт · БЖД ТИСБИ" in html
+    headings = re.findall(r"<h1>(.*?)</h1>", html)
+    assert len(headings) == 1 and headings[0].endswith("Байт")
+    assert "Помощник по безопасности жизнедеятельности ТИСБИ" in html
     assert html.index("<img ") < html.index("<h1>") < html.index("<hr/>")
 
 
@@ -278,9 +336,10 @@ def test_card_uses_rich_markup() -> None:
 
 def test_card_has_a_details_block_per_step() -> None:
     html = render_card(_card(), LOCALE, page=1, has_quiz=True).html
-    summaries = re.findall(r"<summary>(.*?)</summary>", html)
+    summaries = re.findall(r"<summary><h2>(.*?)</h2></summary>", html)
     assert summaries == ["До", "Во время", "После", "Нельзя"]
-    assert "<details>" in html
+    opened = re.findall(r"<details( open)?><summary><h2>(.*?)</h2>", html)
+    assert [label for flag, label in opened if flag] == ["Во время"]
 
 
 def test_card_marks_ru_fallback() -> None:
@@ -347,8 +406,9 @@ def test_question_offers_four_options_one_per_row() -> None:
         ("q1", "2", "a3f1"),
         ("q1", "3", "a3f1"),
     ]
-    assert "Вопрос 1/3" in screen.html
-    assert "<h3>" in screen.html
+    assert "Вопрос 1 из 3" in screen.html
+    assert "<h2>Вопрос 1 из 3</h2>" in screen.html
+    assert "<h3>" not in screen.html
     assert not _primary(screen.html)
 
 
@@ -368,7 +428,7 @@ def _emphasized(html: str) -> list[dict[str, str]]:
 
 def test_result_shows_score_and_one_emphasized_retry() -> None:
     screen = render_result(correct=2, total=3, slug="fire-home", locale=LOCALE)
-    assert "<h1>" in screen.html and "2/3" in screen.html
+    assert "<h1>" in screen.html and "2 из 3" in screen.html
     buttons = _buttons(screen.html)
     assert len(buttons) == 2
     emphasized = _emphasized(screen.html)
@@ -416,6 +476,7 @@ def test_search_lists_results_with_severity() -> None:
     cards = [cb for cb in _parsed(screen.html) if cb and cb.action == "card"]
     assert len(cards) == 3
     assert "●●●" in buttons[0]["label"]
+    assert "<code>пожар</code>" in screen.html
 
 
 def test_search_empty_state_explains_itself() -> None:
