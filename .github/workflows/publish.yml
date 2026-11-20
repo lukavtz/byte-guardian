@@ -28,6 +28,8 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.tag || github.ref }}
 
       - name: Resolve tag
         id: meta
