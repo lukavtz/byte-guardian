@@ -11,8 +11,10 @@
   <img alt="PostgreSQL 18" src="https://img.shields.io/badge/PostgreSQL-18-4169E1?logo=postgresql&logoColor=white&style=flat-square">
   <img alt="Redis 8" src="https://img.shields.io/badge/Redis-8-DC382D?logo=redis&logoColor=white&style=flat-square">
   <img alt="Podman Compose" src="https://img.shields.io/badge/Podman-compose-3B4C5A?logo=podman&logoColor=white&style=flat-square">
-  <img alt="317 тестов проходят" src="https://img.shields.io/badge/tests-317%20passed-2FE0C8?style=flat-square">
+  <img alt="343 теста проходят" src="https://img.shields.io/badge/tests-343%20passed-2FE0C8?style=flat-square">
 </p>
+
+<p align="center"><b>Фирменный стиль ТИСБИ.</b> Официальный синий <code>#0477D2</code>, акцент <code>#FD8749</code>, чернила <code>#444B54</code> и льдистый фон <code>#F4F8FF</code>; маскот — Байт в худи ТИСБИ. Система целиком — <a href="docs/BRAND.md">docs/BRAND.md</a>.</p>
 
 ## Что умеет
 
@@ -113,7 +115,7 @@ flowchart LR
 ## Разработка
 
 ```bash
-uv sync && uv run pytest -q              # 317 passed
+uv sync && uv run pytest -q              # 343 passed
 uv run ruff check . && uv run mypy app
 ```
 
