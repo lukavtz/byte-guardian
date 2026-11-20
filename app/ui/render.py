@@ -99,11 +99,8 @@ def _utf16(text: str) -> int:
 
 
 def _items(items: tuple[str, ...], shown: int) -> str:
-    """One item per line; a dropped tail leaves a single «…» marker."""
-    lines = [f"• {_esc(item)}" for item in items[:shown]]
-    if lines and shown < len(items):
-        lines[-1] += " …"
-    return "<br/>".join(lines)
+    """One item per line; a dropped tail is marked by the caller."""
+    return "<br/>".join(f"• {_esc(item)}" for item in items[:shown])
 
 
 def _details(key: str, body: str, locale: str, opened: bool = False, icon: tuple[str, str] | None = None) -> str:
@@ -111,7 +108,13 @@ def _details(key: str, body: str, locale: str, opened: bool = False, icon: tuple
         return ""
     flag = " open" if opened else ""
     lead = f"{premium(*icon)} " if icon else ""
-    return f"<details{flag}><summary><h2>{lead}{_esc(t(locale, key))}</h2></summary>{body}</details>"
+    return f"<details{flag}><summary><b>{lead}{_esc(t(locale, key))}</b></summary>{body}</details>"
+
+
+def _section(key: str, body: str, locale: str, icon: tuple[str, str]) -> str:
+    if not body:
+        return ""
+    return f"<p><b>{premium(*icon)} {_esc(t(locale, key))}</b><br/>{body}</p>"
 
 
 def _brand(locale: str) -> str:
@@ -151,6 +154,11 @@ def _art_of_threat(slug: str) -> str:
 def _header(slug: str, heading: str, lead: str = "") -> str:
     """Art, heading, one lead block, rule: the shape every screen shares."""
     return f"{_art(slug)}<h1>{heading}</h1>{lead}<hr/>"
+
+
+def _card_header(heading: str, lead: str) -> str:
+    """Cards open with text: no oversized art before the first answer."""
+    return f"<h1>{heading}</h1>{lead}"
 
 
 def render_menu(categories: list[CategoryView], locale: str, is_admin: bool = False) -> RichScreen:
@@ -325,38 +333,36 @@ def render_category(
 
 
 def _card_html(card: CardView, locale: str, shown: list[int], summary: str | None = None) -> str:
-    """The card markup, with the first `shown[n]` items of each list."""
-    signs, before, during, after, forbidden = (
-        _items(group, count)
-        for group, count in zip(
-            (card.signs, card.before, card.during, card.after, card.forbidden),
-            shown[:5],
-            strict=True,
-        )
-    )
+    """Card markup: critical help stays open, later steps collapse."""
+    groups = (card.signs, card.before, card.during, card.after, card.forbidden)
+    bodies = [_items(group, count) for group, count in zip(groups, shown[:5], strict=True)]
+    signs, before, during, after, forbidden = bodies
+    truncated = any(len(group) > count for group, count in zip(groups, shown[:5], strict=True))
     contacts = [_no_links(item) for item in card.contacts[: shown[5]]]
     contacts = [item for item in contacts if item]
     if len(card.contacts) > shown[5]:
         contacts.append("…")
+        truncated = True
     source = _no_links(card.source) if card.source else ""
     text = card.summary if summary is None else summary
     brand = t(locale, "brand.footer")
+    quick = card.quick or (card.contacts[0] if card.contacts else "")
+    numbers = " · ".join(item for item in contacts if item and item != "…")
+    emergency = f"<p><b>{premium('warning', '⚠️')} {_esc(numbers)}</b></p>" if numbers else ""
     return (
-        _header(
-            card.category_slug,
+        _card_header(
             f"{premium(card.category_slug, _esc(card.icon))} {_esc(card.title)}",
             f"<p>{_severity(card.severity, locale)} · {_esc(card.category_title)}{_badge(card, locale)}</p>",
         )
-        + (f"<p>{_esc(text)}</p><br/>" if text else "")
-        + (
-            f"<blockquote>{premium('eyes', '👀')} {_esc(t(locale, 'card.signs'))}<br/>{signs}</blockquote>"
-            if signs
-            else ""
-        )
-        + _details("card.before", before, locale, icon=("hourglass", "⏳"))
+        + emergency
+        + (f"<p>{_esc(text)}</p>" if text else "")
+        + _section("card.quick", _esc(quick), locale, ("warning", "⚠️"))
+        + _section("card.signs", signs, locale, ("eyes", "👀"))
+        + _details("card.before", before, locale, icon=("hourglass", "⏲"))
         + _details("card.during", during, locale, opened=True, icon=("fire", "🔥"))
         + _details("card.after", after, locale, icon=("refresh", "🔄"))
         + _details("card.forbidden", forbidden, locale, icon=("cancel", "❌"))
+        + (f"<p>… {_esc(t(locale, 'card.truncated'))}</p>" if truncated else "")
         + "<footer>"
         + " · ".join(
             [
@@ -474,9 +480,9 @@ def render_card(
                 shown[index] -= 1
                 break
         else:
-            # Unreachable for seeded content (a summary is bounded far below
-            # the cap); the footer and every heading still reach the reader.
-            html = screen("")
+            # A pathological summary can still overflow after lists are gone.
+            cap = CARD_CAP - _utf16("\n" + "\n".join(rows)) - 200
+            html = _card_html(card, locale, shown, card.summary[: max(cap, 0)]) + "\n" + "\n".join(rows)
             break
         html = screen()
     return RichScreen(html)

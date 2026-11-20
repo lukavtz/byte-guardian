@@ -47,6 +47,7 @@
   "card.after": "之后",
   "card.forbidden": "禁止",
   "card.quick": "第一步",
+  "card.truncated": "未显示全部：卡片已缩短以适应长度。",
   "card.mistakes": "常见错误",
   "card.citations": "来源",
   "card.more": "更多步骤",

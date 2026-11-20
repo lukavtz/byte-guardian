@@ -47,6 +47,7 @@
   "card.after": "После",
   "card.forbidden": "Нельзя",
   "card.quick": "Первое действие",
+  "card.truncated": "Показано не всё: карточка сокращена, чтобы поместиться.",
   "card.mistakes": "Частые ошибки",
   "card.citations": "Источники",
   "card.more": "Ещё шаги",

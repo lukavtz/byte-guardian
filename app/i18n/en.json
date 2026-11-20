@@ -47,6 +47,7 @@
   "card.after": "After",
   "card.forbidden": "Never",
   "card.quick": "First action",
+  "card.truncated": "Not everything is shown — the card was shortened to fit.",
   "card.mistakes": "Common mistakes",
   "card.citations": "Sources",
   "card.more": "More steps",

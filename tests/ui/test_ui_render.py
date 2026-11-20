@@ -299,9 +299,9 @@ def test_card_layout_separates_the_summary_signs_and_footer() -> None:
     assert html.count("<h1>") == 1
     assert "<p>●●● Высокая · Пожар</p>" in html
     assert html.count("<br/>") >= 1
-    assert "</p><br/>" in html
-    assert "Признаки<br/>• Дым из-под двери" in html
-    assert len(re.findall(r"<summary><h2>.*?</h2></summary>", html)) == 4
+    assert "Первое действие" in html
+    assert "Признаки</b><br/>• Дым из-под двери" in html
+    assert len(re.findall(r"<summary><b>.*?</b></summary>", html)) == 4
     footer = re.search(r"<footer>(.*?)</footer>", html)
     assert footer is not None
     assert strip_premium(footer.group(1)).split(" · ")[1:] == ["ТИСБИ", "101", "112", "МЧС России"]
@@ -437,7 +437,7 @@ def test_unknown_section_falls_back_to_the_hero() -> None:
 
 def test_card_and_quiz_use_the_category_artwork() -> None:
     card = render_card(_card(category_slug="chem"), LOCALE, 1, True)
-    assert _img_src(f"{ART}/chem.jpg") in card.html
+    assert "<img " not in card.html
     question = render_question(_quiz(), "rad-smoke", 1, 3, "a3f1", LOCALE)
     assert _img_src(f"{ART}/rad.jpg") in question.html
     result = render_result(3, 3, "medical-aid", LOCALE)
@@ -687,8 +687,9 @@ def test_category_never_exceeds_nine_buttons() -> None:
 def test_card_uses_rich_markup() -> None:
     html = render_card(_card(), LOCALE, page=1, has_quiz=True).html
 
-    for tag in ("<h1>", "<blockquote>", "<details>", "<footer>", "<hr/>"):
+    for tag in ("<h1>", "<details>", "<footer>"):
         assert tag in html
+    assert "<hr/>" not in html
     assert "●●●" in html
     assert "Высокая" in html
     assert "RU" not in html
@@ -696,11 +697,60 @@ def test_card_uses_rich_markup() -> None:
 
 def test_card_has_a_details_block_per_step() -> None:
     html = render_card(_card(), LOCALE, page=1, has_quiz=True).html
-    summaries = [strip_premium(text) for text in re.findall(r"<summary><h2>(.*?)</h2></summary>", html)]
-    assert [re.sub(r"^[^\w]+", "", text) for text in summaries] == ["До", "Во время", "После", "Нельзя"]
-    opened = re.findall(r"<details( open)?><summary><h2>(.*?)</h2>", html)
-    labels = [strip_premium(label).split(" ", 1)[-1] for flag, label in opened if flag]
-    assert labels == ["Во время"]
+    raw = re.findall(r"<summary>(.*?)</summary>", html)
+    summaries = [strip_premium(re.sub(r"<[^>]+>", "", text)).strip() for text in raw]
+    assert [label.split(" ", 1)[-1] for label in summaries] == ["До", "Во время", "После", "Нельзя"]
+    opened = re.findall(r"<details( open)?>", html)
+    assert opened == ["", " open", "", ""]
+
+
+def test_card_details_have_visible_labels_without_nested_headings() -> None:
+    html = render_card(_card(), LOCALE, page=1, has_quiz=True).html
+    raw = re.findall(r"<summary>(.*?)</summary>", html)
+    summaries = [re.sub(r"^\W+\s*", "", strip_premium(re.sub(r"<[^>]+>", "", item))).strip() for item in raw]
+    assert len(summaries) == 4
+    assert all("<h2>" not in item for item in raw)
+    assert summaries == ["До", "Во время", "После", "Нельзя"]
+
+
+def test_card_keeps_the_first_action_and_contacts_visible() -> None:
+    card = dataclasses.replace(_card(), quick="Звоните 101")
+    html = render_card(card, LOCALE, page=1, has_quiz=True).html
+    assert "Первое действие" in html
+    assert "Звоните 101" in html
+    assert "101" in html and "112" in html
+    assert html.index("Звоните 101") < html.index("<details")
+
+
+def test_card_warns_when_items_are_dropped() -> None:
+    long = "я" * 160
+    fat = dataclasses.replace(
+        _card(),
+        signs=tuple(long for _ in range(80)),
+        before=tuple(long for _ in range(80)),
+        during=tuple(long for _ in range(80)),
+    )
+    html = render_card(fat, LOCALE, page=1, has_quiz=True).html
+    assert "Показано не всё" in html
+    assert "…" in html
+
+
+def test_card_puts_text_before_art() -> None:
+    html = render_card(_card(), LOCALE, page=1, has_quiz=True).html
+    assert "<img " not in html
+    assert "<hr/>" not in html
+
+
+def test_card_keeps_emergency_numbers_above_the_fold() -> None:
+    long = "я" * 160
+    fat = dataclasses.replace(
+        _card(),
+        signs=tuple(long for _ in range(80)),
+        before=tuple(long for _ in range(80)),
+        during=tuple(long for _ in range(80)),
+    )
+    above = render_card(fat, LOCALE, page=1, has_quiz=True).html.split("<details", 1)[0]
+    assert "101" in above and "112" in above
 
 
 def test_card_marks_ru_fallback() -> None:
