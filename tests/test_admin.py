@@ -401,6 +401,7 @@ async def test_toggle_callback_flips_and_refreshes() -> None:
     html = bot.html()
     assert "⛔" in html
     assert "✅" not in html
+    assert "Добавить карточку" in html
 
 
 async def test_broadcast_callback_opens_screen() -> None:
@@ -419,7 +420,6 @@ async def test_broadcast_callback_opens_screen() -> None:
     assert "Аудитория: <b>7</b>" in html
     assert "идёт" in html
     assert "b1:admin" in html
-    assert "Добавить карточку" in html
 
 
 async def test_settings_round_trip() -> None:
