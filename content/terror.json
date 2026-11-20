@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "category": {
     "slug": "terror",
     "emoji": "🛡️",
@@ -32,6 +32,7 @@
             "Не пытайтесь самостоятельно задержать вооружённых людей"
           ],
           "during": [
+            "Позвоните 112 и сообщите о случившемся",
             "Выполняйте требования нападавших, не спорьте и не смотрите им в глаза",
             "Не делайте резких движений и не доставайте телефон без разрешения",
             "Спрашивайте разрешение, прежде чем встать, сесть или сходить в туалет",
@@ -55,7 +56,19 @@
             "112",
             "102"
           ],
-          "source": "МЧС России · https://78.mchs.gov.ru/deyatelnost/propaganda/propaganda-sredi-naseleniya/polezno-znat/pravila-povedeniya-pri-terroristicheskom-akte"
+          "source": "МЧС России · https://78.mchs.gov.ru/deyatelnost/propaganda/propaganda-sredi-naseleniya/polezno-znat/pravila-povedeniya-pri-terroristicheskom-akte",
+          "quick": "Позвоните 112 и сообщите о случившемся; Выполняйте требования нападавших, не спорьте и не смотрите.",
+          "mistakes": [
+            "Вступать в перепалку и провоцировать нападавших",
+            "Звонить, если звонок могут заметить",
+            "Бежать к выходу во время штурма или навстречу спецназу"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://78.mchs.gov.ru/deyatelnost/propaganda/propaganda-sredi-naseleniya/polezno-znat/pravila-povedeniya-pri-terroristicheskom-akte"
+            }
+          ]
         },
         "en": {
           "title": "Hostage taking",
@@ -73,6 +86,7 @@
             "Do not try to detain armed people yourself"
           ],
           "during": [
+            "Call 112 and report the emergency",
             "Follow the attackers' demands, do not argue and do not look them in the eye",
             "Do not make sudden movements and do not take out your phone without permission",
             "Ask permission before standing up, sitting down, or going to the toilet",
@@ -96,6 +110,18 @@
           "contacts": [
             "112",
             "102"
+          ],
+          "quick": "Call 112 and report the emergency; Follow the attackers' demands, do not argue and do not look.",
+          "mistakes": [
+            "Getting into arguments and provoking the attackers",
+            "Making calls if the call could be noticed",
+            "Running to an exit during the assault or toward special forces"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://78.mchs.gov.ru/deyatelnost/propaganda/propaganda-sredi-naseleniya/polezno-znat/pravila-povedeniya-pri-terroristicheskom-akte"
+            }
           ]
         },
         "zh": {
@@ -114,6 +140,7 @@
             "不要自行扣押武装人员"
           ],
           "during": [
+            "拨打112并报告情况",
             "听从袭击者的要求，不要争辩，不要直视他们的眼睛",
             "不要做突然的动作，未经许可不要拿出手机",
             "站起、坐下或去卫生间前先请求许可",
@@ -137,7 +164,19 @@
             "112",
             "102"
           ],
-          "source": "俄罗斯紧急情况部 · https://78.mchs.gov.ru/deyatelnost/propaganda/propaganda-sredi-naseleniya/polezno-znat/pravila-povedeniya-pri-terroristicheskom-akte"
+          "source": "俄罗斯紧急情况部 · https://78.mchs.gov.ru/deyatelnost/propaganda/propaganda-sredi-naseleniya/polezno-znat/pravila-povedeniya-pri-terroristicheskom-akte",
+          "quick": "拨打112并报告情况；听从袭击者的要求，不要争辩，不要直视他们的眼睛",
+          "mistakes": [
+            "争辩和激怒袭击者",
+            "在通话可能被察觉时打电话",
+            "突击时跑向出口或跑向特种部队"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://78.mchs.gov.ru/deyatelnost/propaganda/propaganda-sredi-naseleniya/polezno-znat/pravila-povedeniya-pri-terroristicheskom-akte"
+            }
+          ]
         },
         "tt": {
           "title": "Тоткынга алу",
@@ -155,6 +194,7 @@
             "Кораллы кешеләрне үзегез тотарга маташмагыз"
           ],
           "during": [
+            "112 телефонына шалтыратып хәбәр итегез",
             "Һөҗүм итүчеләрнең таләпләрен үтәгез, бәхәсләшмәгез һәм аларның күзләренә карамагыз",
             "Кинәт хәрәкәт итмәгез һәм рөхсәтсез телефонны алмагыз",
             "Басыр, утырыр яки бәдрәфкә барыр алдыннан рөхсәт сорагыз",
@@ -178,7 +218,19 @@
             "112",
             "102"
           ],
-          "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://78.mchs.gov.ru/deyatelnost/propaganda/propaganda-sredi-naseleniya/polezno-znat/pravila-povedeniya-pri-terroristicheskom-akte"
+          "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://78.mchs.gov.ru/deyatelnost/propaganda/propaganda-sredi-naseleniya/polezno-znat/pravila-povedeniya-pri-terroristicheskom-akte",
+          "quick": "112 телефонына шалтыратып хәбәр итегез; Һөҗүм итүчеләрнең таләпләрен үтәгез, бәхәсләшмәгез һәм алар.",
+          "mistakes": [
+            "Һөҗүм итүчеләр белән әйтешү һәм аларны котырту",
+            "Шалтыратуны сизә алсалар, шалтырату",
+            "Штурм вакытында чыгу юлына яки спецназга каршы йөгерү"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://78.mchs.gov.ru/deyatelnost/propaganda/propaganda-sredi-naseleniya/polezno-znat/pravila-povedeniya-pri-terroristicheskom-akte"
+            }
+          ]
         }
       },
       "quiz": {
@@ -334,7 +386,8 @@
             "explanation": "Калдырылган әйберләр куркынычлы һәм тикшерү өчен мөһим булырга мөмкин. Аларга тик белгечләр генә кагыла."
           }
         ]
-      }
+      },
+      "updated": "2026-11-20"
     },
     {
       "slug": "terror-suspicious-item",
@@ -355,10 +408,10 @@
             "Запомните, где находятся ближайшие выходы из здания"
           ],
           "during": [
+            "Сообщите по 112: место, время находки и приметы предмета",
             "Не подходите к предмету и не трогайте его",
             "Уведите людей подальше от находки",
             "Не пользуйтесь мобильным телефоном и рацией рядом с предметом",
-            "Сообщите по 112: место, время находки и приметы предмета",
             "Дождитесь сотрудников в стороне и не пускайте людей к месту"
           ],
           "after": [
@@ -377,7 +430,19 @@
             "112",
             "102"
           ],
-          "source": "МЧС России · https://29.mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pamyatka-deystviy-pri-obnaruzhenii-podozritelnogo-predmeta"
+          "source": "МЧС России · https://29.mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pamyatka-deystviy-pri-obnaruzhenii-podozritelnogo-predmeta",
+          "quick": "Сообщите по 112: место, время находки и приметы предмета; Не подходите к предмету и не трогайте его",
+          "mistakes": [
+            "Открывать, вскрывать или передвигать находку",
+            "Заглядывать внутрь пакета или коробки",
+            "Пинать лежащие на улице предметы"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://29.mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pamyatka-deystviy-pri-obnaruzhenii-podozritelnogo-predmeta"
+            }
+          ]
         },
         "en": {
           "title": "Suspicious item",
@@ -394,10 +459,10 @@
             "Note where the nearest building exits are"
           ],
           "during": [
+            "Call 112: report the location, time of discovery, and description of the item",
             "Do not approach or touch the item",
             "Move people away from it",
             "Do not use a mobile phone or radio near the item",
-            "Call 112: report the location, time of discovery, and description of the item",
             "Wait for responders at a distance and keep people away from the area"
           ],
           "after": [
@@ -416,6 +481,18 @@
           "contacts": [
             "112",
             "102"
+          ],
+          "quick": "Call 112: report the location, time of discovery, and description of the item; Do not approach or touch the item",
+          "mistakes": [
+            "Opening, tampering with, or moving the item",
+            "Looking inside a package or box",
+            "Kicking items lying on the street"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://29.mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pamyatka-deystviy-pri-obnaruzhenii-podozritelnogo-predmeta"
+            }
           ]
         },
         "zh": {
@@ -433,6 +510,7 @@
             "记住最近的建筑物出口位置"
           ],
           "during": [
+            "拨打112并报告情况",
             "不要靠近或触摸物品",
             "让人员远离",
             "不要在物品附近使用手机或无线电",
@@ -455,7 +533,19 @@
             "112",
             "102"
           ],
-          "source": "俄罗斯紧急情况部 · https://29.mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pamyatka-deystviy-pri-obnaruzhenii-podozritelnogo-predmeta"
+          "source": "俄罗斯紧急情况部 · https://29.mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pamyatka-deystviy-pri-obnaruzhenii-podozritelnogo-predmeta",
+          "quick": "拨打112并报告情况；不要靠近或触摸物品",
+          "mistakes": [
+            "打开、摆弄或移动物品",
+            "查看包裹或箱子内部",
+            "踢街上的物品"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://29.mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pamyatka-deystviy-pri-obnaruzhenii-podozritelnogo-predmeta"
+            }
+          ]
         },
         "tt": {
           "title": "Шикле әйбер",
@@ -472,10 +562,10 @@
             "Бинадан якын чыгу юллары кайда икәнен истә калдырыгыз"
           ],
           "during": [
+            "112 телефонына урынны, табылган вакытны һәм әйбернең билгеләрен әйтегез",
             "Әйбергә якын килмәгез һәм аңа кагылмагыз",
             "Кешеләрне табылдыктан еракка алып китү",
             "Әйбер янында мобиль телефон һәм рация кулланмагыз",
-            "112 телефонына урынны, табылган вакытны һәм әйбернең билгеләрен әйтегез",
             "Хезмәткәрләрне читтә көтегез һәм кешеләрне урынга җибәрмәгез"
           ],
           "after": [
@@ -494,7 +584,19 @@
             "112",
             "102"
           ],
-          "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://29.mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pamyatka-deystviy-pri-obnaruzhenii-podozritelnogo-predmeta"
+          "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://29.mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pamyatka-deystviy-pri-obnaruzhenii-podozritelnogo-predmeta",
+          "quick": "112 телефонына урынны, табылган вакытны һәм әйбернең билгеләрен әйтегез; Әйбергә якын килмәгез һәм аңа кагылмагыз",
+          "mistakes": [
+            "Табылдыкны ачу, тишү яки күчерү",
+            "Пакет яки тартма эченә карау",
+            "Урамда яткан әйберләргә тибү"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://29.mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pamyatka-deystviy-pri-obnaruzhenii-podozritelnogo-predmeta"
+            }
+          ]
         }
       },
       "quiz": {
@@ -650,7 +752,8 @@
             "explanation": "Төгәл координаталар һәм тасвирлама әйберне тиз табарга һәм кешеләрне сакларга ярдәм итә. Фаразлар һәм имеш-мимеш комачаулый гына."
           }
         ]
-      }
+      },
+      "updated": "2026-11-20"
     },
     {
       "slug": "terror-bomb-call",
@@ -671,11 +774,11 @@
             "Знайте номер 112 и порядок эвакуации из здания"
           ],
           "during": [
+            "Сразу после разговора позвоните по 112 и действуйте по указаниям",
             "Не перебивайте звонящего и не угрожайте ему в ответ",
             "Запишите точное время звонка и номер, если он определился",
             "Отметьте голос, темп речи и манеру говорить",
-            "Запомните фоновые шумы и детали, которые назвал звонящий",
-            "Сразу после разговора позвоните по 112 и действуйте по указаниям"
+            "Запомните фоновые шумы и детали, которые назвал звонящий"
           ],
           "after": [
             "Не обсуждайте звонок с посторонними и не публикуйте подробности",
@@ -693,7 +796,19 @@
             "112",
             "102"
           ],
-          "source": "МЧС России · https://10.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki-po-antiterroru/terrorizm-ugroza-obshchestvu-chto-delat-pri-ugroze-terrora"
+          "source": "МЧС России · https://10.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki-po-antiterroru/terrorizm-ugroza-obshchestvu-chto-delat-pri-ugroze-terrora",
+          "quick": "Сразу после разговора позвоните по 112 и действуйте по указаниям; Не перебивайте звонящего и не угрожайте ему в ответ",
+          "mistakes": [
+            "Кричать и угрожать в ответ",
+            "Бросать трубку до конца разговора",
+            "Распространять слухи о звонке"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://10.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki-po-antiterroru/terrorizm-ugroza-obshchestvu-chto-delat-pri-ugroze-terrora"
+            }
+          ]
         },
         "en": {
           "title": "Telephone bomb threat",
@@ -710,11 +825,11 @@
             "Know the number 112 and the building evacuation procedure"
           ],
           "during": [
+            "Immediately after the call, dial 112 and follow the instructions",
             "Do not interrupt the caller and do not threaten back",
             "Write down the exact time of the call and the number if it is displayed",
             "Note the voice, speech pace, and manner of speaking",
-            "Memorize background noises and details the caller mentioned",
-            "Immediately after the call, dial 112 and follow the instructions"
+            "Memorize background noises and details the caller mentioned"
           ],
           "after": [
             "Do not discuss the call with outsiders and do not share details",
@@ -732,6 +847,18 @@
           "contacts": [
             "112",
             "102"
+          ],
+          "quick": "Immediately after the call, dial 112 and follow the instructions; Do not interrupt the caller and do not threaten back",
+          "mistakes": [
+            "Shouting and threatening back",
+            "Hanging up before the conversation ends",
+            "Spreading rumors about the call"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://10.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki-po-antiterroru/terrorizm-ugroza-obshchestvu-chto-delat-pri-ugroze-terrora"
+            }
           ]
         },
         "zh": {
@@ -749,6 +876,7 @@
             "记住112和建筑物的疏散程序"
           ],
           "during": [
+            "拨打112并报告情况",
             "不要打断来电者，也不要回以威胁",
             "记下来电的准确时间和显示的号码",
             "注意声音、语速和说话方式",
@@ -771,7 +899,19 @@
             "112",
             "102"
           ],
-          "source": "俄罗斯紧急情况部 · https://10.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki-po-antiterroru/terrorizm-ugroza-obshchestvu-chto-delat-pri-ugroze-terrora"
+          "source": "俄罗斯紧急情况部 · https://10.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki-po-antiterroru/terrorizm-ugroza-obshchestvu-chto-delat-pri-ugroze-terrora",
+          "quick": "拨打112并报告情况；不要打断来电者，也不要回以威胁",
+          "mistakes": [
+            "大声喊叫并回以威胁",
+            "在对话结束前挂断",
+            "散布关于来电的传言"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://10.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki-po-antiterroru/terrorizm-ugroza-obshchestvu-chto-delat-pri-ugroze-terrora"
+            }
+          ]
         },
         "tt": {
           "title": "Телефоннан шартлау белән янау",
@@ -788,6 +928,7 @@
             "112 номерын һәм бинадан эвакуация тәртибен белегез"
           ],
           "during": [
+            "112 телефонына шалтыратып хәбәр итегез",
             "Шалтыратучыны бүлдермәгез һәм аңа җавап итеп янамагыз",
             "Шалтыратуның төгәл вакытын һәм номерын, ул билгеләнсә, языгыз",
             "Тавышын, сөйләү темпын һәм сөйләшү рәвешен билгеләгез",
@@ -810,7 +951,19 @@
             "112",
             "102"
           ],
-          "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://10.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki-po-antiterroru/terrorizm-ugroza-obshchestvu-chto-delat-pri-ugroze-terrora"
+          "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://10.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki-po-antiterroru/terrorizm-ugroza-obshchestvu-chto-delat-pri-ugroze-terrora",
+          "quick": "112 телефонына шалтыратып хәбәр итегез; Шалтыратучыны бүлдермәгез һәм аңа җавап итеп янамагыз",
+          "mistakes": [
+            "Кычкырырга һәм җавап итеп янарга",
+            "Сөйләшү ахырга җиткәнче трубканы ташларга",
+            "Шалтырату турында имеш-мимеш таратырга"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://10.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki-po-antiterroru/terrorizm-ugroza-obshchestvu-chto-delat-pri-ugroze-terrora"
+            }
+          ]
         }
       },
       "quiz": {
@@ -966,7 +1119,8 @@
             "explanation": "Детальләрне бастыру тикшерүгә комачаулый һәм паника тудыра. Мәгълүматны тик хезмәткәрләргә тапшыралар."
           }
         ]
-      }
+      },
+      "updated": "2026-11-20"
     },
     {
       "slug": "terror-shooting",
@@ -986,10 +1140,10 @@
             "Держите телефон заряженным"
           ],
           "during": [
+            "Сообщите по 112, когда это безопасно, и опишите место",
             "Если выход свободен, уходите пригнувшись, не поднимаясь в полный рост",
             "Если выйти нельзя, лягте на пол за укрытие: стену, колонну, мебель",
             "Держитесь подальше от окон и не выглядывайте",
-            "Сообщите по 112, когда это безопасно, и опишите место",
             "При появлении полиции не бегите к ним и держите руки на виду"
           ],
           "after": [
@@ -1009,7 +1163,19 @@
             "112",
             "102"
           ],
-          "source": "МЧС России · https://10.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki-po-antiterroru/terrorizm-ugroza-obshchestvu-chto-delat-pri-ugroze-terrora"
+          "source": "МЧС России · https://10.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki-po-antiterroru/terrorizm-ugroza-obshchestvu-chto-delat-pri-ugroze-terrora",
+          "quick": "Сообщите по 112, когда это безопасно, и опишите место; Если выход свободен, уходите пригнувшись, не поднимаясь в п.",
+          "mistakes": [
+            "Бежать на звук выстрелов и снимать происходящее",
+            "Выходить в коридор, чтобы посмотреть, что происходит",
+            "Бежать навстречу сотрудникам или от них"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://10.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki-po-antiterroru/terrorizm-ugroza-obshchestvu-chto-delat-pri-ugroze-terrora"
+            }
+          ]
         },
         "en": {
           "title": "Shooting in a building",
@@ -1025,10 +1191,10 @@
             "Keep your phone charged"
           ],
           "during": [
+            "Call 112 when it is safe and describe your location",
             "If the exit is clear, leave while crouching, without standing up to full height",
             "If you cannot leave, lie on the floor behind cover: a wall, a column, furniture",
             "Stay away from windows and do not look out",
-            "Call 112 when it is safe and describe your location",
             "When police arrive, do not run toward them and keep your hands visible"
           ],
           "after": [
@@ -1048,6 +1214,18 @@
           "contacts": [
             "112",
             "102"
+          ],
+          "quick": "Call 112 when it is safe and describe your location; If the exit is clear, leave while crouching, without standi.",
+          "mistakes": [
+            "Run toward the gunfire and film what is happening",
+            "Go into the corridor to see what is going on",
+            "Run toward or away from responding officers"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://10.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki-po-antiterroru/terrorizm-ugroza-obshchestvu-chto-delat-pri-ugroze-terrora"
+            }
           ]
         },
         "zh": {
@@ -1064,6 +1242,7 @@
             "保持手机电量"
           ],
           "during": [
+            "拨打112并报告情况",
             "出口畅通时弯腰离开，不要站直",
             "无法离开时趴在地上，躲在墙、柱子或家具后",
             "远离窗户，不要向外张望",
@@ -1087,7 +1266,19 @@
             "112",
             "102"
           ],
-          "source": "俄罗斯紧急情况部 · https://10.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki-po-antiterroru/terrorizm-ugroza-obshchestvu-chto-delat-pri-ugroze-terrora"
+          "source": "俄罗斯紧急情况部 · https://10.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki-po-antiterroru/terrorizm-ugroza-obshchestvu-chto-delat-pri-ugroze-terrora",
+          "quick": "拨打112并报告情况；出口畅通时弯腰离开，不要站直",
+          "mistakes": [
+            "跑向枪声处并拍摄现场",
+            "走到走廊查看发生了什么",
+            "跑向或跑离赶到的警员"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://10.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki-po-antiterroru/terrorizm-ugroza-obshchestvu-chto-delat-pri-ugroze-terrora"
+            }
+          ]
         },
         "tt": {
           "title": "Бинада атыш",
@@ -1103,6 +1294,7 @@
             "Телефонны зарядлы тотыгыз"
           ],
           "during": [
+            "112 телефонына шалтыратып хәбәр итегез",
             "Чыгу юлы ирекле булса, тулы буйга басмаган килеш, иелеп китегез",
             "Чыгарга мөмкин булмаса, идәнәгә ышык артына ятыгыз: стена, колонна, мебель",
             "Тәрәзәләрдән ерак торыгыз һәм карамагыз",
@@ -1126,7 +1318,19 @@
             "112",
             "102"
           ],
-          "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://10.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki-po-antiterroru/terrorizm-ugroza-obshchestvu-chto-delat-pri-ugroze-terrora"
+          "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://10.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki-po-antiterroru/terrorizm-ugroza-obshchestvu-chto-delat-pri-ugroze-terrora",
+          "quick": "112 телефонына шалтыратып хәбәр итегез; Чыгу юлы ирекле булса, тулы буйга басмаган килеш, иелеп кит.",
+          "mistakes": [
+            "Атыш тавышына йөгерү һәм булганны төшерү",
+            "Нәрсә булганын карар өчен коридорга чыгу",
+            "Хезмәткәрләргә каршы яки алардан йөгерү"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://10.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki-po-antiterroru/terrorizm-ugroza-obshchestvu-chto-delat-pri-ugroze-terrora"
+            }
+          ]
         }
       },
       "quiz": {
@@ -1282,7 +1486,8 @@
             "explanation": "Тыныч шалтырату ышыкны бирми. Видео һәм кычкырган сөйләшү һөҗүм итүченең игътибарын җәлеп итә."
           }
         ]
-      }
+      },
+      "updated": "2026-11-20"
     },
     {
       "slug": "terror-drone",
@@ -1303,11 +1508,11 @@
             "Держите телефон заряженным"
           ],
           "during": [
+            "Когда дрон уйдёт, сообщите по 112: время, место и направление полёта",
             "Не приближайтесь к беспилотнику и не пытайтесь его сбить",
             "Уйдите в подвал, паркинг или помещение с несущими стенами без окон",
             "Держитесь подальше от окон и стеклянных конструкций",
-            "Не пользуйтесь телефоном, пока дрон рядом",
-            "Когда дрон уйдёт, сообщите по 112: время, место и направление полёта"
+            "Не пользуйтесь телефоном, пока дрон рядом"
           ],
           "after": [
             "Не подходите к обломкам и не трогайте их",
@@ -1323,7 +1528,19 @@
           "contacts": [
             "112"
           ],
-          "source": "МЧС России · https://27.mchs.gov.ru/rekomendacii-naseleniyu/chto-delat-pri-atake-bespilotnyh-letatelnyh-apparatov"
+          "source": "МЧС России · https://27.mchs.gov.ru/rekomendacii-naseleniyu/chto-delat-pri-atake-bespilotnyh-letatelnyh-apparatov",
+          "quick": "Когда дрон уйдёт, сообщите по 112: время, место и направление полёта; Не приближайтесь к беспилотнику и не пытайтесь ег.",
+          "mistakes": [
+            "Сбивать дрон палками или камнями",
+            "Подходить к упавшему беспилотнику",
+            "Трогать обломки и неизвестные предметы"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://27.mchs.gov.ru/rekomendacii-naseleniyu/chto-delat-pri-atake-bespilotnyh-letatelnyh-apparatov"
+            }
+          ]
         },
         "en": {
           "title": "Drone attack",
@@ -1340,11 +1557,11 @@
             "Keep your phone charged"
           ],
           "during": [
+            "When the drone has left, call 112 with the time, place, and direction of flight",
             "Do not approach the drone and do not try to bring it down",
             "Go to a basement, parking garage, or room with solid walls and no windows",
             "Stay away from windows and glass structures",
-            "Do not use your phone while the drone is nearby",
-            "When the drone has left, call 112 with the time, place, and direction of flight"
+            "Do not use your phone while the drone is nearby"
           ],
           "after": [
             "Do not approach debris and do not touch it",
@@ -1360,6 +1577,18 @@
           "source": "EMERCOM of Russia · https://27.mchs.gov.ru/rekomendacii-naseleniyu/chto-delat-pri-atake-bespilotnyh-letatelnyh-apparatov",
           "contacts": [
             "112"
+          ],
+          "quick": "When the drone has left, call 112 with the time, place, and direction of flight; Do not approach the drone and do not t.",
+          "mistakes": [
+            "Knocking the drone down with sticks or stones",
+            "Approaching a downed drone",
+            "Touching debris or unknown objects"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://27.mchs.gov.ru/rekomendacii-naseleniyu/chto-delat-pri-atake-bespilotnyh-letatelnyh-apparatov"
+            }
           ]
         },
         "zh": {
@@ -1377,6 +1606,7 @@
             "保持手机电量"
           ],
           "during": [
+            "拨打112并报告情况",
             "不要靠近无人机，不要试图击落它",
             "进入地下室、地下车库，或没有窗户的坚固房间",
             "远离窗户和玻璃结构",
@@ -1397,7 +1627,19 @@
           "contacts": [
             "112"
           ],
-          "source": "俄罗斯紧急情况部 · https://27.mchs.gov.ru/rekomendacii-naseleniyu/chto-delat-pri-atake-bespilotnyh-letatelnyh-apparatov"
+          "source": "俄罗斯紧急情况部 · https://27.mchs.gov.ru/rekomendacii-naseleniyu/chto-delat-pri-atake-bespilotnyh-letatelnyh-apparatov",
+          "quick": "拨打112并报告情况；不要靠近无人机，不要试图击落它",
+          "mistakes": [
+            "用棍棒或石块击落无人机",
+            "靠近坠落的无人机",
+            "触碰残骸或不明物品"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://27.mchs.gov.ru/rekomendacii-naseleniyu/chto-delat-pri-atake-bespilotnyh-letatelnyh-apparatov"
+            }
+          ]
         },
         "tt": {
           "title": "Дрон һөҗүме",
@@ -1414,6 +1656,7 @@
             "Телефонны зарядлы тотыгыз"
           ],
           "during": [
+            "112 телефонына шалтыратып хәбәр итегез",
             "Дронга якын килмәгез һәм аны бәреп төшерергә маташмагыз",
             "Подвалга, паркингка яки тәрәзәсез йөртүче стеналары булган бинага керегез",
             "Тәрәзәләрдән һәм пыяла конструкцияләрдән ерак торыгыз",
@@ -1434,7 +1677,19 @@
           "contacts": [
             "112"
           ],
-          "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://27.mchs.gov.ru/rekomendacii-naseleniyu/chto-delat-pri-atake-bespilotnyh-letatelnyh-apparatov"
+          "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://27.mchs.gov.ru/rekomendacii-naseleniyu/chto-delat-pri-atake-bespilotnyh-letatelnyh-apparatov",
+          "quick": "112 телефонына шалтыратып хәбәр итегез; Дронга якын килмәгез һәм аны бәреп төшерергә маташмагыз",
+          "mistakes": [
+            "Дронны таяк яки таш белән бәреп төшерү",
+            "Егылган дронга якын килү",
+            "Калдыкларга һәм билгесез әйберләргә кагылу"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://27.mchs.gov.ru/rekomendacii-naseleniyu/chto-delat-pri-atake-bespilotnyh-letatelnyh-apparatov"
+            }
+          ]
         }
       },
       "quiz": {
@@ -1590,7 +1845,8 @@
             "explanation": "Калдыклар шартлау яки агу куркынычы белән бәйле булырга мөмкин. Аларны тик белгечләр өйрәнә."
           }
         ]
-      }
+      },
+      "updated": "2026-11-20"
     },
     {
       "slug": "terror-recruit",
@@ -1612,11 +1868,11 @@
             "Обсуждайте с близкими подозрительные переписки"
           ],
           "during": [
+            "Сообщите в полицию по 102 или 112",
             "Прекратите общение, но сохраните переписку",
             "Не переводите деньги и не отправляйте документы, фото и геолокацию",
             "Не выполняйте поручения: передача вещей, съёмка, поджог — это преступление",
-            "Расскажите родителям, преподавателю или психологу",
-            "Сообщите в полицию по 102 или 112"
+            "Расскажите родителям, преподавателю или психологу"
           ],
           "after": [
             "Сохраните ссылки, никнеймы и скриншоты",
@@ -1634,7 +1890,19 @@
             "112",
             "102"
           ],
-          "source": "Национальный антитеррористический комитет · https://nac.gov.ru/list/view/019f2389-b98a-7f5d-aaf4-303b30a34eed/view/019fae32-7c25-7dec-bc99-f1e8435a1d96"
+          "source": "Национальный антитеррористический комитет · https://nac.gov.ru/list/view/019f2389-b98a-7f5d-aaf4-303b30a34eed/view/019fae32-7c25-7dec-bc99-f1e8435a1d96",
+          "quick": "Сообщите в полицию по 102 или 112; Прекратите общение, но сохраните переписку",
+          "mistakes": [
+            "Спорить с вербовщиком и доказывать свою правоту",
+            "Пересылать деньги или данные карты",
+            "Удалять переписку до обращения в полицию"
+          ],
+          "citations": [
+            {
+              "org": "Национальный антитеррористический комитет",
+              "url": "https://nac.gov.ru/list/view/019f2389-b98a-7f5d-aaf4-303b30a34eed/view/019fae32-7c25-7dec-bc99-f1e8435a1d96"
+            }
+          ]
         },
         "en": {
           "title": "Recruitment into a terrorist organization",
@@ -1652,11 +1920,11 @@
             "Discuss suspicious messages with your family"
           ],
           "during": [
+            "Report to the police at 102 or 112",
             "Stop the conversation, but keep the messages",
             "Do not send money, documents, photos, or your location",
             "Do not follow their instructions: passing items, filming, or arson are crimes",
-            "Tell your parents, a teacher, or a psychologist",
-            "Report to the police at 102 or 112"
+            "Tell your parents, a teacher, or a psychologist"
           ],
           "after": [
             "Keep links, nicknames, and screenshots",
@@ -1674,6 +1942,18 @@
           "contacts": [
             "112",
             "102"
+          ],
+          "quick": "Report to the police at 102 or 112; Stop the conversation, but keep the messages",
+          "mistakes": [
+            "Arguing with the recruiter and trying to prove your point",
+            "Sending money or card details",
+            "Deleting the messages before contacting the police"
+          ],
+          "citations": [
+            {
+              "org": "Национальный антитеррористический комитет",
+              "url": "https://nac.gov.ru/list/view/019f2389-b98a-7f5d-aaf4-303b30a34eed/view/019fae32-7c25-7dec-bc99-f1e8435a1d96"
+            }
           ]
         },
         "zh": {
@@ -1692,6 +1972,7 @@
             "把可疑消息与家人讨论"
           ],
           "during": [
+            "拨打112并报告情况",
             "停止对话，但保留消息",
             "不要发送钱、证件、照片或你的位置",
             "不要按对方指示行动：传递物品、拍摄或纵火都是犯罪",
@@ -1714,7 +1995,19 @@
             "112",
             "102"
           ],
-          "source": "国家反恐委员会 · https://nac.gov.ru/list/view/019f2389-b98a-7f5d-aaf4-303b30a34eed/view/019fae32-7c25-7dec-bc99-f1e8435a1d96"
+          "source": "国家反恐委员会 · https://nac.gov.ru/list/view/019f2389-b98a-7f5d-aaf4-303b30a34eed/view/019fae32-7c25-7dec-bc99-f1e8435a1d96",
+          "quick": "拨打112并报告情况；停止对话，但保留消息",
+          "mistakes": [
+            "与招募者争论并试图说服对方",
+            "汇款或发送银行卡信息",
+            "联系警察前删除消息"
+          ],
+          "citations": [
+            {
+              "org": "Национальный антитеррористический комитет",
+              "url": "https://nac.gov.ru/list/view/019f2389-b98a-7f5d-aaf4-303b30a34eed/view/019fae32-7c25-7dec-bc99-f1e8435a1d96"
+            }
+          ]
         },
         "tt": {
           "title": "Террор оешмасына җәлеп итү",
@@ -1732,11 +2025,11 @@
             "Шикле язышуларны якыннарыгыз белән сөйләшегез"
           ],
           "during": [
+            "Полициягә 102 яки 112 аша хәбәр итегез",
             "Аралашуны туктатыгыз, ләкин язышуны саклагыз",
             "Акча күчермәгез һәм документлар, фото, геолокация җибәрмәгез",
             "Йөкләмәләрне үтәмәгез: әйбер тапшыру, төшерү, яндыру — җинаять",
-            "Ата-анага, укытучыга яки психологларга сөйләгез",
-            "Полициягә 102 яки 112 аша хәбәр итегез"
+            "Ата-анага, укытучыга яки психологларга сөйләгез"
           ],
           "after": [
             "Сылтамаларны, никнеймнарны һәм скриншотларны саклагыз",
@@ -1754,7 +2047,19 @@
             "112",
             "102"
           ],
-          "source": "Милли антитеррор комитеты · https://nac.gov.ru/list/view/019f2389-b98a-7f5d-aaf4-303b30a34eed/view/019fae32-7c25-7dec-bc99-f1e8435a1d96"
+          "source": "Милли антитеррор комитеты · https://nac.gov.ru/list/view/019f2389-b98a-7f5d-aaf4-303b30a34eed/view/019fae32-7c25-7dec-bc99-f1e8435a1d96",
+          "quick": "Полициягә 102 яки 112 аша хәбәр итегез; Аралашуны туктатыгыз, ләкин язышуны саклагыз",
+          "mistakes": [
+            "Җәлеп итүче белән бәхәсләшү һәм үз хаклыгыгызны исбатлау",
+            "Акча яки карта мәгълүматын күчерү",
+            "Полициягә мөрәҗәгать иткәнче язышуны бетерергә"
+          ],
+          "citations": [
+            {
+              "org": "Национальный антитеррористический комитет",
+              "url": "https://nac.gov.ru/list/view/019f2389-b98a-7f5d-aaf4-303b30a34eed/view/019fae32-7c25-7dec-bc99-f1e8435a1d96"
+            }
+          ]
         }
       },
       "quiz": {
@@ -1910,7 +2215,8 @@
             "explanation": "Шәхесне алмаштыру һәм мәгълүмат сорау — ФСБ һәм НАК тасвирлаган алым."
           }
         ]
-      }
+      },
+      "updated": "2026-11-20"
     },
     {
       "slug": "terror-evacuation",
@@ -1931,6 +2237,7 @@
             "Участвуйте в учебных эвакуациях"
           ],
           "during": [
+            "Позвоните 112 и сообщите о случившемся",
             "Возьмите документы и телефон, если они под рукой, и идите к выходу",
             "Не пользуйтесь лифтом, спускайтесь по лестнице",
             "Не бегите и не толкайте людей впереди",
@@ -1952,7 +2259,19 @@
           "contacts": [
             "112"
           ],
-          "source": "МЧС России · https://78.mchs.gov.ru/deyatelnost/propaganda/propaganda-sredi-naseleniya/polezno-znat/pravila-povedeniya-pri-terroristicheskom-akte"
+          "source": "МЧС России · https://78.mchs.gov.ru/deyatelnost/propaganda/propaganda-sredi-naseleniya/polezno-znat/pravila-povedeniya-pri-terroristicheskom-akte",
+          "quick": "Позвоните 112 и сообщите о случившемся; Возьмите документы и телефон, если они под рукой, и идите к.",
+          "mistakes": [
+            "Возвращаться в здание за вещами",
+            "Пользоваться лифтом при эвакуации",
+            "Снимать панику на видео и мешать проходу"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://78.mchs.gov.ru/deyatelnost/propaganda/propaganda-sredi-naseleniya/polezno-znat/pravila-povedeniya-pri-terroristicheskom-akte"
+            }
+          ]
         },
         "en": {
           "title": "Evacuation during a terrorist threat",
@@ -1969,6 +2288,7 @@
             "Take part in evacuation drills"
           ],
           "during": [
+            "Call 112 and report the emergency",
             "Take documents and your phone if they are at hand and head to the exit",
             "Do not use the elevator, go down the stairs",
             "Do not run or push people ahead of you",
@@ -1990,6 +2310,18 @@
           "source": "EMERCOM of Russia · https://78.mchs.gov.ru/deyatelnost/propaganda/propaganda-sredi-naseleniya/polezno-znat/pravila-povedeniya-pri-terroristicheskom-akte",
           "contacts": [
             "112"
+          ],
+          "quick": "Call 112 and report the emergency; Take documents and your phone if they are at hand and head.",
+          "mistakes": [
+            "Returning to the building for your belongings",
+            "Using the elevator during evacuation",
+            "Filming the panic and blocking the way"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://78.mchs.gov.ru/deyatelnost/propaganda/propaganda-sredi-naseleniya/polezno-znat/pravila-povedeniya-pri-terroristicheskom-akte"
+            }
           ]
         },
         "zh": {
@@ -2007,6 +2339,7 @@
             "参加疏散演练"
           ],
           "during": [
+            "拨打112并报告情况",
             "手边有证件和手机就带上，前往出口",
             "不要乘电梯，走楼梯下楼",
             "不要奔跑，不要推前面的人",
@@ -2028,7 +2361,19 @@
           "contacts": [
             "112"
           ],
-          "source": "俄罗斯紧急情况部 · https://78.mchs.gov.ru/deyatelnost/propaganda/propaganda-sredi-naseleniya/polezno-znat/pravila-povedeniya-pri-terroristicheskom-akte"
+          "source": "俄罗斯紧急情况部 · https://78.mchs.gov.ru/deyatelnost/propaganda/propaganda-sredi-naseleniya/polezno-znat/pravila-povedeniya-pri-terroristicheskom-akte",
+          "quick": "拨打112并报告情况；手边有证件和手机就带上，前往出口",
+          "mistakes": [
+            "为取物品返回建筑物",
+            "疏散时乘电梯",
+            "拍摄混乱场面并挡住通路"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://78.mchs.gov.ru/deyatelnost/propaganda/propaganda-sredi-naseleniya/polezno-znat/pravila-povedeniya-pri-terroristicheskom-akte"
+            }
+          ]
         },
         "tt": {
           "title": "Террор куркынычы вакытында эвакуация",
@@ -2045,6 +2390,7 @@
             "Уку эвакуацияләрендә катнашыгыз"
           ],
           "during": [
+            "112 телефонына шалтыратып хәбәр итегез",
             "Документлар һәм телефон кул астында булса алыгыз да чыгу юлына барыгыз",
             "Лифт кулланмагыз, баскычтан төшегез",
             "Йөгермәгез һәм алдагы кешеләрне этмәгез",
@@ -2066,7 +2412,19 @@
           "contacts": [
             "112"
           ],
-          "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://78.mchs.gov.ru/deyatelnost/propaganda/propaganda-sredi-naseleniya/polezno-znat/pravila-povedeniya-pri-terroristicheskom-akte"
+          "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://78.mchs.gov.ru/deyatelnost/propaganda/propaganda-sredi-naseleniya/polezno-znat/pravila-povedeniya-pri-terroristicheskom-akte",
+          "quick": "112 телефонына шалтыратып хәбәр итегез; Документлар һәм телефон кул астында булса алыгыз да чыгу юл.",
+          "mistakes": [
+            "Әйберләр өчен бинага кайту",
+            "Эвакуация вакытында лифт куллану",
+            "Паниканы видеога төшереп юлны каплау"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://78.mchs.gov.ru/deyatelnost/propaganda/propaganda-sredi-naseleniya/polezno-znat/pravila-povedeniya-pri-terroristicheskom-akte"
+            }
+          ]
         }
       },
       "quiz": {
@@ -2222,7 +2580,8 @@
             "explanation": "Җыю пункты мөмкин булган куркынычтан ерак һәм исемлек тикшерергә мөмкинлек бирә. Бина янында калу куркыныч."
           }
         ]
-      }
+      },
+      "updated": "2026-11-20"
     }
   ]
 }
