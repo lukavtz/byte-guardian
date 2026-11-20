@@ -2,6 +2,9 @@ FROM python:3.14-slim AS runtime
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 WORKDIR /app
 RUN pip install --no-cache-dir uv==0.12.23
+# The venv is built as root with --no-dev; keep `uv run` from re-syncing dev
+# deps at runtime (the non-root user cannot write /app/.venv).
+ENV UV_NO_DEV=1
 COPY pyproject.toml uv.lock* ./
 RUN uv sync --frozen --no-dev
 COPY app ./app

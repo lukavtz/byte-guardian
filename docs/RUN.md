@@ -39,18 +39,26 @@ podman machine inspect --format '{{.ConnectionInfo.PodmanSocket.Path}}'
 podman compose up -d --build
 podman compose ps
 podman compose logs -f bot
-curl -fsS localhost:8080/healthz
-curl -fsS localhost:8080/readyz
 ```
 
 Порядок: `postgres`/`redis` (healthcheck) → `migrate` (`alembic upgrade head`) →
-`bot`, `worker`. `caddy` публикует 80/443 и проксирует `bot:8080`.
+`bot`, `worker`. `caddy` включается только профилем `webhook` и проксирует
+`bot:8080`.
+
+```bash
+podman compose --profile webhook up -d --build   # прод, TLS через Caddy
+```
 
 Проверка без запуска контейнеров:
 
 ```bash
 podman compose config
 ```
+
+`/healthz`, `/readyz`, `/metrics` поднимает только webhook-режим (aiohttp-сервер
+на `PORT`). В polling HTTP-сервера нет, поэтому `HEALTHCHECK` в образе и
+`curl localhost:8080/healthz` локально падают — это ожидаемо, живость
+проверяется по логу `Run polling for bot @...`.
 
 ## 4. Режимы
 
@@ -90,7 +98,9 @@ echo 'net.ipv4.ip_unprivileged_port_start=80' | sudo tee /etc/sysctl.d/99-podman
 Без прав root: убрать `ports` у `caddy` и поставить внешний reverse proxy, либо
 слушать 8080/8443 и проксировать с хоста.
 
-macOS: порты внутри `podman machine` уже разрешены, sysctl не нужен.
+macOS (Podman 6 / libkrun): порог тот же — публикация 80/443 падает с
+`rootlessport cannot expose privileged port 80`. Локально `caddy` не нужен
+(профиль `webhook`); для проверки прод-режима на macOS поднимать порты ≥1024.
 
 ## 6. Обслуживание
 
@@ -156,3 +166,19 @@ curl -fsS "https://api.telegram.org/bot$BOT_TOKEN/getWebhookInfo"
 ```
 `last_error_message` в ответе Telegram обычно указывает на 403 (неверный секрет)
 или 502 (Caddy не видит `bot`).
+
+**`postgres` падает: "there appears to be PostgreSQL data in /var/lib/postgresql/data"**
+Образ `postgres:18`+ требует один том в `/var/lib/postgresql` (данные лежат в
+подкаталоге версии). Том в `/var/lib/postgresql/data` не подходит:
+```bash
+podman compose down -v && podman compose up -d
+```
+
+**`migrate`/`bot`: `failed to create directory /app/.venv/...: Permission denied`**
+`uv run` в рантайме пытался доставить dev-зависимости в `.venv`, собранный от
+root с `--no-dev`. Образ выставляет `UV_NO_DEV=1`; при правке Dockerfile не
+убирать.
+
+**`rootlessport cannot expose privileged port 80`**
+`caddy` включён профилем `webhook`. Локально:
+`podman compose up -d` (без caddy) — либо `--profile webhook` с портами ≥1024.

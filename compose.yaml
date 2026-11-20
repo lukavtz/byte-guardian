@@ -34,6 +34,9 @@ services:
   caddy:
     image: caddy:2.10-alpine
     restart: unless-stopped
+    # Only needed when Telegram talks to the bot over HTTPS. Local polling runs
+    # must not bind privileged 80/443 (rootless podman denies <1024).
+    profiles: ["webhook"]
     ports:
       - "80:80"
       - "443:443"
@@ -50,7 +53,9 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
       POSTGRES_DB: ${POSTGRES_DB:-bot}
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      # postgres 18+ images expect the mount one level up; PGDATA lives in a
+      # version-specific subdirectory so pg_upgrade --link works.
+      - postgres-data:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-bot}"]
       interval: 5s
