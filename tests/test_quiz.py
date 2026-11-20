@@ -80,6 +80,8 @@ class FakeDB:
 
     def execute(self, statement, params: dict[str, Any]) -> _Result:
         sql = " ".join(str(statement).split())
+        if sql.startswith("SELECT locale FROM users"):
+            return _Result([])
         if sql.startswith("INSERT INTO quiz_answer"):
             key = self._key(params)
             if any(self._key(row) == key for row in self.rows):

@@ -63,6 +63,26 @@ def _card_from_payload(payload: str) -> str | None:
     return payload[len("card_") :] if payload.startswith("card_") else None
 
 
+async def _private_only(
+    message: Message,
+    bot: Bot,
+    session_factory: async_sessionmaker[AsyncSession],
+) -> bool:
+    """Interactive screens are edited in place, so groups get a link instead."""
+    if getattr(message.chat, "type", None) == "private":
+        return True
+    locale = await user_locale(session_factory, message.from_user)
+    username = None
+    try:
+        me = await bot.me()
+        username = me.username
+    except Exception:
+        logger.warning("could not resolve bot username for the group reply")
+    link = f"https://t.me/{username}" if username else ""
+    await message.answer(t(locale, "group.private_only", link=link))
+    return False
+
+
 @router.message(Command("start"))
 async def start(
     message: Message,
@@ -71,6 +91,8 @@ async def start(
     repo: ContentRepository,
     session_factory: async_sessionmaker[AsyncSession],
 ) -> None:
+    if not await _private_only(message, bot, session_factory):
+        return
     locale = await pin_initial_locale(session_factory, message.from_user)
     await send_banner(message, session_factory)
     slug = _card_from_payload(command.args or "")
@@ -97,6 +119,8 @@ async def settings_command(
     bot: Bot,
     session_factory: async_sessionmaker[AsyncSession],
 ) -> None:
+    if not await _private_only(message, bot, session_factory):
+        return
     locale = await user_locale(session_factory, message.from_user)
     user = message.from_user
     opted_in = await broadcast_opted_in(session_factory, user.id) if user else True
@@ -125,6 +149,7 @@ async def set_commands(bot: Bot, locale: str, language_code: str | None = None) 
         [
             BotCommand(command="start", description=t(locale, "commands.start")),
             BotCommand(command="help", description=t(locale, "commands.help")),
+            BotCommand(command="settings", description=t(locale, "commands.settings")),
         ],
         language_code=language_code,
     )

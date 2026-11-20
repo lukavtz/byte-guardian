@@ -33,6 +33,7 @@ class User(Base):
     broadcasts_opt_in: Mapped[bool] = mapped_column(
         Boolean, nullable=False, server_default="true"
     )
+    locale: Mapped[str] = mapped_column(Text, nullable=False, server_default="ru")
     created_at: Mapped[dt.datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=sa_text("now()")
     )

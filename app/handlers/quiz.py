@@ -9,8 +9,9 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from app.content.repository import ContentRepository
 from app.content.types import QuizView
 from app.services.callbacks import parse_cb
-from app.services.i18n import resolve_locale, t
+from app.services.i18n import t
 from app.services.quiz import owner_of, pick_questions, record_answer, score
+from app.services.user_locale import get_locale
 from app.ui.delivery import show
 from app.ui.render import render_question, render_result
 
@@ -21,11 +22,6 @@ START = "start"
 
 async def _alert(callback: CallbackQuery, locale: str) -> None:
     await callback.answer(t(locale, "errors.generic"), show_alert=True)
-
-
-def _locale(callback: CallbackQuery) -> str:
-    user = callback.from_user
-    return resolve_locale(user.language_code if user is not None else None)
 
 
 def _index_of(questions: list[QuizView], qid: str) -> int | None:
@@ -53,7 +49,11 @@ async def quiz_callback(
         await callback.answer()
         return
 
-    locale = _locale(callback)
+    locale = await get_locale(
+        session_factory,
+        callback.from_user.id,
+        callback.from_user.language_code,
+    )
     slug = parsed.arg
     seed = parsed.extra[-1]
     questions = pick_questions(repo.quizzes(slug, locale), seed)

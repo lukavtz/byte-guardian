@@ -54,5 +54,11 @@
   "settings.broadcast.disable": "Выключить рассылку",
   "settings.broadcast.enable": "Включить рассылку",
   "settings.saved": "Сохранено.",
-  "settings.command": "/settings - язык и рассылка"
+  "settings.command": "/settings - язык и рассылка",
+  "commands.settings": "Язык и рассылка",
+  "button.search": "Поиск",
+  "button.language": "Язык",
+  "menu.search_hint": "Напишите ситуацию одним сообщением — найдём карточку.",
+  "language.hint": "Выберите язык интерфейса.",
+  "group.private_only": "Меню и настройки открываются в личке: {link}"
 }

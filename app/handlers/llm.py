@@ -8,6 +8,7 @@ from aiogram import Bot, Dispatcher, F, Router
 from aiogram.dispatcher.event.bases import SkipHandler
 from aiogram.filters import Command, CommandObject
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.config import Settings
 from app.content.repository import ContentRepository
@@ -21,6 +22,7 @@ from app.services.llm import (
     strip_html,
     strip_mention,
 )
+from app.services.user_locale import get_locale
 from app.ui.delivery import show
 from app.ui.render import search_screen
 
@@ -52,9 +54,15 @@ FALLBACK = {
 router = Router(name="llm")
 
 
-def locale_of(message: Message) -> str:
+async def locale_of(
+    message: Message,
+    session_factory: async_sessionmaker[AsyncSession] | None,
+) -> str:
     user = message.from_user
-    return resolve_locale(user.language_code if user else None)
+    code = user.language_code if user else None
+    if session_factory is None:
+        return resolve_locale(code)
+    return await get_locale(session_factory, user.id if user else 0, code)
 
 
 def _is_group(message: Message) -> bool:
@@ -114,8 +122,9 @@ async def respond(
     settings: Settings,
     repository: ContentRepository | None = None,
     bot_username: str | None = None,
+    session_factory: async_sessionmaker[AsyncSession] | None = None,
 ) -> None:
-    locale = locale_of(message)
+    locale = await locale_of(message, session_factory)
     group = _is_group(message)
     question = question.strip()
     if not question:
@@ -156,6 +165,7 @@ async def ask_command(
     bot: Bot,
     settings: Settings,
     repo: ContentRepository | None = None,
+    session_factory: async_sessionmaker[AsyncSession] | None = None,
 ) -> None:
     await respond(
         message,
@@ -164,6 +174,7 @@ async def ask_command(
         settings=settings,
         repository=repo,
         bot_username=BOT_USERNAME,
+        session_factory=session_factory,
     )
 
 
@@ -173,6 +184,7 @@ async def group_question(
     bot: Bot,
     settings: Settings,
     repo: ContentRepository | None = None,
+    session_factory: async_sessionmaker[AsyncSession] | None = None,
 ) -> None:
     username = BOT_USERNAME
     if not is_addressed(message, username, bot.id):
@@ -184,6 +196,7 @@ async def group_question(
         settings=settings,
         repository=repo,
         bot_username=username,
+        session_factory=session_factory,
     )
 
 

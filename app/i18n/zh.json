@@ -54,5 +54,11 @@
   "settings.broadcast.disable": "关闭推送",
   "settings.broadcast.enable": "开启推送",
   "settings.saved": "已保存。",
-  "settings.command": "/settings - 语言与推送"
+  "settings.command": "/settings - 语言与推送",
+  "commands.settings": "语言与推送",
+  "button.search": "搜索",
+  "button.language": "语言",
+  "menu.search_hint": "用一句话描述情况，我们会找到卡片。",
+  "language.hint": "请选择界面语言。",
+  "group.private_only": "菜单和设置请在私聊中打开：{link}"
 }

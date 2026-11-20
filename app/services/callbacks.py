@@ -9,6 +9,8 @@ Screens are stateless: everything needed to redraw arrives in the callback.
     b1:quiz:<slug>:<qid>:<option>:<seed>
     b1:quiz_next:<slug>:<qid>:<seed>
     b1:lang:<code>
+    b1:lang_menu
+    b1:search_hint
     b1:admin
     b1:bc:<yes|no>
     b1:ask:<slug>
@@ -21,7 +23,22 @@ from dataclasses import dataclass
 PREFIX = "b1"
 MAX_LEN = 64
 MAX_SLUG = 32
-ACTIONS = frozenset({"menu", "cat", "card", "quiz", "quiz_next", "lang", "admin", "bc", "ask"})
+ACTIONS = frozenset(
+    {
+        "menu",
+        "cat",
+        "card",
+        "quiz",
+        "quiz_next",
+        "lang",
+        "lang_menu",
+        "search_hint",
+        "admin",
+        "bc",
+        "ask",
+    }
+)
+_BARE = frozenset({"menu", "admin", "lang_menu", "search_hint"})
 _PAGES = frozenset({"cat", "card"})
 _HEX = frozenset("0123456789abcdef")
 _BOOL_ARGS = frozenset({"yes", "no"})
@@ -102,6 +119,14 @@ def cb_lang(code: str) -> str:
     return _pack("lang", _lang(code))
 
 
+def cb_lang_menu() -> str:
+    return _pack("lang_menu")
+
+
+def cb_search_hint() -> str:
+    return _pack("search_hint")
+
+
 def cb_admin() -> str:
     return _pack("admin")
 
@@ -134,7 +159,7 @@ def parse_cb(data: str | None) -> Callback | None:
         return None
     action, args = parts[1], parts[2:]
 
-    if action in ("menu", "admin"):
+    if action in _BARE:
         return Callback(action) if not args else None
 
     if action in _PAGES:

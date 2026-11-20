@@ -10,7 +10,14 @@ from aiogram.types import FSInputFile
 
 from app.content.types import CardView, CategoryView, ThreatView
 from app.handlers import commands, nav
-from app.services.callbacks import cb_card, cb_cat, cb_menu, parse_cb
+from app.services.callbacks import (
+    cb_card,
+    cb_cat,
+    cb_lang_menu,
+    cb_menu,
+    cb_search_hint,
+    parse_cb,
+)
 
 
 class _Result:
@@ -22,9 +29,14 @@ class _Result:
 
 
 class FakeDB:
-    def __init__(self, opt_in: dict[int, bool] | None = None) -> None:
+    def __init__(
+        self,
+        opt_in: dict[int, bool] | None = None,
+        locales: dict[int, str] | None = None,
+    ) -> None:
         self.settings: dict[str, str] = {}
         self.users = dict(opt_in or {})
+        self.locales = dict(locales or {})
 
     def factory(self) -> FakeSessionFactory:
         return FakeSessionFactory(self)
@@ -38,6 +50,12 @@ class FakeDB:
             key = params["key"]
             return _Result([(self.settings[key],)] if key in self.settings else [])
         if sql.startswith("DELETE FROM settings"):
+            return _Result([])
+        if sql.startswith("SELECT locale FROM users"):
+            user_id = params["user_id"]
+            return _Result([(self.locales[user_id],)] if user_id in self.locales else [])
+        if sql.startswith("UPDATE users SET locale"):
+            self.locales[params["user_id"]] = params["locale"]
             return _Result([])
         if sql.startswith("SELECT broadcasts_opt_in"):
             user_id = params["user_id"]
@@ -131,6 +149,9 @@ class FakeBot:
     def __init__(self) -> None:
         self.sent: list[dict] = []
         self.edited: list[dict] = []
+
+    async def me(self) -> SimpleNamespace:
+        return SimpleNamespace(username="byte_bot")
 
     async def send_rich_message(self, **kwargs: object) -> SimpleNamespace:
         self.sent.append(kwargs)
@@ -242,8 +263,7 @@ async def test_start_saves_telegram_language_once() -> None:
 
     await commands.start(message, SimpleNamespace(args=None), FakeBot(), FakeRepo(), db.factory())
 
-    import json
-    assert json.loads(db.settings["user_locale:7"]) == "tt"
+    assert db.locales[7] == "tt"
 
 
 @pytest.mark.asyncio
@@ -298,16 +318,17 @@ async def test_card_back_button_keeps_page() -> None:
 
 
 @pytest.mark.asyncio
-async def test_language_callback_saves_and_rerenders_settings() -> None:
+async def test_language_callback_saves_and_rerenders_language_screen() -> None:
     db = FakeDB({7: False})
     bot = FakeBot()
     query = _query("b1:lang:en")
 
     await nav.on_lang(query, bot, db.factory())
 
-    import json
-    assert json.loads(db.settings["user_locale:7"]) == "en"
-    assert "Settings" in bot.edited[0]["rich_message"].html
+    assert db.locales[7] == "en"
+    html = bot.edited[0]["rich_message"].html
+    assert "Language" in html
+    assert any(item.text == "English" for item in _buttons(bot.edited[0]))
 
 
 @pytest.mark.asyncio
@@ -317,7 +338,7 @@ async def test_unknown_language_is_ignored() -> None:
 
     await nav.on_lang(_query("b1:lang:de"), bot, db.factory())
 
-    assert "user_locale:7" not in db.settings
+    assert 7 not in db.locales
     assert not bot.edited
 
 
@@ -344,3 +365,70 @@ async def test_broadcast_toggle_updates_flag_and_redraws() -> None:
     query.answer.assert_awaited_once()
     assert db.users[7] is False
     assert "Выключена" in bot.edited[0]["rich_message"].html
+
+
+@pytest.mark.asyncio
+async def test_menu_has_search_and_language_row() -> None:
+    bot = FakeBot()
+    query = _query(cb_menu())
+
+    await nav.on_menu(query, bot, FakeRepo(), FakeDB().factory())
+
+    buttons = _buttons(bot.edited[0])
+    datas = [item.callback_data for item in buttons if item.callback_data]
+    assert cb_search_hint() in datas
+    assert cb_lang_menu() in datas
+    assert len(buttons) <= 10
+
+
+@pytest.mark.asyncio
+async def test_language_menu_opens_four_languages() -> None:
+    bot = FakeBot()
+    query = _query(cb_lang_menu())
+
+    await nav.on_lang_menu(query, bot, FakeDB().factory())
+
+    query.answer.assert_awaited_once()
+    labels = [item.text for item in _buttons(bot.edited[0])]
+    assert {"Русский", "English", "中文", "Татарча"} <= set(labels)
+
+
+@pytest.mark.asyncio
+async def test_search_hint_is_private_only() -> None:
+    bot = FakeBot()
+    query = _query(cb_search_hint(), chat_type="group")
+
+    await nav.on_search_hint(query, bot, FakeDB().factory())
+
+    query.answer.assert_awaited_once()
+    assert not bot.sent
+
+
+@pytest.mark.asyncio
+async def test_group_start_replies_with_private_link_only() -> None:
+    db = FakeDB()
+    bot = FakeBot()
+    message = _message()
+    message.chat.type = "group"
+
+    await commands.start(
+        message, SimpleNamespace(args=None), bot, FakeRepo(), db.factory()
+    )
+
+    assert not bot.sent
+    assert message.answer_photo.await_count == 0
+    text = message.answer.await_args.args[0]
+    assert "https://t.me/byte_bot" in text
+    assert "tt" not in db.locales and "ru" not in db.locales
+
+
+@pytest.mark.asyncio
+async def test_group_settings_is_not_posted() -> None:
+    bot = FakeBot()
+    message = _message()
+    message.chat.type = "supergroup"
+
+    await commands.settings_command(message, bot, FakeDB().factory())
+
+    assert not bot.sent
+    assert "https://t.me/byte_bot" in message.answer.await_args.args[0]

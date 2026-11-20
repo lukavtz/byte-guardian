@@ -12,16 +12,22 @@ import math
 
 import asyncpg
 from aiogram import Bot, F, Router
-from aiogram.types import CallbackQuery
+from aiogram.types import CallbackQuery, InlineKeyboardMarkup
 from sqlalchemy import text
 from sqlalchemy.exc import ProgrammingError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.content.repository import ContentRepository
 from app.content.types import CardView, CategoryView
-from app.services.callbacks import cb_lang, cb_menu, parse_cb
-from app.services.i18n import ENABLED_LOCALES, resolve_locale, t
-from app.services.settings import settings_get, settings_set
+from app.services.callbacks import (
+    cb_lang,
+    cb_lang_menu,
+    cb_menu,
+    cb_search_hint,
+    parse_cb,
+)
+from app.services.i18n import DEFAULT_LOCALE, ENABLED_LOCALES, resolve_locale, t
+from app.services.user_locale import get_locale, set_locale
 from app.ui.delivery import show
 from app.ui.keyboards import PAGE_SIZE, button, markup, paired
 from app.ui.render import RichScreen, render_card, render_category, render_menu
@@ -30,7 +36,6 @@ logger = logging.getLogger(__name__)
 
 router = Router(name="nav")
 
-LOCALE_KEY = "user_locale:{user_id}"
 OPT_IN_ON = "set:bc:on"
 OPT_IN_OFF = "set:bc:off"
 LANGUAGE_NAMES = {"ru": "Русский", "en": "English", "zh": "中文", "tt": "Татарча"}
@@ -38,45 +43,38 @@ LANGUAGE_NAMES = {"ru": "Русский", "en": "English", "zh": "中文", "tt":
 OPT_IN_SELECT = text("SELECT broadcasts_opt_in FROM users WHERE id = :user_id")
 
 
-def locale_key(user_id: int) -> str:
-    return LOCALE_KEY.format(user_id=user_id)
-
-
-async def get_saved_locale(
-    session_factory: async_sessionmaker[AsyncSession], user_id: int
-) -> str | None:
-    value = await settings_get(session_factory, locale_key(user_id))
-    return value if value in ENABLED_LOCALES else None
-
-
 async def save_locale(
     session_factory: async_sessionmaker[AsyncSession], user_id: int, code: str
 ) -> None:
-    await settings_set(session_factory, locale_key(user_id), resolve_locale(code))
+    await set_locale(session_factory, user_id, code)
 
 
 async def user_locale(
     session_factory: async_sessionmaker[AsyncSession], user: object | None
 ) -> str:
-    """Saved choice first, then the Telegram language, then ``ru``."""
-    saved = None
-    if user is not None:
-        saved = await get_saved_locale(session_factory, int(getattr(user, "id", 0)))
-    return saved or resolve_locale(getattr(user, "language_code", None))
+    """The stored column first, then the Telegram language, then ``ru``."""
+    user_id = int(getattr(user, "id", 0)) if user is not None else 0
+    return await get_locale(
+        session_factory, user_id, getattr(user, "language_code", None)
+    )
 
 
 async def pin_initial_locale(
     session_factory: async_sessionmaker[AsyncSession], user: object | None
 ) -> str:
-    """Write the Telegram language once; later /start never overrides a choice."""
+    """Write the Telegram language while the row is still the default.
+
+    A language the user picked in the UI is never overwritten by ``/start``.
+    """
     if user is None:
         return resolve_locale(None)
     user_id = int(getattr(user, "id", 0))
-    saved = await get_saved_locale(session_factory, user_id)
-    if saved is not None:
-        return saved
-    locale = resolve_locale(getattr(user, "language_code", None))
-    await save_locale(session_factory, user_id, locale)
+    locale = await get_locale(
+        session_factory, user_id, getattr(user, "language_code", None)
+    )
+    if locale == DEFAULT_LOCALE:
+        locale = resolve_locale(getattr(user, "language_code", None))
+    await set_locale(session_factory, user_id, locale)
     return locale
 
 
@@ -95,12 +93,9 @@ async def broadcast_opted_in(
 
 
 def settings_screen(locale: str, opted_in: bool) -> RichScreen:
-    languages = [
-        button(LANGUAGE_NAMES[code], cb_lang(code)) for code in ENABLED_LOCALES
-    ]
-    rows: list[list] = paired(languages)
     toggle = OPT_IN_OFF if opted_in else OPT_IN_ON
     label = t(locale, "settings.broadcast.disable" if opted_in else "settings.broadcast.enable")
+    rows: list[list] = [[button(t(locale, "button.language"), cb_lang_menu())]]
     rows.append([button(label, toggle, "primary")])
     status = t(locale, "settings.broadcast.on" if opted_in else "settings.broadcast.off")
     html = (
@@ -108,6 +103,24 @@ def settings_screen(locale: str, opted_in: bool) -> RichScreen:
         f"<p>{t(locale, 'settings.language')}: "
         f"<b>{LANGUAGE_NAMES.get(locale, LANGUAGE_NAMES['ru'])}</b></p>"
         f"<p>{t(locale, 'settings.broadcasts')}: <b>{status}</b></p>"
+    )
+    return RichScreen(html, markup(rows))
+
+
+def language_screen(locale: str) -> RichScreen:
+    languages = [
+        button(
+            LANGUAGE_NAMES[code],
+            cb_lang(code),
+            "primary" if code == locale else None,
+        )
+        for code in ENABLED_LOCALES
+    ]
+    rows: list[list] = paired(languages)
+    rows.append([button(t(locale, "button.menu"), cb_menu())])
+    html = (
+        f"<h1>{t(locale, 'settings.language')}</h1>"
+        f"<p>{t(locale, 'language.hint')}</p>"
     )
     return RichScreen(html, markup(rows))
 
@@ -129,7 +142,15 @@ def _category(repo: ContentRepository, slug: str) -> CategoryView | None:
 
 
 async def menu_screen(repo: ContentRepository, locale: str) -> RichScreen:
-    return render_menu(repo.categories(), locale)
+    screen = render_menu(repo.categories(), locale)
+    rows = list(screen.keyboard.inline_keyboard) if screen.keyboard else []
+    rows.append(
+        [
+            button(t(locale, "button.search"), cb_search_hint()),
+            button(t(locale, "button.language"), cb_lang_menu()),
+        ]
+    )
+    return RichScreen(screen.html, InlineKeyboardMarkup(inline_keyboard=rows))
 
 
 async def category_screen(
@@ -222,10 +243,32 @@ async def on_lang(
     if user is None:
         return
     await save_locale(session_factory, user.id, callback.arg)
-    locale = callback.arg
-    await _redraw(
-        query, bot, settings_screen(locale, await broadcast_opted_in(session_factory, user.id))
-    )
+    await _redraw(query, bot, language_screen(callback.arg))
+
+
+@router.callback_query(F.data == cb_lang_menu())
+async def on_lang_menu(
+    query: CallbackQuery,
+    bot: Bot,
+    session_factory: async_sessionmaker[AsyncSession],
+) -> None:
+    await query.answer()
+    locale = await user_locale(session_factory, query.from_user)
+    await _redraw(query, bot, language_screen(locale))
+
+
+@router.callback_query(F.data == cb_search_hint())
+async def on_search_hint(
+    query: CallbackQuery,
+    bot: Bot,
+    session_factory: async_sessionmaker[AsyncSession],
+) -> None:
+    await query.answer()
+    message = query.message
+    if message is None or not _is_private(query):
+        return
+    locale = await user_locale(session_factory, query.from_user)
+    await show(bot, message.chat.id, RichScreen(t(locale, "menu.search_hint")))
 
 
 def register(dp: object, _bot: Bot) -> None:

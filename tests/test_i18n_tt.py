@@ -41,6 +41,7 @@ async def test_startup_registers_commands_for_every_locale() -> None:
     assert [command.description for command in default[0].args[0]] == [
         t(DEFAULT_LOCALE, "commands.start"),
         t(DEFAULT_LOCALE, "commands.help"),
+        t(DEFAULT_LOCALE, "commands.settings"),
     ]
 
 

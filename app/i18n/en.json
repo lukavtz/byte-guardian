@@ -54,5 +54,11 @@
   "settings.broadcast.disable": "Turn broadcasts off",
   "settings.broadcast.enable": "Turn broadcasts on",
   "settings.saved": "Saved.",
-  "settings.command": "/settings - language and broadcasts"
+  "settings.command": "/settings - language and broadcasts",
+  "commands.settings": "Language and broadcasts",
+  "button.search": "Search",
+  "button.language": "Language",
+  "menu.search_hint": "Describe the situation in one message — we will find a card.",
+  "language.hint": "Choose the interface language.",
+  "group.private_only": "Menu and settings live in a private chat: {link}"
 }
