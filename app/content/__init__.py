@@ -1,0 +1,1 @@
+"""Static content: view types shared by repository, renderers, and handlers."""
