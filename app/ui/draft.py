@@ -16,7 +16,7 @@ from aiogram import Bot
 from aiogram.exceptions import TelegramRetryAfter
 from aiogram.types import InlineKeyboardMarkup, InputRichMessage
 
-from app.services.llm import draft_html
+from app.services.llm import draft_html, strip_html
 from app.ui.delivery import show
 from app.ui.render import RichScreen
 
@@ -132,7 +132,7 @@ class StatusEditSink:
         self._last = now
         if self._message_id is None:
             try:
-                message = await self._bot.send_message(chat_id=self._chat_id, text=text or "…")
+                message = await self._bot.send_message(chat_id=self._chat_id, text=strip_html(text) or "…")
                 self._message_id = getattr(message, "message_id", None)
                 self._last_text = text
             except Exception:
@@ -142,7 +142,7 @@ class StatusEditSink:
             return
         try:
             await self._bot.edit_message_text(
-                chat_id=self._chat_id, message_id=self._message_id, text=text
+                chat_id=self._chat_id, message_id=self._message_id, text=strip_html(text)
             )
             self._last_text = text
             self._last_edit = now

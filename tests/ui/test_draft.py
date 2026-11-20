@@ -76,7 +76,7 @@ async def test_draft_sink_pauses_on_retry_after_and_disables_after_failures() ->
     sink = ui_draft.DraftSink(bot, chat_id=1, draft_id=42, interval=0.0, clock=clock)  # type: ignore[arg-type]
 
     bot.send_rich_message_draft.side_effect = TelegramRetryAfter(
-        SimpleNamespace(), "slow down", 5
+        SimpleNamespace(), "slow down", 5  # type: ignore[arg-type]
     )
     await sink.push("раз")
     await sink.push("два")
@@ -94,8 +94,8 @@ async def test_status_sink_posts_once_then_edits_with_a_gap() -> None:
     clock = _Clock()
     bot = _bot()
     sink = ui_draft.StatusEditSink(
-        bot, chat_id=1, interval=1.0, min_edit_gap=10.0, clock=clock
-    )  # type: ignore[arg-type]
+        bot, chat_id=1, interval=1.0, min_edit_gap=10.0, clock=clock  # type: ignore[arg-type]
+    )
 
     await sink.push("Думаю")
     await sink.push("Думаю дальше")
@@ -118,3 +118,24 @@ async def test_status_sink_sends_a_new_message_when_the_status_is_gone() -> None
     await sink.push("Думаю")
     await sink.finish("Готово", None)
     assert bot.send_message.await_count == 2
+
+
+async def test_status_sink_sanitizes_model_deltas_before_send_and_edit() -> None:
+    raw = '<b onclick="x">hi</b><img src=x onerror=alert(1)>'
+    expected = "<b>hi</b>"
+    assert "onclick" not in expected and "onerror" not in expected and "<img" not in expected
+
+    clock = _Clock()
+    bot = _bot()
+    sink = ui_draft.StatusEditSink(
+        bot, chat_id=1, interval=1.0, min_edit_gap=0.0, clock=clock  # type: ignore[arg-type]
+    )
+
+    await sink.push(raw)
+    assert bot.send_message.await_args.kwargs["text"] == expected
+
+    clock.now = 1.0
+    await sink.push(raw + "!")
+    edit_text = bot.edit_message_text.await_args.kwargs["text"]
+    assert edit_text == "<b>hi</b>!"
+    assert "onclick" not in edit_text and "onerror" not in edit_text and "<img" not in edit_text
