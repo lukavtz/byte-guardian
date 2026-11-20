@@ -579,12 +579,8 @@ def test_chat_callbacks_fit_telegram() -> None:
     assert parse_cb(cb_chat_exit()) == Callback("chat_exit")
 
 
-def test_settings_primary_is_navigation_not_the_destructive_toggle() -> None:
 def test_settings_has_no_primary_and_ends_with_the_menu_button() -> None:
     buttons = _screen_buttons(nav.settings_screen("ru", True))
-    primary = [item for item in buttons if item.style == "primary"]
-    assert len(primary) == 1
-    assert primary[0].callback_data == cb_menu()
     assert not [item for item in buttons if item.style == "primary"]
     assert buttons[-1].callback_data == cb_menu()
     assert buttons[-1].style is None
