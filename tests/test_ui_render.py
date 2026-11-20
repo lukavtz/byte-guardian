@@ -4,6 +4,7 @@ import dataclasses
 import re
 from html import unescape
 from pathlib import Path
+from urllib.parse import parse_qs, urlparse
 
 import pytest
 
@@ -20,9 +21,11 @@ from app.ui.render import (
     render_category,
     render_chat,
     render_menu,
+    render_not_found,
     render_question,
     render_result,
     search_screen,
+    share_url,
 )
 
 LOCALE = "ru"
@@ -117,8 +120,9 @@ def _screens() -> list[RichScreen]:
         render_card(_card(), LOCALE, 1, True),
         render_card(_card(), LOCALE, 1, True, can_game=True),
         render_question(_quiz(), "fire-home", 1, 3, "a3f1", LOCALE),
-        render_result(2, 3, "fire-home", LOCALE),
+        render_result(2, 3, "fire-home", LOCALE, 2, 4),
         search_screen("пожар", [_threat()], LOCALE),
+        render_not_found(LOCALE),
     ]
 
 
@@ -165,7 +169,12 @@ def test_pinned_premium_emoji_stays_inside_the_button(monkeypatch: pytest.Monkey
     for screen in _screens():
         assert "<tg-emoji" in screen.html
         for button in _buttons(screen.html):
-            assert button["attrs"].count("data=") + button["attrs"].count("query=") == 1
+            assert (
+                button["attrs"].count("data=")
+                + button["attrs"].count("query=")
+                + button["attrs"].count("url=")
+                == 1
+            )
 
 
 def test_content_icon_is_escaped_in_heading() -> None:
@@ -324,13 +333,16 @@ def test_chat_uses_its_own_artwork() -> None:
     assert f'<img src="{ART}/chat.png"/>' in render_chat(LOCALE).html
 
 
-def test_no_source_references_the_removed_banner() -> None:
+def test_app_does_not_reference_the_removed_banner_but_readme_does() -> None:
     root = Path(__file__).resolve().parents[1]
-    banned = "banner" + ".jpg"
-    files = [root / "README.md", *root.joinpath("app").rglob("*.py"), *root.joinpath("tests").rglob("*.py")]
-    files += list(root.joinpath("docs").rglob("*.md"))
-    offenders = [path.relative_to(root).as_posix() for path in files if banned in path.read_text(encoding="utf-8")]
+    asset = "banner" + ".jpg"
+    offenders = [
+        path.relative_to(root).as_posix()
+        for path in root.joinpath("app").rglob("*.py")
+        if asset in path.read_text(encoding="utf-8")
+    ]
     assert not offenders
+    assert asset in (root / "README.md").read_text(encoding="utf-8")
 
 
 def test_unknown_section_falls_back_to_the_hero() -> None:
@@ -357,11 +369,16 @@ def test_menu_has_one_button_per_category_and_the_chat_row() -> None:
     screen = render_menu(categories, LOCALE)
 
     rows = _rows(screen.html)
-    assert [len(row) for row in rows] == [1] * 8 + [1, 2]
+    assert [len(row) for row in rows] == [1] * 8 + [1, 1, 2]
     categories_only = _parsed(screen.html)
     assert [cb.arg for cb in categories_only[:8]] == slugs
     assert all(cb.action == "cat" for cb in categories_only[:8])
-    assert [cb.action for cb in categories_only[8:]] == ["chat", "search_hint", "lang_menu"]
+    assert [cb.action for cb in categories_only[8:]] == [
+        "chat",
+        "random",
+        "search_hint",
+        "lang_menu",
+    ]
 
 
 def test_menu_shows_the_shared_header_and_brand() -> None:
@@ -445,7 +462,7 @@ def test_menu_never_exceeds_eight_categories() -> None:
     categories = [_category(slug=f"c{i}", title=f"Раздел {i}") for i in range(9)]
     screen = render_menu(categories, LOCALE)
     assert "b1:cat:c8:1" not in _data(screen.html)
-    assert len(_data(screen.html)) == 11
+    assert len(_data(screen.html)) == 12
 
 
 def test_chat_screen_carries_the_heading_lead_and_two_ways_out() -> None:
@@ -517,9 +534,10 @@ def test_card_buttons_are_quiz_back_and_share() -> None:
 
     back = [button for button in buttons if button.get("data", "").startswith("b1:cat:")]
     assert len(back) == 1
-    share = [button for button in buttons if button.get("type") == "switch_inline_query_current_chat"]
+    share = [button for button in buttons if button.get("type") == "url"]
     assert len(share) == 1
-    assert share[0]["query"] == "Пожар в квартире"
+    assert share[0]["url"].startswith("https://t.me/share/url?")
+    assert "switch_inline_query_current_chat" not in share[0]["attrs"]
 
     no_quiz = render_card(_card(), LOCALE, page=1, has_quiz=False)
     assert not _primary(no_quiz.html)
@@ -643,7 +661,7 @@ def test_search_lists_results_with_severity() -> None:
 def test_search_empty_state_explains_itself() -> None:
     screen = search_screen("", [], LOCALE)
     assert "Поиск" in screen.html
-    assert [cb.action for cb in _parsed(screen.html)] == ["menu"]
+    assert [cb.action for cb in _parsed(screen.html)] == ["random", "menu"]
 
 
 def test_search_truncates_to_seven_results() -> None:
@@ -680,7 +698,7 @@ def test_keyboard_from_rich_rebuilds_the_same_controls() -> None:
     assert rows[0][0].callback_data is not None
     assert parse_cb(rows[0][0].callback_data).action == "quiz_next"
     assert rows[0][0].style == "primary"
-    assert rows[1][1].switch_inline_query_current_chat == "Пожар в квартире"
+    assert rows[1][1].url.startswith("https://t.me/share/url?")
     assert "<tg-button" not in strip_rich_buttons(screen.html)
 
 
@@ -692,3 +710,78 @@ def test_screens_are_clean_utf8_without_bom() -> None:
         assert not screen.html.startswith("\ufeff")
         assert "\ufffd" not in screen.html
         screen.html.encode("utf-8").decode("utf-8")
+
+# --- share ---------------------------------------------------------------
+
+
+def test_share_url_encodes_the_deep_link_and_the_reason() -> None:
+    url = share_url("byte_bot", _card())
+    query = parse_qs(urlparse(url).query)
+
+    assert url.startswith("https://t.me/share/url?")
+    assert query["url"] == ["https://t.me/byte_bot?start=card_fire-home"]
+    assert query["text"][0].startswith("Пожар в квартире — Счёт идёт на минуты.")
+    assert " " not in url and "—" not in url
+
+
+def test_share_without_a_username_still_shares_the_text() -> None:
+    query = parse_qs(urlparse(share_url(None, _card())).query)
+
+    assert "url" not in query
+    assert query["text"][0].startswith("Пожар в квартире")
+
+
+# --- stale screens -------------------------------------------------------
+
+
+def test_not_found_names_the_state_and_offers_menu_and_search() -> None:
+    screen = render_not_found(LOCALE)
+
+    assert "Карточка не найдена" in screen.html
+    assert [cb.action for cb in _parsed(screen.html)] == ["menu", "search_hint"]
+
+
+# --- paged search --------------------------------------------------------
+
+
+def _many(count: int) -> list[ThreatView]:
+    return [_threat(slug=f"t{i}") for i in range(count)]
+
+
+def test_search_page_one_shows_seven_and_a_more_button() -> None:
+    screen = search_screen(
+        "пожар", _many(9), LOCALE, page=1, total=9, digest="0123abcd"
+    )
+    parsed = _parsed(screen.html)
+
+    assert "Найдено: 9" in screen.html
+    assert len([cb for cb in parsed if cb.action == "card"]) == 7
+    more = [cb for cb in parsed if cb.action == "search"]
+    assert [(cb.arg, cb.page) for cb in more] == [("0123abcd", 2)]
+
+
+def test_search_last_page_has_no_more_button_and_keeps_the_total() -> None:
+    screen = search_screen(
+        "пожар", _many(9), LOCALE, page=2, total=9, digest="0123abcd"
+    )
+
+    assert "Найдено: 9" in screen.html
+    assert len([cb for cb in _parsed(screen.html) if cb.action == "card"]) == 2
+    assert not [cb for cb in _parsed(screen.html) if cb.action == "search"]
+
+
+def test_search_without_a_digest_never_offers_paging() -> None:
+    screen = search_screen("пожар", _many(9), LOCALE, page=1, total=9)
+
+    assert not [cb for cb in _parsed(screen.html) if cb.action == "search"]
+
+
+# --- quiz result ---------------------------------------------------------
+
+
+def test_result_shows_the_session_bar_and_the_streak() -> None:
+    screen = render_result(2, 3, "fire-home", LOCALE, 2, 5)
+
+    assert "▰" * 7 + "▱" * 3 in screen.html
+    assert "Серия: 2 · Рекорд: 5" in screen.html
+    assert "▰" * 10 in render_result(3, 3, "fire-home", LOCALE, 3, 3).html
