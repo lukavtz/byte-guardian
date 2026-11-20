@@ -1,0 +1,12 @@
+{
+  "start.welcome": "Рәхим итегез, {bot}. Командаларны күрү өчен /help кулланыгыз.",
+  "help.title": "Командалар:",
+  "help.commands": "/start - ботны күчерү\n/help - исемлекне күрсәтү\n/admin - администратор панеле",
+  "errors.generic": "Нәрсәдер дөрес китмәде. Яңадан тырышып карагыз.",
+  "payments.precheckout_failed": "Түләүне раслап булмады.",
+  "payments.thanks": "Түләвегез өчен рәхмәт!",
+  "subscription.active": "Язылу актив.",
+  "subscription.canceled": "Язылу гамәлдән чыгарылды.",
+  "commands.start": "Ботны күчерү",
+  "commands.help": "Командалар исемлеге"
+}

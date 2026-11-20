@@ -8,8 +8,8 @@ from typing import Any
 logger = logging.getLogger(__name__)
 
 DEFAULT_LOCALE = "ru"
-ENABLED_LOCALES = ["en","ru","zh"]
-LOCALES = ["en","ru","zh"]
+ENABLED_LOCALES = ["ru", "en", "zh", "tt"]
+LOCALES = ["ru", "en", "zh", "tt"]
 _CATALOGS: dict[str, dict[str, str]] = {}
 _WARNED: set[str] = set()
 

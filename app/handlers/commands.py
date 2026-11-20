@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from aiogram import Bot, Dispatcher, Router
 from aiogram.filters import Command
-from aiogram.types import Message
+from aiogram.types import BotCommand, Message
 
-from app.services.i18n import t
+from app.services.i18n import ENABLED_LOCALES, t
 
 router = Router(name="commands")
 
@@ -24,5 +24,21 @@ async def help_command(message: Message) -> None:
     await message.answer(t(locale, "help.title") + "\n" + t(locale, "help.commands"))
 
 
+async def set_commands(bot: Bot, locale: str) -> None:
+    await bot.set_my_commands(
+        [
+            BotCommand(command="start", description=t(locale, "commands.start")),
+            BotCommand(command="help", description=t(locale, "commands.help")),
+        ],
+        language_code=locale,
+    )
+
+
+async def on_startup(bot: Bot) -> None:
+    for locale in ENABLED_LOCALES:
+        await set_commands(bot, locale)
+
+
 def register(dp: Dispatcher, _bot: Bot) -> None:
     dp.include_router(router)
+    dp.startup.register(on_startup)

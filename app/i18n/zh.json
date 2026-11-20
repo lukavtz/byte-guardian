@@ -6,5 +6,7 @@
   "payments.precheckout_failed": "无法确认付款。",
   "payments.thanks": "感谢您的付款！",
   "subscription.active": "订阅已激活。",
-  "subscription.canceled": "订阅已取消。"
+  "subscription.canceled": "订阅已取消。",
+  "commands.start": "启动机器人",
+  "commands.help": "显示命令列表"
 }

@@ -6,5 +6,7 @@
   "payments.precheckout_failed": "Payment could not be confirmed.",
   "payments.thanks": "Thanks for your payment!",
   "subscription.active": "Subscription active.",
-  "subscription.canceled": "Subscription canceled."
+  "subscription.canceled": "Subscription canceled.",
+  "commands.start": "Start the bot",
+  "commands.help": "Show command list"
 }

@@ -6,5 +6,7 @@
   "payments.precheckout_failed": "Платёж не удалось подтвердить.",
   "payments.thanks": "Спасибо за оплату!",
   "subscription.active": "Подписка активна.",
-  "subscription.canceled": "Подписка отменена."
+  "subscription.canceled": "Подписка отменена.",
+  "commands.start": "Запустить бота",
+  "commands.help": "Показать список команд"
 }
