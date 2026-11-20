@@ -1,0 +1,1180 @@
+{
+  "ru": {
+    "wi-fi в кафе": [
+      "cyber-public-wifi"
+    ],
+    "авария": [
+      "tech-transport"
+    ],
+    "авария на дороге": [
+      "tech-transport"
+    ],
+    "автомобиль загорелся": [
+      "fire-car"
+    ],
+    "аммиак": [
+      "chem-ammonia"
+    ],
+    "аммиачная авария": [
+      "chem-ammonia"
+    ],
+    "аномальная жара": [
+      "nature-heat"
+    ],
+    "атака дронов": [
+      "terror-drone"
+    ],
+    "база утекла": [
+      "cyber-data-leak"
+    ],
+    "белый порошок": [
+      "chem-unknown"
+    ],
+    "беспилотник": [
+      "terror-drone"
+    ],
+    "бесхозная сумка": [
+      "terror-suspicious-item"
+    ],
+    "бомба": [
+      "terror-suspicious-item"
+    ],
+    "бпла": [
+      "terror-drone"
+    ],
+    "бытовая химия": [
+      "chem-household"
+    ],
+    "вай-фай": [
+      "cyber-public-wifi"
+    ],
+    "вербовка": [
+      "terror-recruit"
+    ],
+    "вербовка в сети": [
+      "terror-recruit"
+    ],
+    "вербуют": [
+      "terror-recruit"
+    ],
+    "взлом аккаунта": [
+      "cyber-account-hijack"
+    ],
+    "взлом телеграма": [
+      "cyber-account-hijack"
+    ],
+    "взломали аккаунт": [
+      "cyber-account-hijack"
+    ],
+    "взрывное устройство": [
+      "terror-suspicious-item"
+    ],
+    "видео подделка": [
+      "cyber-deepfake-call"
+    ],
+    "вирус": [
+      "cyber-malware"
+    ],
+    "вирус на телефоне": [
+      "cyber-malware"
+    ],
+    "возгорание в квартире": [
+      "fire-home"
+    ],
+    "возгорание в машине": [
+      "fire-car"
+    ],
+    "вредонос": [
+      "cyber-malware"
+    ],
+    "выброс хлора": [
+      "tech-chemical-cloud"
+    ],
+    "вывод людей": [
+      "terror-evacuation"
+    ],
+    "выстрелы": [
+      "terror-shooting"
+    ],
+    "газ в квартире": [
+      "tech-gas"
+    ],
+    "газ пахнет в квартире": [
+      "chem-gas-leak"
+    ],
+    "газовая плита": [
+      "tech-gas"
+    ],
+    "газовый баллон": [
+      "tech-gas"
+    ],
+    "герметизация квартиры": [
+      "rad-shelter"
+    ],
+    "гипотермия": [
+      "nature-cold"
+    ],
+    "голос мошенника": [
+      "cyber-deepfake-call"
+    ],
+    "горит дом": [
+      "fire-building"
+    ],
+    "горит кухня": [
+      "fire-kitchen"
+    ],
+    "горит предприятие": [
+      "tech-fire-facility"
+    ],
+    "гроза": [
+      "nature-lightning"
+    ],
+    "гроза на улице": [
+      "nature-lightning"
+    ],
+    "гром": [
+      "nature-lightning"
+    ],
+    "дезактивация": [
+      "rad-clothing"
+    ],
+    "дипфейк": [
+      "cyber-deepfake-call"
+    ],
+    "дипфейк-звонок": [
+      "cyber-deepfake-call"
+    ],
+    "дозиметр": [
+      "rad-dosimeter"
+    ],
+    "дом рухнул": [
+      "tech-collapse"
+    ],
+    "дорожная авария": [
+      "tech-transport"
+    ],
+    "дрон": [
+      "terror-drone"
+    ],
+    "дрон над городом": [
+      "terror-drone"
+    ],
+    "дтп": [
+      "tech-transport"
+    ],
+    "дым": [
+      "fire-smoke"
+    ],
+    "дым в квартире": [
+      "fire-home"
+    ],
+    "дым в подъезде": [
+      "fire-smoke"
+    ],
+    "еда и вода": [
+      "rad-food-water"
+    ],
+    "жара": [
+      "nature-heat"
+    ],
+    "жгут": [
+      "medical-bleeding"
+    ],
+    "жир загорелся": [
+      "fire-kitchen"
+    ],
+    "загрязнённая вода": [
+      "rad-food-water"
+    ],
+    "загрязнённая одежда": [
+      "rad-clothing"
+    ],
+    "задымление": [
+      "fire-smoke"
+    ],
+    "заложник": [
+      "terror-hostage"
+    ],
+    "заложники в школе": [
+      "terror-hostage"
+    ],
+    "замер радиации": [
+      "rad-dosimeter"
+    ],
+    "замыкание": [
+      "fire-electrical"
+    ],
+    "запах аммиака": [
+      "chem-ammonia"
+    ],
+    "запах газа": [
+      "tech-gas"
+    ],
+    "запах хлора": [
+      "chem-chlorine"
+    ],
+    "застрял в лифте": [
+      "tech-elevator"
+    ],
+    "застрял между этажами": [
+      "tech-elevator"
+    ],
+    "затопление": [
+      "nature-flood"
+    ],
+    "захват": [
+      "terror-hostage"
+    ],
+    "захват заложников": [
+      "terror-hostage"
+    ],
+    "звонок из банка": [
+      "cyber-phone-fraud"
+    ],
+    "звонок о бомбе": [
+      "terror-bomb-call"
+    ],
+    "землетрясение": [
+      "nature-earthquake"
+    ],
+    "зной": [
+      "nature-heat"
+    ],
+    "зона загрязнения": [
+      "rad-evacuation"
+    ],
+    "йод": [
+      "rad-iodine"
+    ],
+    "йодид": [
+      "rad-iodine"
+    ],
+    "йодид калия": [
+      "rad-iodine"
+    ],
+    "квартира горит": [
+      "fire-home"
+    ],
+    "кипяток": [
+      "medical-burn"
+    ],
+    "кислота": [
+      "chem-acids-alkalis"
+    ],
+    "коммунальная авария": [
+      "tech-pipe-burst"
+    ],
+    "короткое замыкание": [
+      "fire-electrical"
+    ],
+    "кровотечение": [
+      "medical-bleeding"
+    ],
+    "кровь": [
+      "medical-bleeding"
+    ],
+    "ландшафтный пожар": [
+      "nature-wildfire"
+    ],
+    "лес горит": [
+      "fire-forest"
+    ],
+    "лесной пожар": [
+      "fire-forest"
+    ],
+    "лифт": [
+      "tech-elevator"
+    ],
+    "лифт застрял": [
+      "tech-elevator"
+    ],
+    "ложное минирование": [
+      "terror-bomb-call"
+    ],
+    "лэп": [
+      "tech-electric"
+    ],
+    "майнер": [
+      "cyber-malware"
+    ],
+    "масло на сковороде": [
+      "fire-kitchen"
+    ],
+    "массовая стрельба": [
+      "terror-shooting"
+    ],
+    "машина горит": [
+      "fire-car"
+    ],
+    "машина дымится": [
+      "fire-car"
+    ],
+    "многоэтажка": [
+      "fire-building"
+    ],
+    "молния": [
+      "nature-lightning"
+    ],
+    "мороз": [
+      "nature-cold"
+    ],
+    "мошенники": [
+      "cyber-phone-fraud"
+    ],
+    "мошенническая ссылка": [
+      "cyber-phishing"
+    ],
+    "мошенничество по телефону": [
+      "cyber-phone-fraud"
+    ],
+    "наводнение": [
+      "nature-flood"
+    ],
+    "не дышит": [
+      "medical-cpr"
+    ],
+    "неизвестное вещество": [
+      "chem-unknown"
+    ],
+    "неизвестный порошок": [
+      "chem-unknown"
+    ],
+    "неокрепший лёд": [
+      "nature-thin-ice"
+    ],
+    "низовой пожар": [
+      "fire-forest"
+    ],
+    "обвал здания": [
+      "tech-collapse"
+    ],
+    "обжёгся": [
+      "medical-burn"
+    ],
+    "облако аммиака": [
+      "tech-chemical-cloud"
+    ],
+    "обморожение": [
+      "medical-frostbite"
+    ],
+    "обморозил пальцы": [
+      "medical-frostbite"
+    ],
+    "обморок": [
+      "medical-fainting"
+    ],
+    "обрушение": [
+      "tech-collapse"
+    ],
+    "обрушение конструкции": [
+      "tech-collapse"
+    ],
+    "обрыв провода": [
+      "tech-electric"
+    ],
+    "общественный wi-fi": [
+      "cyber-public-wifi"
+    ],
+    "ожог": [
+      "medical-burn"
+    ],
+    "ожог кислотой": [
+      "chem-acids-alkalis"
+    ],
+    "ожог руки": [
+      "medical-burn"
+    ],
+    "ожог щёлочью": [
+      "chem-acids-alkalis"
+    ],
+    "остановка сердца": [
+      "medical-cpr"
+    ],
+    "отключение света": [
+      "tech-electric"
+    ],
+    "открытая сеть": [
+      "cyber-public-wifi"
+    ],
+    "открытый перелом": [
+      "medical-fracture"
+    ],
+    "отморожение": [
+      "medical-frostbite"
+    ],
+    "отморозил": [
+      "medical-frostbite"
+    ],
+    "отопление прорвало": [
+      "tech-pipe-burst"
+    ],
+    "отравление дымом": [
+      "fire-smoke"
+    ],
+    "отравление угарным газом": [
+      "medical-co-poisoning"
+    ],
+    "отравление химией": [
+      "chem-household"
+    ],
+    "отравление хлором": [
+      "chem-chlorine"
+    ],
+    "оцепление": [
+      "terror-evacuation"
+    ],
+    "паводок": [
+      "nature-flood"
+    ],
+    "перегрев": [
+      "nature-heat"
+    ],
+    "перелом": [
+      "medical-fracture"
+    ],
+    "переохлаждение": [
+      "nature-cold"
+    ],
+    "персональные данные": [
+      "cyber-data-leak"
+    ],
+    "письмо от мошенников": [
+      "cyber-phishing"
+    ],
+    "плита пахнет газом": [
+      "chem-gas-leak"
+    ],
+    "подвал при радиации": [
+      "rad-shelter"
+    ],
+    "подделали голос": [
+      "cyber-deepfake-call"
+    ],
+    "поддельный сайт": [
+      "cyber-phishing"
+    ],
+    "подземные толчки": [
+      "nature-earthquake"
+    ],
+    "подозрительная жидкость": [
+      "chem-unknown"
+    ],
+    "подозрительный пакет": [
+      "terror-suspicious-item"
+    ],
+    "подозрительный предмет": [
+      "terror-suspicious-item"
+    ],
+    "подтопление": [
+      "nature-flood"
+    ],
+    "подъезд в дыму": [
+      "fire-building"
+    ],
+    "пожар": [
+      "fire-building",
+      "fire-car",
+      "fire-electrical",
+      "fire-forest",
+      "fire-home",
+      "fire-kitchen"
+    ],
+    "пожар в авто": [
+      "fire-car"
+    ],
+    "пожар в доме": [
+      "fire-building"
+    ],
+    "пожар в квартире": [
+      "fire-home"
+    ],
+    "пожар в подъезде": [
+      "fire-building"
+    ],
+    "пожар на заводе": [
+      "tech-fire-facility"
+    ],
+    "пожар на кухне": [
+      "fire-kitchen"
+    ],
+    "пожар на производстве": [
+      "tech-fire-facility"
+    ],
+    "пожар на складе": [
+      "tech-fire-facility"
+    ],
+    "пожара": [
+      "fire-building",
+      "fire-car",
+      "fire-forest",
+      "fire-home"
+    ],
+    "пожаре": [
+      "fire-building",
+      "fire-home"
+    ],
+    "пожаром": [
+      "fire-building",
+      "fire-home",
+      "fire-kitchen"
+    ],
+    "потеря сознания": [
+      "medical-fainting"
+    ],
+    "потоп": [
+      "nature-flood"
+    ],
+    "потоп в подвале": [
+      "tech-pipe-burst"
+    ],
+    "природный пожар": [
+      "nature-wildfire"
+    ],
+    "провалился под лёд": [
+      "nature-thin-ice"
+    ],
+    "провод под напряжением": [
+      "tech-electric"
+    ],
+    "проводка": [
+      "fire-electrical"
+    ],
+    "продукты после аварии": [
+      "rad-food-water"
+    ],
+    "промышленный пожар": [
+      "tech-fire-facility"
+    ],
+    "прорыв трубы": [
+      "tech-pipe-burst"
+    ],
+    "публичный вайфай": [
+      "cyber-public-wifi"
+    ],
+    "пункт сбора": [
+      "rad-evacuation"
+    ],
+    "радиационная авария": [
+      "rad-accident"
+    ],
+    "радиационная эвакуация": [
+      "rad-evacuation"
+    ],
+    "радиационный выброс": [
+      "rad-accident"
+    ],
+    "радиационный фон": [
+      "rad-dosimeter"
+    ],
+    "радиация": [
+      "rad-accident"
+    ],
+    "радикализация": [
+      "terror-recruit"
+    ],
+    "радиоактивная еда": [
+      "rad-food-water"
+    ],
+    "радиоактивная пыль на одежде": [
+      "rad-clothing"
+    ],
+    "радиоактивный выброс": [
+      "rad-accident"
+    ],
+    "разбился градусник": [
+      "chem-mercury"
+    ],
+    "рана": [
+      "medical-bleeding"
+    ],
+    "реанимация": [
+      "medical-cpr"
+    ],
+    "розетка искрит": [
+      "fire-electrical"
+    ],
+    "ртутный термометр": [
+      "chem-mercury"
+    ],
+    "ртуть": [
+      "chem-mercury"
+    ],
+    "сердечно-легочная реанимация": [
+      "medical-cpr"
+    ],
+    "сильное кровотечение": [
+      "medical-bleeding"
+    ],
+    "сильный ветер": [
+      "nature-hurricane"
+    ],
+    "сильный холод": [
+      "nature-cold"
+    ],
+    "сковорода загорелась": [
+      "fire-kitchen"
+    ],
+    "слив данных": [
+      "cyber-data-leak"
+    ],
+    "сломал ногу": [
+      "medical-fracture"
+    ],
+    "сломал руку": [
+      "medical-fracture"
+    ],
+    "слр": [
+      "medical-cpr"
+    ],
+    "служба безопасности банка": [
+      "cyber-phone-fraud"
+    ],
+    "смерч": [
+      "nature-hurricane"
+    ],
+    "снять одежду": [
+      "rad-clothing"
+    ],
+    "сообщение о минировании": [
+      "terror-bomb-call"
+    ],
+    "спасение на воде": [
+      "medical-drowning"
+    ],
+    "степной пожар": [
+      "nature-wildfire"
+    ],
+    "столкновение": [
+      "tech-transport"
+    ],
+    "странная жидкость": [
+      "chem-unknown"
+    ],
+    "стрелок": [
+      "terror-shooting"
+    ],
+    "стрельба": [
+      "terror-shooting"
+    ],
+    "счётчик гейгера": [
+      "rad-dosimeter"
+    ],
+    "таблетки йода": [
+      "rad-iodine"
+    ],
+    "телефонные мошенники": [
+      "cyber-phone-fraud"
+    ],
+    "тепловой удар": [
+      "nature-heat"
+    ],
+    "термический ожог": [
+      "medical-burn"
+    ],
+    "террорист с оружием": [
+      "terror-shooting"
+    ],
+    "террористы в здании": [
+      "terror-hostage"
+    ],
+    "токсичное облако": [
+      "tech-chemical-cloud"
+    ],
+    "толчки": [
+      "nature-earthquake"
+    ],
+    "тонет": [
+      "medical-drowning"
+    ],
+    "тонкий лёд": [
+      "nature-thin-ice"
+    ],
+    "торф горит": [
+      "nature-wildfire"
+    ],
+    "торфяной пожар": [
+      "fire-forest"
+    ],
+    "трава горит": [
+      "nature-wildfire"
+    ],
+    "трещина в стене": [
+      "tech-collapse"
+    ],
+    "троян": [
+      "cyber-malware"
+    ],
+    "труба прорвалась": [
+      "tech-pipe-burst"
+    ],
+    "убежище": [
+      "rad-shelter"
+    ],
+    "угарный газ": [
+      "medical-co-poisoning"
+    ],
+    "угнали телеграм": [
+      "cyber-account-hijack"
+    ],
+    "угорел": [
+      "medical-co-poisoning"
+    ],
+    "угроза взрыва": [
+      "terror-bomb-call"
+    ],
+    "удар молнии": [
+      "nature-lightning"
+    ],
+    "укрытие": [
+      "rad-shelter"
+    ],
+    "упал в обморок": [
+      "medical-fainting"
+    ],
+    "ураган": [
+      "nature-hurricane"
+    ],
+    "утекли данные": [
+      "cyber-data-leak"
+    ],
+    "утечка бытового газа": [
+      "chem-gas-leak"
+    ],
+    "утечка газа": [
+      "tech-gas"
+    ],
+    "утечка данных": [
+      "cyber-data-leak"
+    ],
+    "утонул": [
+      "medical-drowning"
+    ],
+    "утопление": [
+      "medical-drowning"
+    ],
+    "фишинг": [
+      "cyber-phishing"
+    ],
+    "фишинговая ссылка": [
+      "cyber-phishing"
+    ],
+    "химическая авария": [
+      "tech-chemical-cloud"
+    ],
+    "химический ожог": [
+      "chem-acids-alkalis"
+    ],
+    "химическое облако": [
+      "tech-chemical-cloud"
+    ],
+    "химия в доме": [
+      "chem-household"
+    ],
+    "хлор": [
+      "chem-chlorine"
+    ],
+    "хлорка": [
+      "chem-chlorine"
+    ],
+    "человек без сознания": [
+      "medical-fainting"
+    ],
+    "человек под льдом": [
+      "nature-thin-ice"
+    ],
+    "человек тонет": [
+      "medical-drowning"
+    ],
+    "чистящее средство": [
+      "chem-household"
+    ],
+    "чужой вход в аккаунт": [
+      "cyber-account-hijack"
+    ],
+    "шарики ртути": [
+      "chem-mercury"
+    ],
+    "шина": [
+      "medical-fracture"
+    ],
+    "шквал": [
+      "nature-hurricane"
+    ],
+    "шторм": [
+      "nature-hurricane"
+    ],
+    "щёлочь": [
+      "chem-acids-alkalis"
+    ],
+    "эвакуация": [
+      "terror-evacuation"
+    ],
+    "эвакуация из зоны": [
+      "rad-evacuation"
+    ],
+    "эвакуация при угрозе": [
+      "terror-evacuation"
+    ],
+    "экстремизм": [
+      "terror-recruit"
+    ],
+    "электричество": [
+      "tech-electric"
+    ],
+    "электропроводка загорелась": [
+      "fire-electrical"
+    ]
+  },
+  "en": {
+    "account hijack": [
+      "cyber-account-hijack"
+    ],
+    "acid burn": [
+      "chem-acids-alkalis"
+    ],
+    "active shooter": [
+      "terror-shooting"
+    ],
+    "alkali": [
+      "chem-acids-alkalis"
+    ],
+    "ammonia": [
+      "chem-ammonia"
+    ],
+    "apartment fire": [
+      "fire-home"
+    ],
+    "bleeding": [
+      "medical-bleeding"
+    ],
+    "bomb call": [
+      "terror-bomb-call"
+    ],
+    "bomb threat": [
+      "terror-bomb-call"
+    ],
+    "broken bone": [
+      "medical-fracture"
+    ],
+    "broken thermometer": [
+      "chem-mercury"
+    ],
+    "brush fire": [
+      "nature-wildfire"
+    ],
+    "building collapse": [
+      "tech-collapse"
+    ],
+    "building fire": [
+      "fire-building"
+    ],
+    "burn": [
+      "medical-burn"
+    ],
+    "car accident": [
+      "tech-transport"
+    ],
+    "car fire": [
+      "fire-car"
+    ],
+    "carbon monoxide": [
+      "medical-co-poisoning"
+    ],
+    "cardiac arrest": [
+      "medical-cpr"
+    ],
+    "chemical cloud": [
+      "tech-chemical-cloud"
+    ],
+    "chemical poisoning": [
+      "chem-household"
+    ],
+    "chemical spill": [
+      "tech-chemical-cloud"
+    ],
+    "chlorine": [
+      "chem-chlorine"
+    ],
+    "co poisoning": [
+      "medical-co-poisoning"
+    ],
+    "collapse": [
+      "tech-collapse"
+    ],
+    "contaminated clothing": [
+      "rad-clothing"
+    ],
+    "contaminated food": [
+      "rad-food-water"
+    ],
+    "contaminated water": [
+      "rad-food-water"
+    ],
+    "cpr": [
+      "medical-cpr"
+    ],
+    "data breach": [
+      "cyber-data-leak"
+    ],
+    "data leak": [
+      "cyber-data-leak"
+    ],
+    "decontamination": [
+      "rad-clothing"
+    ],
+    "deepfake": [
+      "cyber-deepfake-call"
+    ],
+    "domestic gas": [
+      "chem-gas-leak"
+    ],
+    "dosimeter": [
+      "rad-dosimeter"
+    ],
+    "downed power line": [
+      "tech-electric"
+    ],
+    "drone": [
+      "terror-drone"
+    ],
+    "drowning": [
+      "medical-drowning"
+    ],
+    "earthquake": [
+      "nature-earthquake"
+    ],
+    "electrical fire": [
+      "fire-electrical"
+    ],
+    "elevator": [
+      "tech-elevator"
+    ],
+    "evacuation": [
+      "terror-evacuation"
+    ],
+    "factory fire": [
+      "tech-fire-facility"
+    ],
+    "fainted": [
+      "medical-fainting"
+    ],
+    "fainting": [
+      "medical-fainting"
+    ],
+    "fake link": [
+      "cyber-phishing"
+    ],
+    "fallout shelter": [
+      "rad-shelter"
+    ],
+    "fell through ice": [
+      "nature-thin-ice"
+    ],
+    "fire": [
+      "fire-building",
+      "fire-car",
+      "fire-electrical",
+      "fire-forest",
+      "fire-home",
+      "fire-kitchen"
+    ],
+    "flood": [
+      "nature-flood"
+    ],
+    "flooding": [
+      "nature-flood"
+    ],
+    "forest fire": [
+      "fire-forest"
+    ],
+    "fracture": [
+      "medical-fracture"
+    ],
+    "frost": [
+      "nature-cold"
+    ],
+    "frostbite": [
+      "medical-frostbite"
+    ],
+    "gas leak": [
+      "tech-gas"
+    ],
+    "gas leak at home": [
+      "chem-gas-leak"
+    ],
+    "gas smell": [
+      "tech-gas"
+    ],
+    "geiger counter": [
+      "rad-dosimeter"
+    ],
+    "grass fire": [
+      "nature-wildfire"
+    ],
+    "grease fire": [
+      "fire-kitchen"
+    ],
+    "hacked account": [
+      "cyber-account-hijack"
+    ],
+    "heat wave": [
+      "nature-heat"
+    ],
+    "heatstroke": [
+      "nature-heat"
+    ],
+    "home fire": [
+      "fire-home"
+    ],
+    "hostage": [
+      "terror-hostage"
+    ],
+    "hostage taking": [
+      "terror-hostage"
+    ],
+    "house fire": [
+      "fire-building"
+    ],
+    "household chemicals": [
+      "chem-household"
+    ],
+    "hurricane": [
+      "nature-hurricane"
+    ],
+    "hypothermia": [
+      "nature-cold"
+    ],
+    "industrial fire": [
+      "tech-fire-facility"
+    ],
+    "iodine": [
+      "rad-iodine"
+    ],
+    "kitchen fire": [
+      "fire-kitchen"
+    ],
+    "lightning": [
+      "nature-lightning"
+    ],
+    "lockdown": [
+      "terror-evacuation"
+    ],
+    "malware": [
+      "cyber-malware"
+    ],
+    "mercury": [
+      "chem-mercury"
+    ],
+    "near drowning": [
+      "medical-drowning"
+    ],
+    "nuclear accident": [
+      "rad-accident"
+    ],
+    "open network": [
+      "cyber-public-wifi"
+    ],
+    "phishing": [
+      "cyber-phishing"
+    ],
+    "phone fraud": [
+      "cyber-phone-fraud"
+    ],
+    "phone scam": [
+      "cyber-phone-fraud"
+    ],
+    "pipe burst": [
+      "tech-pipe-burst"
+    ],
+    "potassium iodide": [
+      "rad-iodine"
+    ],
+    "power outage": [
+      "tech-electric"
+    ],
+    "public wifi": [
+      "cyber-public-wifi"
+    ],
+    "radiation accident": [
+      "rad-accident"
+    ],
+    "radiation evacuation": [
+      "rad-evacuation"
+    ],
+    "radicalization": [
+      "terror-recruit"
+    ],
+    "recruitment": [
+      "terror-recruit"
+    ],
+    "scald": [
+      "medical-burn"
+    ],
+    "shelter": [
+      "rad-shelter"
+    ],
+    "shooting": [
+      "terror-shooting"
+    ],
+    "short circuit": [
+      "fire-electrical"
+    ],
+    "smoke": [
+      "fire-smoke"
+    ],
+    "smoke inhalation": [
+      "fire-smoke"
+    ],
+    "storm": [
+      "nature-hurricane"
+    ],
+    "stuck in elevator": [
+      "tech-elevator"
+    ],
+    "suspicious item": [
+      "terror-suspicious-item"
+    ],
+    "suspicious package": [
+      "terror-suspicious-item"
+    ],
+    "thin ice": [
+      "nature-thin-ice"
+    ],
+    "thunderstorm": [
+      "nature-lightning"
+    ],
+    "tourniquet": [
+      "medical-bleeding"
+    ],
+    "traffic accident": [
+      "tech-transport"
+    ],
+    "tremor": [
+      "nature-earthquake"
+    ],
+    "uav": [
+      "terror-drone"
+    ],
+    "unknown powder": [
+      "chem-unknown"
+    ],
+    "unknown substance": [
+      "chem-unknown"
+    ],
+    "vehicle fire": [
+      "fire-car"
+    ],
+    "virus": [
+      "cyber-malware"
+    ],
+    "voice clone": [
+      "cyber-deepfake-call"
+    ],
+    "water main break": [
+      "tech-pipe-burst"
+    ],
+    "wildfire": [
+      "fire-forest"
+    ]
+  }
+}
