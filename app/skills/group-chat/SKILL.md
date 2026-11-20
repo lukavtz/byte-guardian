@@ -1,9 +1,9 @@
 ---
 name: group-chat
 description: "Правила ответа в группе: коротко, по адресу, без стен текста и лишних упоминаний."
-triggers: ["групп", "чат", "ребят", "коллег", "group", "everyone", "team"]
+triggers: ["групп", "чат", "ребят", "коллег", "group", "everyone", "team", "群聊", "群里", "聊天", "төркем"]
 priority: 50
-locales: ["ru", "en", "tt"]
+locales: ["ru", "en", "zh", "tt"]
 ---
 
 # Группа

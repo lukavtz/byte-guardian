@@ -189,6 +189,8 @@ def _stem_hit(stem: str, tokens: list[str]) -> bool:
 
 def _hits(trigger: str, normalised: str, tokens: list[str]) -> bool:
     trigger_norm, trigger_tokens = _normalise(trigger)
+    if any("\u3400" <= char <= "\u9fff" for char in trigger_norm):
+        return trigger_norm in normalised
     if not trigger_tokens:
         return False
     if len(trigger_tokens) == 1:

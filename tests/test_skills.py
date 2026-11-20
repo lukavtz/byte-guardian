@@ -132,6 +132,26 @@ def test_morphology_matches_ru_and_tt_without_substrings() -> None:
     assert [skill.name for skill in loader.select_skills("кошка", "ru")] == ["formatting"]
 
 
+@pytest.mark.parametrize(
+    ("question", "locale", "expected"),
+    [
+        ("有人昏迷，不呼吸，打急救", "zh", "triage"),
+        ("Ашыгыч ярдәм, кеше аңсыз", "tt", "triage"),
+        ("这是来源", "zh", "sources"),
+        ("чыганак кайда", "tt", "sources"),
+        ("群聊里怎么回答", "zh", "group-chat"),
+        ("төркемдә ничек җавап бирәм", "tt", "group-chat"),
+    ],
+)
+def test_localized_triggers_select_skills(question: str, locale: str, expected: str) -> None:
+    assert expected in [skill.name for skill in loader.select_skills(question, locale)]
+
+
+def test_cjk_trigger_inside_sentence_matches() -> None:
+    assert "sources" in [skill.name for skill in loader.select_skills("这是来源问题", "zh")]
+    assert "group-chat" in [skill.name for skill in loader.select_skills("群聊怎么回答", "zh")]
+
+
 def test_unknown_question_returns_only_the_baseline() -> None:
     assert [skill.name for skill in loader.select_skills("квазар", "ru")] == ["formatting"]
 
