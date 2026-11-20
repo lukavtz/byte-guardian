@@ -11,6 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 DRAFT_TTL_SECONDS = 3600
 DRAFT_KEY_PREFIX = "broadcast_draft:"
+CHAT_MODE_PREFIX = "chat_mode:"
 
 SELECT_SQL = text("SELECT value FROM settings WHERE key = :key")
 UPSERT_SQL = text(
@@ -58,6 +59,22 @@ async def settings_delete(
 
 def draft_key(admin_id: int) -> str:
     return DRAFT_KEY_PREFIX + str(admin_id)
+
+
+def chat_mode_key(tg_id: int) -> str:
+    return CHAT_MODE_PREFIX + str(tg_id)
+
+
+async def chat_mode_on(
+    session_factory: async_sessionmaker[AsyncSession], tg_id: int
+) -> bool:
+    return await settings_get(session_factory, chat_mode_key(tg_id)) == "1"
+
+
+async def set_chat_mode(
+    session_factory: async_sessionmaker[AsyncSession], tg_id: int, on: bool
+) -> None:
+    await settings_set(session_factory, chat_mode_key(tg_id), "1" if on else "0")
 
 
 async def draft_save(

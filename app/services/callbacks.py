@@ -15,6 +15,8 @@ Screens are stateless: everything needed to redraw arrives in the callback.
     b1:admin
     b1:bc:<yes|no>
     b1:ask:<slug>
+    b1:chat
+    b1:chat_exit
 """
 
 from __future__ import annotations
@@ -38,9 +40,13 @@ ACTIONS = frozenset(
         "admin",
         "bc",
         "ask",
+        "chat",
+        "chat_exit",
     }
 )
-_BARE = frozenset({"menu", "admin", "lang_menu", "search_hint"})
+_BARE = frozenset(
+    {"menu", "admin", "lang_menu", "search_hint", "chat", "chat_exit"}
+)
 _PAGES = frozenset({"cat", "card"})
 _HEX = frozenset("0123456789abcdef")
 _BOOL_ARGS = frozenset({"yes", "no"})
@@ -143,6 +149,14 @@ def cb_broadcast(confirm: bool) -> str:
 
 def cb_ask(slug: str) -> str:
     return _pack("ask", _slug(slug))
+
+
+def cb_chat() -> str:
+    return _pack("chat")
+
+
+def cb_chat_exit() -> str:
+    return _pack("chat_exit")
 
 
 def _page_arg(raw: str) -> int | None:

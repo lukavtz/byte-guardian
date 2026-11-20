@@ -7,11 +7,13 @@ from unittest.mock import AsyncMock, MagicMock
 
 import httpx
 import pytest
+from test_nav import FakeDB
 
 from app.content.types import CardView, ThreatView
 from app.handlers import llm as handlers
 from app.services import llm as service
 from app.services.prompt import SYSTEM_PROMPT
+from app.services.settings import chat_mode_on, set_chat_mode
 
 
 def _card(slug: str = "fire-home", **overrides) -> CardView:
@@ -508,3 +510,114 @@ def test_question_strips_ask_and_mention() -> None:
     assert handlers._question("/ask@bytebot что делать?", "bytebot") == "что делать?"
     assert handlers._question("@ByteBot что делать?", "bytebot") == "что делать?"
     assert handlers._question("/ask", "bytebot") == ""
+
+
+# --- private chat mode ----------------------------------------------------
+
+
+def _ok_client(text: str = "<b>ok</b>") -> httpx.AsyncClient:
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, json={"choices": [{"message": {"content": text}}]})
+
+    return _client(handler)
+
+
+async def test_chat_text_answers_with_the_menu_and_exit_buttons(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    db = FakeDB()
+    await set_chat_mode(db.factory(), 42, True)
+    monkeypatch.setattr(service, "client_for", lambda settings: _ok_client())
+    message = _message("что делать при пожаре?")
+
+    await handlers.chat_text(
+        message,
+        bot=SimpleNamespace(id=999),
+        settings=_settings(),
+        repo=_Repo([_card()]),
+        session_factory=db.factory(),  # type: ignore[arg-type]
+    )
+
+    message.answer.assert_awaited_once()
+    assert message.answer.await_args.args[0] == "<b>ok</b>"
+    markup = message.answer.await_args.kwargs["reply_markup"]
+    assert [
+        item.callback_data for row in markup.inline_keyboard for item in row
+    ] == ["b1:menu", "b1:chat_exit"]
+
+
+async def test_chat_text_outside_chat_mode_falls_through_to_search() -> None:
+    message = _message("пожар")
+
+    with pytest.raises(Exception) as error:
+        await handlers.chat_text(
+            message,
+            bot=SimpleNamespace(id=999),
+            settings=_settings(),
+            repo=_Repo([_card()]),
+            session_factory=FakeDB().factory(),  # type: ignore[arg-type]
+        )
+
+    assert error.type.__name__ == "SkipHandler"
+    message.answer.assert_not_awaited()
+
+
+async def test_chat_text_fallback_keeps_the_mode_and_shows_search(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    db = FakeDB()
+    await set_chat_mode(db.factory(), 42, True)
+    monkeypatch.setattr(service, "client_for", lambda settings: None)
+    monkeypatch.setattr(handlers, "show", AsyncMock())
+    message = _message("пожар")
+
+    await handlers.chat_text(
+        message,
+        bot=SimpleNamespace(id=999),
+        settings=_settings(),
+        repo=_Repo([_card()]),
+        session_factory=db.factory(),  # type: ignore[arg-type]
+    )
+
+    handlers.show.assert_awaited_once()
+    assert "поиска" in message.answer.await_args.args[0]
+    assert await chat_mode_on(db.factory(), 42) is True
+
+
+async def test_ask_answers_while_chat_mode_is_on(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(service, "client_for", lambda settings: _ok_client("ответ"))
+    monkeypatch.setattr(handlers, "BOT_USERNAME", "bytebot")
+    message = _message("/ask что делать?")
+
+    await handlers.ask_command(
+        message,
+        SimpleNamespace(args="что делать?"),
+        bot=SimpleNamespace(id=999),
+        settings=_settings(),
+        repo=_Repo([_card()]),
+        session_factory=FakeDB().factory(),  # type: ignore[arg-type]
+    )
+
+    message.answer.assert_awaited_once()
+    assert message.answer.await_args.args[0] == "ответ"
+    markup = message.answer.await_args.kwargs["reply_markup"]
+    assert markup.inline_keyboard[0][0].url == "https://t.me/bytebot?start=card_fire-home"
+
+
+async def test_chat_text_never_logs_the_question(
+    monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    monkeypatch.setattr(service, "client_for", lambda settings: _ok_client("ответ"))
+    db = FakeDB()
+    await set_chat_mode(db.factory(), 42, True)
+
+    caplog.set_level("INFO")
+    await handlers.chat_text(
+        _message("секретный вопрос про пожар"),
+        bot=SimpleNamespace(id=999),
+        settings=_settings(),
+        repo=_Repo([_card()]),
+        session_factory=db.factory(),  # type: ignore[arg-type]
+    )
+
+    assert "секретный" not in caplog.text

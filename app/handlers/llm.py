@@ -6,6 +6,7 @@ import logging
 
 from aiogram import Bot, Dispatcher, F, Router
 from aiogram.dispatcher.event.bases import SkipHandler
+from aiogram.enums import ChatType
 from aiogram.filters import Command, CommandObject
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
@@ -14,6 +15,7 @@ from app.config import Settings
 from app.content.repository import ContentRepository
 from app.content.types import CardView
 from app.services import llm as llm_service
+from app.services.callbacks import cb_chat_exit, cb_menu
 from app.services.i18n import resolve_locale, t
 from app.services.llm import (
     RateLimiter,
@@ -23,8 +25,11 @@ from app.services.llm import (
     strip_html,
     strip_mention,
 )
+from app.services.settings import chat_mode_on
 from app.services.user_locale import get_locale
 from app.ui.delivery import show
+from app.ui.emoji import custom_id
+from app.ui.keyboards import button
 from app.ui.render import search_screen
 
 logger = logging.getLogger(__name__)
@@ -91,6 +96,26 @@ def _card_keyboard(card: CardView | None, bot_username: str | None, locale: str)
     )
 
 
+def _chat_keyboard(locale: str) -> InlineKeyboardMarkup:
+    """The chat answer keeps both ways out within one tap."""
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                button(
+                    t(locale, "button.menu"),
+                    cb_menu(),
+                    icon_custom_emoji_id=custom_id("menu"),
+                ),
+                button(
+                    t(locale, "button.chat_exit"),
+                    cb_chat_exit(),
+                    icon_custom_emoji_id=custom_id("cancel"),
+                ),
+            ]
+        ]
+    )
+
+
 async def _send(message: Message, text: str, *, group: bool, markup: InlineKeyboardMarkup | None = None) -> None:
     if group:
         await message.reply(text, reply_markup=markup)
@@ -124,12 +149,13 @@ async def respond(
     repository: ContentRepository | None = None,
     bot_username: str | None = None,
     session_factory: async_sessionmaker[AsyncSession] | None = None,
+    chat: bool = False,
 ) -> None:
     locale = await locale_of(message, session_factory)
     group = _is_group(message)
     question = question.strip()
     if not question:
-        await _send(message, USAGE[locale], group=group)
+        await _send(message, USAGE[locale], group=group, markup=_chat_keyboard(locale) if chat else None)
         return
     user = message.from_user
     if not LIMITER.allow(
@@ -137,7 +163,7 @@ async def respond(
         chat_id=message.chat.id,
         group=group,
     ):
-        await _send(message, RATE[locale], group=group)
+        await _send(message, RATE[locale], group=group, markup=_chat_keyboard(locale) if chat else None)
         return
     cards = context_cards(repository, question, locale)
     client = llm_service.client_for(settings)
@@ -155,7 +181,11 @@ async def respond(
     if not text:
         await _fallback(message, question, bot=bot, repository=repository, locale=locale, group=group)
         return
-    markup = _card_keyboard(cards[0] if cards else None, bot_username or BOT_USERNAME, locale)
+    markup = (
+        _chat_keyboard(locale)
+        if chat
+        else _card_keyboard(cards[0] if cards else None, bot_username or BOT_USERNAME, locale)
+    )
     await _send(message, text, group=group, markup=markup)
 
 
@@ -176,6 +206,36 @@ async def ask_command(
         repository=repo,
         bot_username=BOT_USERNAME,
         session_factory=session_factory,
+    )
+
+
+@router.message(F.chat.type == ChatType.PRIVATE, F.text, ~F.text.startswith("/"))
+async def chat_text(
+    message: Message,
+    bot: Bot,
+    settings: Settings,
+    repo: ContentRepository | None = None,
+    session_factory: async_sessionmaker[AsyncSession] | None = None,
+) -> None:
+    """Plain text in a private chat is a question only while chat mode is on.
+
+    This router is registered before `app.handlers.search`, so an idle chat
+    falls through to the search screen unchanged.
+    """
+    user = message.from_user
+    if user is None or session_factory is None:
+        raise SkipHandler()
+    if not await chat_mode_on(session_factory, user.id):
+        raise SkipHandler()
+    await respond(
+        message,
+        strip_mention(message.text or "", BOT_USERNAME),
+        bot=bot,
+        settings=settings,
+        repository=repo,
+        bot_username=BOT_USERNAME,
+        session_factory=session_factory,
+        chat=True,
     )
 
 

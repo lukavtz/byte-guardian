@@ -23,6 +23,8 @@ from app.services.callbacks import (
     cb_admin,
     cb_card,
     cb_cat,
+    cb_chat,
+    cb_chat_exit,
     cb_game,
     cb_lang_menu,
     cb_menu,
@@ -171,9 +173,18 @@ def render_menu(categories: list[CategoryView], locale: str, is_admin: bool = Fa
     rows.append(
         rich_row(
             rich_button(
+                t(locale, "button.chat"),
+                data=cb_chat(),
+                style="primary",
+                icon=("support", "💬"),
+            )
+        )
+    )
+    rows.append(
+        rich_row(
+            rich_button(
                 t(locale, "button.search"),
                 data=cb_search_hint(),
-                style="primary",
                 icon=("search", "🔍"),
             ),
             rich_button(
@@ -197,6 +208,27 @@ def render_menu(categories: list[CategoryView], locale: str, is_admin: bool = Fa
         )
     heading = f"{premium('shield', '🛡️')} {_esc(t(locale, 'menu.title'))}"
     html = _header("menu", heading, f"<p>{_esc(t(locale, 'menu.lead'))}</p>")
+    return RichScreen(html + "\n".join(rows))
+
+
+def render_chat(locale: str) -> RichScreen:
+    """The chat screen: one lead line and the two ways out."""
+    rows = [
+        rich_row(
+            rich_button(
+                t(locale, "button.chat_exit"),
+                data=cb_chat_exit(),
+                icon=("cancel", "❌"),
+            ),
+            rich_button(
+                t(locale, "button.menu"),
+                data=cb_menu(),
+                icon=("menu", "🏘"),
+            ),
+        )
+    ]
+    heading = f"{premium('support', '💬')} {_esc(t(locale, 'chat.title'))}"
+    html = _header("hero", heading, f"<p>{_esc(t(locale, 'chat.lead'))}</p>")
     return RichScreen(html + "\n".join(rows))
 
 

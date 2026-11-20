@@ -16,6 +16,7 @@ from app.ui.render import (
     RichScreen,
     render_card,
     render_category,
+    render_chat,
     render_menu,
     render_question,
     render_result,
@@ -109,6 +110,7 @@ def _utf16_len(text: str) -> int:
 def _screens() -> list[RichScreen]:
     return [
         render_menu([_category()], LOCALE),
+        render_chat(LOCALE),
         render_category(_category(), [_threat()], LOCALE, 1, 1),
         render_card(_card(), LOCALE, 1, True),
         render_card(_card(), LOCALE, 1, True, can_game=True),
@@ -296,17 +298,17 @@ def test_card_and_quiz_use_the_category_artwork() -> None:
 # --- menu ----------------------------------------------------------------
 
 
-def test_menu_has_one_button_per_category_and_the_service_row() -> None:
+def test_menu_has_one_button_per_category_and_the_chat_row() -> None:
     slugs = ["fire", "terror", "tech", "nature", "medical", "chem", "rad", "cyber"]
     categories = [_category(slug=slug, title=slug.title()) for slug in slugs]
     screen = render_menu(categories, LOCALE)
 
     rows = _rows(screen.html)
-    assert [len(row) for row in rows] == [1] * 8 + [2]
+    assert [len(row) for row in rows] == [1] * 8 + [1, 2]
     categories_only = _parsed(screen.html)
     assert [cb.arg for cb in categories_only[:8]] == slugs
     assert all(cb.action == "cat" for cb in categories_only[:8])
-    assert [cb.action for cb in categories_only[8:]] == ["search_hint", "lang_menu"]
+    assert [cb.action for cb in categories_only[8:]] == ["chat", "search_hint", "lang_menu"]
 
 
 def test_menu_shows_the_shared_header_and_brand() -> None:
@@ -317,11 +319,13 @@ def test_menu_shows_the_shared_header_and_brand() -> None:
     assert html.index("<img ") < html.index("<h1>") < html.index("<hr/>")
 
 
-def test_menu_search_is_the_only_primary() -> None:
+def test_menu_chat_is_the_only_primary() -> None:
     screen = render_menu([_category()], LOCALE)
     primary = _primary(screen.html)
     assert len(primary) == 1
-    assert parse_cb(primary[0]["data"]).action == "search_hint"
+    assert parse_cb(primary[0]["data"]).action == "chat"
+    search = [button for button in _buttons(screen.html) if button.get("data") == "b1:search_hint"]
+    assert search and "style" not in search[0]
 
 
 def test_admin_row_is_hidden_from_everyone_else() -> None:
@@ -388,7 +392,18 @@ def test_menu_never_exceeds_eight_categories() -> None:
     categories = [_category(slug=f"c{i}", title=f"Раздел {i}") for i in range(9)]
     screen = render_menu(categories, LOCALE)
     assert "b1:cat:c8:1" not in _data(screen.html)
-    assert len(_data(screen.html)) == 10
+    assert len(_data(screen.html)) == 11
+
+
+def test_chat_screen_carries_the_heading_lead_and_two_ways_out() -> None:
+    screen = render_chat(LOCALE)
+    assert "<h1>" in screen.html and "Чат с Байтом" in screen.html
+    assert "Напиши вопрос по БЖД — отвечу по карточкам. Выйти — кнопка ниже." in screen.html
+    rows = _rows(screen.html)
+    assert len(rows) == 1
+    assert [button["data"] for button in rows[0]] == ["b1:chat_exit", "b1:menu"]
+    assert all("style" not in button for button in rows[0])
+    assert [button["label"].split(" ", 1)[-1] for button in rows[0]] == ["Выйти", "Меню"]
 
 
 # --- category ------------------------------------------------------------

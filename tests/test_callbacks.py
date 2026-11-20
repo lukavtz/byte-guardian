@@ -10,6 +10,8 @@ from app.services.callbacks import (
     cb_broadcast,
     cb_card,
     cb_cat,
+    cb_chat,
+    cb_chat_exit,
     cb_game,
     cb_lang,
     cb_menu,
@@ -42,6 +44,8 @@ def test_round_trip_every_builder() -> None:
         (cb_broadcast(True), Callback("bc", arg="yes")),
         (cb_broadcast(False), Callback("bc", arg="no")),
         (cb_ask(SLUG), Callback("ask", arg=SLUG)),
+        (cb_chat(), Callback("chat")),
+        (cb_chat_exit(), Callback("chat_exit")),
     ]
     for data, expected in cases:
         assert parse_cb(data) == expected, data
@@ -74,6 +78,8 @@ def test_worst_case_slug_fits_64_bytes() -> None:
         cb_broadcast(True),
         cb_broadcast(False),
         cb_ask(LONG_SLUG),
+        cb_chat(),
+        cb_chat_exit(),
     ]
     assert len(LONG_SLUG) == 32
     for payload in data:
@@ -107,6 +113,8 @@ def test_worst_case_slug_fits_64_bytes() -> None:
         "b1:bc:maybe",
         "b1:bc",
         "b1:bc:yes:no",
+        "b1:chat:x",
+        "b1:chat_exit:1",
         "b1:quiz:fire-home:q1:4:a3f1",
         "b1:quiz:fire-home:q1:1",
         "b1:quiz:fire-home:q1:1:zzzz",

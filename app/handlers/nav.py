@@ -21,6 +21,8 @@ from app.config import Settings
 from app.content.repository import ContentRepository
 from app.content.types import CardView, CategoryView
 from app.services.callbacks import (
+    cb_chat,
+    cb_chat_exit,
     cb_lang,
     cb_lang_menu,
     cb_menu,
@@ -28,11 +30,18 @@ from app.services.callbacks import (
     parse_cb,
 )
 from app.services.i18n import DEFAULT_LOCALE, ENABLED_LOCALES, resolve_locale, t
+from app.services.settings import set_chat_mode
 from app.services.user_locale import get_locale, set_locale
 from app.ui.delivery import show
 from app.ui.emoji import custom_id, premium
 from app.ui.keyboards import PAGE_SIZE, button, markup, paired, rich_button, rich_row
-from app.ui.render import RichScreen, render_card, render_category, render_menu
+from app.ui.render import (
+    RichScreen,
+    render_card,
+    render_category,
+    render_chat,
+    render_menu,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -278,6 +287,40 @@ async def on_lang_menu(
     await query.answer()
     locale = await user_locale(session_factory, query.from_user)
     await _redraw(query, bot, language_screen(locale))
+
+
+@router.callback_query(F.data == cb_chat())
+async def on_chat(
+    query: CallbackQuery,
+    bot: Bot,
+    session_factory: async_sessionmaker[AsyncSession],
+) -> None:
+    await query.answer()
+    user = query.from_user
+    if user is None:
+        return
+    await set_chat_mode(session_factory, user.id, True)
+    locale = await user_locale(session_factory, user)
+    await _redraw(query, bot, render_chat(locale))
+
+
+@router.callback_query(F.data == cb_chat_exit())
+async def on_chat_exit(
+    query: CallbackQuery,
+    bot: Bot,
+    repo: ContentRepository,
+    session_factory: async_sessionmaker[AsyncSession],
+    settings: Settings | None = None,
+) -> None:
+    await query.answer()
+    user = query.from_user
+    if user is None:
+        return
+    await set_chat_mode(session_factory, user.id, False)
+    locale = await user_locale(session_factory, user)
+    await _redraw(
+        query, bot, await menu_screen(repo, locale, is_admin_id(settings, user.id))
+    )
 
 
 @router.callback_query(F.data == cb_search_hint())

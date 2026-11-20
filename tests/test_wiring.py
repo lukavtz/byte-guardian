@@ -128,6 +128,33 @@ def test_migrations_env_imports_content_tables() -> None:
     assert {"category", "threat", "threat_text", "quiz_question", "quiz_answer", "settings"} <= set(tables)
 
 
+def test_handlers_register_in_name_order(monkeypatch: pytest.MonkeyPatch) -> None:
+    """`llm` must claim private text before `search`; directory order is not enough."""
+    import app.handlers as package
+
+    seen: list[str] = []
+
+    def fake_iter(path: list[str]) -> Any:
+        return iter(
+            [
+                SimpleNamespace(name="search"),
+                SimpleNamespace(name="llm"),
+                SimpleNamespace(name="_ignored"),
+            ]
+        )
+
+    def fake_import(name: str) -> Any:
+        short = name.rsplit(".", 1)[-1]
+        return SimpleNamespace(register=lambda dp, bot: seen.append(short))
+
+    monkeypatch.setattr(package.pkgutil, "iter_modules", fake_iter)
+    monkeypatch.setattr(package.importlib, "import_module", fake_import)
+
+    package.register_handlers(object(), None)  # type: ignore[arg-type]
+
+    assert seen == ["llm", "search"]
+
+
 def test_repository_accepts_session_factory() -> None:
     repo = ContentRepository(object())  # type: ignore[arg-type]
     assert isinstance(repo, ContentRepository)

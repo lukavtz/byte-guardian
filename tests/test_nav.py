@@ -10,13 +10,17 @@ import pytest
 from app.content.types import CardView, CategoryView, ThreatView
 from app.handlers import commands, nav
 from app.services.callbacks import (
+    Callback,
     cb_card,
     cb_cat,
+    cb_chat,
+    cb_chat_exit,
     cb_lang_menu,
     cb_menu,
     cb_search_hint,
     parse_cb,
 )
+from app.services.settings import chat_mode_on, set_chat_mode
 from app.ui.keyboards import keyboard_from_rich
 
 
@@ -513,6 +517,56 @@ def test_language_screen_marks_the_current_locale_success() -> None:
     styles = {item.text: item.style for item in buttons}
     assert styles["Русский"] == "success"
     assert [item.style for item in buttons].count("primary") == 0
+
+
+@pytest.mark.asyncio
+async def test_menu_offers_the_chat_entry_as_the_primary_button() -> None:
+    bot = FakeBot()
+    await nav.on_menu(_query(cb_menu()), bot, FakeRepo(), FakeDB().factory())
+
+    buttons = _buttons(bot.edited[0])
+    primary = [item for item in buttons if item.style == "primary"]
+    assert len(primary) == 1
+    assert primary[0].callback_data == cb_chat()
+    search = next(item for item in buttons if item.callback_data == cb_search_hint())
+    assert search.style is None
+
+
+@pytest.mark.asyncio
+async def test_chat_callback_opens_the_chat_screen_and_keeps_the_mode() -> None:
+    db = FakeDB()
+    bot = FakeBot()
+    query = _query(cb_chat())
+
+    await nav.on_chat(query, bot, db.factory())
+
+    query.answer.assert_awaited_once()
+    assert await chat_mode_on(db.factory(), 7) is True
+    assert bot.edited and not bot.sent
+    assert _edited_message_id(bot.edited) == 10
+    assert "Чат с Байтом" in bot.edited[0]["rich_message"].html
+    datas = [item.callback_data for item in _buttons(bot.edited[0]) if item.callback_data]
+    assert {cb_chat_exit(), cb_menu()} <= set(datas)
+
+
+@pytest.mark.asyncio
+async def test_chat_exit_clears_the_mode_and_draws_the_menu() -> None:
+    db = FakeDB()
+    await set_chat_mode(db.factory(), 7, True)
+    bot = FakeBot()
+
+    await nav.on_chat_exit(_query(cb_chat_exit()), bot, FakeRepo(), db.factory())
+
+    assert await chat_mode_on(db.factory(), 7) is False
+    assert bot.edited and not bot.sent
+    assert any(item.text == "🔥 Пожар" for item in _buttons(bot.edited[0]))
+
+
+def test_chat_callbacks_fit_telegram() -> None:
+    assert len(cb_chat().encode("utf-8")) <= 64
+    assert len(cb_chat_exit().encode("utf-8")) <= 64
+    assert parse_cb(cb_chat()) == Callback("chat")
+    assert parse_cb(cb_chat_exit()) == Callback("chat_exit")
 
 
 def test_settings_has_exactly_one_primary_toggle() -> None:
