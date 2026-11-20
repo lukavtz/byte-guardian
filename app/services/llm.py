@@ -19,7 +19,7 @@ from app.content.repository import ContentRepository
 from app.content.types import CardView
 from app.runtime.secrets import read_secret
 from app.services.prompt import SYSTEM_PROMPT
-from app.skills.loader import render, select_skills
+from app.skills.loader import format_skills
 
 logger = logging.getLogger(__name__)
 
@@ -238,10 +238,10 @@ def build_messages(
         user += f"\n\n{web}"
     # Skills ride on the system prompt for topical questions only: greeting and
     # small-talk intents are answered by ChatBrain and never reach the model.
-    # `render` caps its own block at BUDGET_CHARS, so growth stays ≤ 1200 chars.
+    # `format_skills` caps the block at BUDGET_CHARS, so growth stays ≤ 900 chars.
     system = SYSTEM_PROMPT
     if detect_smalltalk(question) is None:
-        system += render(select_skills(question, locale))
+        system += format_skills(question, locale)
     return [
         {"role": "system", "content": system},
         {"role": "user", "content": user},
