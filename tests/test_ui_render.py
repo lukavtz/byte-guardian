@@ -356,17 +356,17 @@ def test_action_buttons_are_verbs_without_trailing_dots() -> None:
 @pytest.mark.parametrize("slug", ["fire", "terror", "tech", "nature", "medical", "chem", "rad", "cyber"])
 def test_category_artwork_matches_the_section(slug: str) -> None:
     screen = render_category(_category(slug=slug), [_threat()], LOCALE, 1, 1)
-    assert f'<img src="{ART}/{slug}.png"/>' in screen.html
+    assert f'<img src="{ART}/{slug}.jpg"/>' in screen.html
 
 
-def test_menu_is_text_only() -> None:
+def test_menu_opens_with_its_banner() -> None:
     html = render_menu([_category()], LOCALE).html
-    assert "<img" not in html
-    assert "menu.png" not in html
+    assert f'<img src="{ART}/menu.jpg"/>' in html
+    assert html.index("<img") < html.index("<h1>")
 
 
 def test_chat_uses_its_own_artwork() -> None:
-    assert f'<img src="{ART}/chat.png"/>' in render_chat(LOCALE).html
+    assert f'<img src="{ART}/chat.jpg"/>' in render_chat(LOCALE).html
 
 
 def test_app_does_not_reference_the_removed_banner_but_readme_does() -> None:
@@ -382,18 +382,18 @@ def test_app_does_not_reference_the_removed_banner_but_readme_does() -> None:
 
 
 def test_unknown_section_falls_back_to_the_hero() -> None:
-    assert f'<img src="{ART}/hero.png"/>' in search_screen("x", [], LOCALE).html
+    assert f'<img src="{ART}/hero.jpg"/>' in search_screen("x", [], LOCALE).html
     unknown = render_category(_category(slug="space"), [_threat()], LOCALE, 1, 1)
-    assert f'<img src="{ART}/hero.png"/>' in unknown.html
+    assert f'<img src="{ART}/hero.jpg"/>' in unknown.html
 
 
 def test_card_and_quiz_use_the_category_artwork() -> None:
     card = render_card(_card(category_slug="chem"), LOCALE, 1, True)
-    assert f'<img src="{ART}/chem.png"/>' in card.html
+    assert f'<img src="{ART}/chem.jpg"/>' in card.html
     question = render_question(_quiz(), "rad-smoke", 1, 3, "a3f1", LOCALE)
-    assert f'<img src="{ART}/rad.png"/>' in question.html
+    assert f'<img src="{ART}/rad.jpg"/>' in question.html
     result = render_result(3, 3, "medical-aid", LOCALE)
-    assert f'<img src="{ART}/medical.png"/>' in result.html
+    assert f'<img src="{ART}/medical.jpg"/>' in result.html
 
 
 # --- menu ----------------------------------------------------------------

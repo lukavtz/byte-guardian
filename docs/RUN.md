@@ -45,7 +45,7 @@ curl -fsS localhost:8080/readyz
 
 Порядок: `postgres`/`redis` (healthcheck) → `migrate` (`alembic upgrade head`) →
 `bot`, `worker`. `caddy` включается только профилем `webhook` и проксирует
-`bot:8080`.
+`bot:8080` по `deploy/Caddyfile`.
 
 ```bash
 podman compose --profile webhook up -d --build   # прод, TLS через Caddy
@@ -67,7 +67,7 @@ podman compose config
 Polling (dev): `BOT_MODE=polling`, вебхук не нужен, наружу ничего не публикуется.
 
 Webhook (prod): `BOT_MODE=webhook`, `WEBHOOK_URL=https://<домен>`.
-Caddy терминирует TLS на `<домен>` из `Caddyfile`, Telegram ходит на `/webhook`.
+Caddy терминирует TLS на `<домен>` из `deploy/Caddyfile`, Telegram ходит на `/webhook`.
 
 Перед сменой режима удалить старый вебхук:
 

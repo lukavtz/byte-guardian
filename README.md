@@ -64,7 +64,7 @@ podman compose up -d --build
 curl -fsS localhost:8080/healthz   # {"ok": true}
 ```
 
-`BOT_MODE=polling` по умолчанию: TLS и домен не нужны. Для продакшена — `podman compose --profile webhook up -d --build` с `BOT_MODE=webhook` и `WEBHOOK_URL=https://<домен>`; Caddy терминирует TLS. Диагностика и переключение режимов — [docs/RUN.md](docs/RUN.md).
+`BOT_MODE=polling` по умолчанию: TLS и домен не нужны. Для продакшена — `podman compose --profile webhook up -d --build` с `BOT_MODE=webhook` и `WEBHOOK_URL=https://<домен>`; Caddy (`deploy/Caddyfile`) терминирует TLS. Диагностика и переключение режимов — [docs/RUN.md](docs/RUN.md).
 
 ## Настройка
 

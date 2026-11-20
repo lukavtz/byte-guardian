@@ -1,10 +1,11 @@
+"""Rich-message demo: stream a draft, then replace it with the final message."""
+
 from __future__ import annotations
 
 from aiogram import Bot, Dispatcher, Router
 from aiogram.filters import Command
-from aiogram.types import Message
-
-from app.services.api104 import send_rich_message, send_rich_message_draft
+from aiogram.methods import SendRichMessage, SendRichMessageDraft
+from aiogram.types import InputRichMessage, Message
 
 router = Router(name="rich")
 
@@ -16,13 +17,19 @@ RICH_FINAL_HTML = "<b>Rich message</b>\nThis message was sent with <code>sendRic
 @router.message(Command("rich"))
 async def rich_demo(message: Message, bot: Bot) -> None:
     chat_id = message.chat.id
-    await send_rich_message_draft(
-        bot,
-        chat_id=chat_id,
-        draft_id=RICH_DRAFT_ID,
-        html=RICH_DRAFT_HTML,
+    await bot(
+        SendRichMessageDraft(
+            chat_id=chat_id,
+            draft_id=RICH_DRAFT_ID,
+            rich_message=InputRichMessage(html=RICH_DRAFT_HTML),
+        )
     )
-    await send_rich_message(bot, chat_id=chat_id, html=RICH_FINAL_HTML)
+    await bot(
+        SendRichMessage(
+            chat_id=chat_id,
+            rich_message=InputRichMessage(html=RICH_FINAL_HTML),
+        )
+    )
 
 
 def register(dp: Dispatcher, _bot: Bot) -> None:

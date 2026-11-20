@@ -46,6 +46,7 @@ SHARE = "https://t.me/share/url?"
 BAR_CELLS = 10
 SEVERITIES = {1: "low", 2: "medium", 3: "high"}
 ART = "https://raw.githubusercontent.com/lukavtz/byte-guardian/main/assets/art"
+EXT = "jpg"
 ARTS = frozenset({"fire", "terror", "tech", "nature", "medical", "chem", "rad", "cyber", "chat"})
 
 
@@ -101,8 +102,8 @@ def _badge(card: CardView, locale: str) -> str:
 
 def _art(slug: str) -> str:
     """One picture above the heading: the section art; an unknown section
-    borrows the hero. The menu is text-only and calls no art."""
-    return f'<img src="{ART}/{slug if slug in ARTS else "hero"}.png"/>'
+    borrows the hero. The menu has a banner of its own and does not call this."""
+    return f'<img src="{ART}/{slug if slug in ARTS else "hero"}.{EXT}"/>'
 
 
 def _art_of_threat(slug: str) -> str:
@@ -172,7 +173,7 @@ def render_menu(categories: list[CategoryView], locale: str, is_admin: bool = Fa
             )
         )
     heading = f"{premium('shield', '🛡️')} {_esc(t(locale, 'menu.title'))}"
-    html = f"<h1>{heading}</h1><p>{_esc(t(locale, 'menu.lead'))}</p><hr/>"
+    html = f'<img src="{ART}/menu.{EXT}"/><h1>{heading}</h1><p>{_esc(t(locale, "menu.lead"))}</p><hr/>'
     return RichScreen(html + "\n".join(rows))
 
 
