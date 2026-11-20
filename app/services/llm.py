@@ -115,7 +115,9 @@ def _card_block(number: int, card: CardView) -> str:
     return "\n".join(lines)
 
 
-def build_messages(question: str, locale: str, cards: list[CardView]) -> list[dict[str, Any]]:
+def build_messages(
+    question: str, locale: str, cards: list[CardView], web: str | None = None
+) -> list[dict[str, Any]]:
     blocks = [_card_block(number, card) for number, card in enumerate(cards[:CARD_LIMIT], start=1)]
     context = "\n\n".join(blocks) if blocks else "Карточек по теме нет."
     user = (
@@ -123,6 +125,8 @@ def build_messages(question: str, locale: str, cards: list[CardView]) -> list[di
         f"Вопрос: {question.strip()}\n\n"
         f"Карточки:\n{context}"
     )
+    if web:
+        user += f"\n\n{web}"
     return [
         {"role": "system", "content": SYSTEM_PROMPT},
         {"role": "user", "content": user},

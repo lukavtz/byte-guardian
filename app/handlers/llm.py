@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import re
 from contextlib import suppress
+from urllib.parse import urlparse
 
 from aiogram import Bot, Dispatcher, F, Router
 from aiogram.dispatcher.event.bases import SkipHandler
@@ -29,6 +31,7 @@ from app.services.llm import (
 )
 from app.services.settings import chat_mode_on
 from app.services.user_locale import get_locale
+from app.services.web_search import WebResult, format_web_context, search_web
 from app.ui.delivery import show
 from app.ui.emoji import custom_id
 from app.ui.keyboards import button
@@ -39,6 +42,16 @@ logger = logging.getLogger(__name__)
 BOT_USERNAME: str | None = None
 
 TYPING_INTERVAL = 4.0
+WEB_TIMEOUT = 6.0
+WEB_LIMIT = 3
+STRONG_CARDS = 2
+
+# Time-sensitive or lookup questions earn a web pass even when cards match.
+WEB_QUESTION_RE = re.compile(
+    r"\b(?:новост\w*|сейчас|курс\w*|закон\w*|2025|2026|где|сайт\w*|телефон\w*)\b",
+    re.IGNORECASE,
+)
+SOURCE_RE = re.compile(r"Источник:\s*(https?://[^\s<>]+)", re.IGNORECASE)
 
 LIMITER = RateLimiter()
 
@@ -120,6 +133,49 @@ def _chat_keyboard(locale: str) -> InlineKeyboardMarkup:
     )
 
 
+def _with_sources(
+    markup: InlineKeyboardMarkup | None,
+    sources: list[tuple[str, str]],
+) -> InlineKeyboardMarkup | None:
+    """Source links sit above the exit row; hosts stay readable on a phone."""
+    if not sources:
+        return markup
+    row = [InlineKeyboardButton(text=host, url=url) for host, url in sources]
+    rows = [row] + (markup.inline_keyboard if markup is not None else [])
+    return InlineKeyboardMarkup(inline_keyboard=rows)
+
+
+def _cited_sources(answer: str, results: list[WebResult]) -> list[tuple[str, str]]:
+    """Only URLs we actually retrieved may become buttons: no invented links."""
+    allowed = {item.url for item in results}
+    picked: list[tuple[str, str]] = []
+    seen: set[str] = set()
+    for match in SOURCE_RE.findall(answer):
+        url = match.rstrip(".,);»")
+        if url not in allowed or url in seen:
+            continue
+        seen.add(url)
+        host = (urlparse(url).hostname or url).removeprefix("www.")
+        picked.append((host, url))
+        if len(picked) == 2:
+            break
+    return picked
+
+
+async def _web_context(question: str, cards: list[CardView]) -> tuple[str, list[WebResult]]:
+    """Search only on weak card coverage or a time-sensitive question."""
+    if len(cards) >= STRONG_CARDS and not WEB_QUESTION_RE.search(question):
+        return "", []
+    try:
+        results = await asyncio.wait_for(
+            search_web(question, limit=WEB_LIMIT, timeout=WEB_TIMEOUT), WEB_TIMEOUT
+        )
+    except Exception:
+        logger.debug("web search unavailable; answering from cards only")
+        return "", []
+    return format_web_context(results), results
+
+
 async def _send(message: Message, text: str, *, group: bool, markup: InlineKeyboardMarkup | None = None) -> None:
     if group:
         await message.reply(text, reply_markup=markup)
@@ -189,11 +245,12 @@ async def respond(
         await _send(message, RATE[locale], group=group, markup=_chat_keyboard(locale) if chat else None)
         return
     cards = context_cards(repository, question, locale)
+    web, web_results = await _web_context(question, cards)
     client = llm_service.client_for(settings)
     if client is None:
         await _fallback(message, question, bot=bot, repository=repository, locale=locale, group=group)
         return
-    messages = build_messages(question, locale, cards)
+    messages = build_messages(question, locale, cards, web or None)
     await _typing_ping(bot, message.chat.id)
     typing = asyncio.create_task(_keep_typing(bot, message.chat.id))
     failed = False
@@ -218,6 +275,7 @@ async def respond(
         if chat
         else _card_keyboard(cards[0] if cards else None, bot_username or BOT_USERNAME, locale)
     )
+    markup = _with_sources(markup, _cited_sources(raw, web_results))
     await _send(message, text, group=group, markup=markup)
 
 
