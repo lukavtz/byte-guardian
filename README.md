@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="assets/art/hero.png" width="100%" alt="Байт — маскот-киви в худи ТИСБИ, чат-бот по безопасности жизнедеятельности">
+  <img src="assets/banner.jpg" width="100%" alt="Байт — свой в ТИСБИ, чат-бот по безопасности жизнедеятельности">
 </p>
 
-<p align="center"><b>Справочник по БЖД, который отвечает за три нажатия</b><br>59 карточек «что делать» при ЧС, 177 вопросов для самопроверки и ИИ-помощник, который отвечает только по этим карточкам.</p>
+<p align="center"><b>Байт — свой в ТИСБИ</b><br>59 карточек «что делать» при ЧС, 177 вопросов для самопроверки и ИИ-помощник, который отвечает только по этим карточкам.</p>
 
 <p align="center">
   <a href="https://t.me/ByteTisbi_bot"><img alt="Telegram: @ByteTisbi_bot" src="https://img.shields.io/badge/Telegram-@ByteTisbi__bot-2CA5E0?logo=telegram&logoColor=white&style=flat-square"></a>
