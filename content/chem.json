@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "category": {
     "slug": "chem",
     "emoji": "☣️",
@@ -32,11 +32,11 @@
             "Слушайте сообщения МЧС по радио и в приложении"
           ],
           "during": [
+            "Позвоните 112 и сообщите о случившемся",
             "Не спускайтесь в подвалы и на нижние этажи",
             "Дышите через ткань, смоченную водой",
             "Выходите наверх и двигайтесь перпендикулярно ветру",
-            "На улице держитесь возвышенных мест",
-            "Если выйти нельзя, закройте окна, двери и вентиляцию"
+            "На улице держитесь возвышенных мест"
           ],
           "after": [
             "Выйдя из зоны, снимите верхнюю одежду и примите душ",
@@ -53,7 +53,19 @@
           "contacts": [
             "112"
           ],
-          "source": "ГУ МЧС России по Псковской области · https://60.mchs.gov.ru/deyatelnost/poleznaya-informaciya/dopolnitelnye-stranicy/staticheskie-stranicy/kompleksnaya-sistema-ekstrennogo-opoveshcheniya-naseleniya/prakticheskie-meropriyatiya/pamyatka-po-deystviyam-v-usloviyah-vozmozhnogo-himicheskogo-zarazheniya"
+          "source": "ГУ МЧС России по Псковской области · https://60.mchs.gov.ru/deyatelnost/poleznaya-informaciya/dopolnitelnye-stranicy/staticheskie-stranicy/kompleksnaya-sistema-ekstrennogo-opoveshcheniya-naseleniya/prakticheskie-meropriyatiya/pamyatka-po-deystviyam-v-usloviyah-vozmozhnogo-himicheskogo-zarazheniya",
+          "quick": "Позвоните 112",
+          "mistakes": [
+            "Не укрывайтесь в подвале или погребе",
+            "Не пейте и не ешьте в зоне заражения",
+            "Не включайте вентиляцию: она затянет воздух с улицы"
+          ],
+          "citations": [
+            {
+              "org": "ГУ МЧС России по Псковской области",
+              "url": "https://60.mchs.gov.ru/deyatelnost/poleznaya-informaciya/dopolnitelnye-stranicy/staticheskie-stranicy/kompleksnaya-sistema-ekstrennogo-opoveshcheniya-naseleniya/prakticheskie-meropriyatiya/pamyatka-po-deystviyam-v-usloviyah-vozmozhnogo-himicheskogo-zarazheniya"
+            }
+          ]
         },
         "en": {
           "title": "Chlorine leak",
@@ -71,11 +83,11 @@
             "Listen to EMERCOM reports on the radio and in the app"
           ],
           "during": [
+            "Call 112 and report the emergency",
             "Do not go into basements or lower floors",
             "Breathe through a cloth dampened with water",
             "Move upward and travel perpendicular to the wind",
-            "Outdoors, stay on high ground",
-            "If you cannot leave, close windows, doors, and vents"
+            "Outdoors, stay on high ground"
           ],
           "after": [
             "Once out of the zone, remove outer clothing and shower",
@@ -92,6 +104,18 @@
           "source": "EMERCOM Main Directorate for Pskov Oblast · https://60.mchs.gov.ru/deyatelnost/poleznaya-informaciya/dopolnitelnye-stranicy/staticheskie-stranicy/kompleksnaya-sistema-ekstrennogo-opoveshcheniya-naseleniya/prakticheskie-meropriyatiya/pamyatka-po-deystviyam-v-usloviyah-vozmozhnogo-himicheskogo-zarazheniya",
           "contacts": [
             "112"
+          ],
+          "quick": "Call 112",
+          "mistakes": [
+            "Do not shelter in a basement or cellar",
+            "Do not drink or eat in the contamination zone",
+            "Do not turn on ventilation: it will pull in outside air"
+          ],
+          "citations": [
+            {
+              "org": "ГУ МЧС России по Псковской области",
+              "url": "https://60.mchs.gov.ru/deyatelnost/poleznaya-informaciya/dopolnitelnye-stranicy/staticheskie-stranicy/kompleksnaya-sistema-ekstrennogo-opoveshcheniya-naseleniya/prakticheskie-meropriyatiya/pamyatka-po-deystviyam-v-usloviyah-vozmozhnogo-himicheskogo-zarazheniya"
+            }
           ]
         },
         "zh": {
@@ -110,11 +134,11 @@
             "收听广播和应用程序中的紧急情况部通报"
           ],
           "during": [
+            "拨打112并报告情况",
             "不要进入地下室或低层",
             "用湿布捂住口鼻呼吸",
             "向上方移动，并与风向垂直行进",
-            "在室外时待在较高地带",
-            "无法离开时关闭窗户、门和通风口"
+            "在室外时待在较高地带"
           ],
           "after": [
             "离开污染区后脱去外衣并淋浴",
@@ -131,7 +155,19 @@
           "contacts": [
             "112"
           ],
-          "source": "俄罗斯紧急情况部普斯科夫州总局 · https://60.mchs.gov.ru/deyatelnost/poleznaya-informaciya/dopolnitelnye-stranicy/staticheskie-stranicy/kompleksnaya-sistema-ekstrennogo-opoveshcheniya-naseleniya/prakticheskie-meropriyatiya/pamyatka-po-deystviyam-v-usloviyah-vozmozhnogo-himicheskogo-zarazheniya"
+          "source": "俄罗斯紧急情况部普斯科夫州总局 · https://60.mchs.gov.ru/deyatelnost/poleznaya-informaciya/dopolnitelnye-stranicy/staticheskie-stranicy/kompleksnaya-sistema-ekstrennogo-opoveshcheniya-naseleniya/prakticheskie-meropriyatiya/pamyatka-po-deystviyam-v-usloviyah-vozmozhnogo-himicheskogo-zarazheniya",
+          "quick": "拨打112",
+          "mistakes": [
+            "不要在地下室或地窖躲避",
+            "不要在污染区饮水进食",
+            "不要开启通风设备，它会吸入外部空气"
+          ],
+          "citations": [
+            {
+              "org": "ГУ МЧС России по Псковской области",
+              "url": "https://60.mchs.gov.ru/deyatelnost/poleznaya-informaciya/dopolnitelnye-stranicy/staticheskie-stranicy/kompleksnaya-sistema-ekstrennogo-opoveshcheniya-naseleniya/prakticheskie-meropriyatiya/pamyatka-po-deystviyam-v-usloviyah-vozmozhnogo-himicheskogo-zarazheniya"
+            }
+          ]
         },
         "tt": {
           "title": "Хлор агып чыгу",
@@ -149,11 +185,11 @@
             "МЧС хәбәрләрен радио һәм кушымта аша тыңлагыз"
           ],
           "during": [
+            "112 телефонына шалтыратып хәбәр итегез",
             "Подвалларга һәм түбән катларга төшмәгез",
             "Суга юештелгән тукыма аша сулагыз",
             "Өскә чыгыгыз һәм җилгә аркылы хәрәкәт итегез",
-            "Урамда калку урыннарда торыгыз",
-            "Чыгарга мөмкин булмаса, тәрәзә, ишек һәм вентиляцияне ябыгыз"
+            "Урамда калку урыннарда торыгыз"
           ],
           "after": [
             "Зонадан чыккач, өске киемне салыгыз һәм душ кабул итегез",
@@ -170,7 +206,19 @@
           "contacts": [
             "112"
           ],
-          "source": "Псков өлкәсе буенча Россия МЧСы баш идарәсе · https://60.mchs.gov.ru/deyatelnost/poleznaya-informaciya/dopolnitelnye-stranicy/staticheskie-stranicy/kompleksnaya-sistema-ekstrennogo-opoveshcheniya-naseleniya/prakticheskie-meropriyatiya/pamyatka-po-deystviyam-v-usloviyah-vozmozhnogo-himicheskogo-zarazheniya"
+          "source": "Псков өлкәсе буенча Россия МЧСы баш идарәсе · https://60.mchs.gov.ru/deyatelnost/poleznaya-informaciya/dopolnitelnye-stranicy/staticheskie-stranicy/kompleksnaya-sistema-ekstrennogo-opoveshcheniya-naseleniya/prakticheskie-meropriyatiya/pamyatka-po-deystviyam-v-usloviyah-vozmozhnogo-himicheskogo-zarazheniya",
+          "quick": "112 телефонына шалтыратыгыз",
+          "mistakes": [
+            "Подвалда яки базда яшеренмәгез",
+            "Зарарланган зонада ашамагыз һәм эчмәгез",
+            "Вентиляцияне кабызмагыз: ул урамнан һава суыра"
+          ],
+          "citations": [
+            {
+              "org": "ГУ МЧС России по Псковской области",
+              "url": "https://60.mchs.gov.ru/deyatelnost/poleznaya-informaciya/dopolnitelnye-stranicy/staticheskie-stranicy/kompleksnaya-sistema-ekstrennogo-opoveshcheniya-naseleniya/prakticheskie-meropriyatiya/pamyatka-po-deystviyam-v-usloviyah-vozmozhnogo-himicheskogo-zarazheniya"
+            }
+          ]
         }
       },
       "quiz": {
@@ -326,7 +374,8 @@
             "explanation": "МЧС су яки 2–5% эчлы сода эремәсе белән юештелгән мамык-марля бәйләвеч тәкъдим итә."
           }
         ]
-      }
+      },
+      "updated": "2026-11-20"
     },
     {
       "slug": "chem-ammonia",
@@ -348,6 +397,7 @@
             "Держите документы и лекарства наготове"
           ],
           "during": [
+            "Позвоните 112 и сообщите о случившемся",
             "Спускайтесь на нижние этажи и выходите на улицу",
             "Дышите через ткань, смоченную водой",
             "Двигайтесь перпендикулярно ветру",
@@ -368,7 +418,19 @@
           "contacts": [
             "112"
           ],
-          "source": "ГУ МЧС России по Калужской области · https://40.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki/chrezvychaynye-situacii-tehnogennogo-haraktera/deystviya-v-usloviyah-vozmozhnogo-himicheskogo-zarazheniya"
+          "source": "ГУ МЧС России по Калужской области · https://40.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki/chrezvychaynye-situacii-tehnogennogo-haraktera/deystviya-v-usloviyah-vozmozhnogo-himicheskogo-zarazheniya",
+          "quick": "Позвоните 112",
+          "mistakes": [
+            "Не прячьтесь на верхних этажах и на крыше",
+            "Не оставляйте включёнными газ и электроприборы",
+            "Не пейте воду из открытых источников до разрешения спасателей"
+          ],
+          "citations": [
+            {
+              "org": "ГУ МЧС России по Калужской области",
+              "url": "https://40.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki/chrezvychaynye-situacii-tehnogennogo-haraktera/deystviya-v-usloviyah-vozmozhnogo-himicheskogo-zarazheniya"
+            }
+          ]
         },
         "en": {
           "title": "Ammonia leak",
@@ -386,6 +448,7 @@
             "Keep documents and medications ready"
           ],
           "during": [
+            "Call 112 and report the emergency",
             "Go down to the lower floors and leave the building",
             "Breathe through a cloth dampened with water",
             "Move perpendicular to the wind",
@@ -406,6 +469,18 @@
           "source": "EMERCOM Main Directorate for Kaluga Oblast · https://40.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki/chrezvychaynye-situacii-tehnogennogo-haraktera/deystviya-v-usloviyah-vozmozhnogo-himicheskogo-zarazheniya",
           "contacts": [
             "112"
+          ],
+          "quick": "Call 112",
+          "mistakes": [
+            "Do not hide on upper floors or the roof",
+            "Do not leave the gas and electrical appliances on",
+            "Do not drink water from open sources until rescuers allow it"
+          ],
+          "citations": [
+            {
+              "org": "ГУ МЧС России по Калужской области",
+              "url": "https://40.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki/chrezvychaynye-situacii-tehnogennogo-haraktera/deystviya-v-usloviyah-vozmozhnogo-himicheskogo-zarazheniya"
+            }
           ]
         },
         "zh": {
@@ -424,6 +499,7 @@
             "备好证件和药品"
           ],
           "during": [
+            "拨打112并报告情况",
             "向低层移动并离开建筑物",
             "用湿布捂住口鼻呼吸",
             "与风向垂直移动",
@@ -444,7 +520,19 @@
           "contacts": [
             "112"
           ],
-          "source": "俄罗斯紧急情况部卡卢加州总局 · https://40.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki/chrezvychaynye-situacii-tehnogennogo-haraktera/deystviya-v-usloviyah-vozmozhnogo-himicheskogo-zarazheniya"
+          "source": "俄罗斯紧急情况部卡卢加州总局 · https://40.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki/chrezvychaynye-situacii-tehnogennogo-haraktera/deystviya-v-usloviyah-vozmozhnogo-himicheskogo-zarazheniya",
+          "quick": "拨打112",
+          "mistakes": [
+            "不要躲在上层或屋顶",
+            "不要保持燃气和电器开启",
+            "未获救援人员许可不要饮用开放水源的水"
+          ],
+          "citations": [
+            {
+              "org": "ГУ МЧС России по Калужской области",
+              "url": "https://40.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki/chrezvychaynye-situacii-tehnogennogo-haraktera/deystviya-v-usloviyah-vozmozhnogo-himicheskogo-zarazheniya"
+            }
+          ]
         },
         "tt": {
           "title": "Аммиак агып чыгу",
@@ -462,6 +550,7 @@
             "Документлар һәм даруларны әзер тотыгыз"
           ],
           "during": [
+            "112 телефонына шалтыратып хәбәр итегез",
             "Түбән катларга төшегез һәм урамга чыгыгыз",
             "Суга юештелгән тукыма аша сулагыз",
             "Җилгә аркылы хәрәкәт итегез",
@@ -482,7 +571,19 @@
           "contacts": [
             "112"
           ],
-          "source": "Калуга өлкәсе буенча Россия МЧСы баш идарәсе · https://40.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki/chrezvychaynye-situacii-tehnogennogo-haraktera/deystviya-v-usloviyah-vozmozhnogo-himicheskogo-zarazheniya"
+          "source": "Калуга өлкәсе буенча Россия МЧСы баш идарәсе · https://40.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki/chrezvychaynye-situacii-tehnogennogo-haraktera/deystviya-v-usloviyah-vozmozhnogo-himicheskogo-zarazheniya",
+          "quick": "112 телефонына шалтыратыгыз",
+          "mistakes": [
+            "Өске катларда һәм түбәдә яшеренмәгез",
+            "Газ һәм электр приборларын кабынган килеш калдырмагыз",
+            "Коткаручылар рөхсәтенә кадәр ачык чыганаклардан су эчмәгез"
+          ],
+          "citations": [
+            {
+              "org": "ГУ МЧС России по Калужской области",
+              "url": "https://40.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki/chrezvychaynye-situacii-tehnogennogo-haraktera/deystviya-v-usloviyah-vozmozhnogo-himicheskogo-zarazheniya"
+            }
+          ]
         }
       },
       "quiz": {
@@ -638,7 +739,8 @@
             "explanation": "Аммиак һавадан 1,6 тапкыр җиңелрәк, шуңа күрә МЧС түбән катларда сыенуны тәкъдим итә."
           }
         ]
-      }
+      },
+      "updated": "2026-11-20"
     },
     {
       "slug": "chem-mercury",
@@ -660,6 +762,7 @@
             "Не выбрасывайте ртутные приборы в обычный мусор"
           ],
           "during": [
+            "Позвоните 112 и сообщите о случившемся",
             "Выведите людей и домашних животных из помещения",
             "Закройте дверь, откройте окно, но не создавайте сквозняк",
             "Наденьте перчатки и соберите капли резиновой грушей",
@@ -680,7 +783,19 @@
           "contacts": [
             "112"
           ],
-          "source": "ГУ МЧС России по Ивановской области · https://37.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/chto-delat-esli-razbilsya-gradusnik-so-rtutyu"
+          "source": "ГУ МЧС России по Ивановской области · https://37.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/chto-delat-esli-razbilsya-gradusnik-so-rtutyu",
+          "quick": "Позвоните 112",
+          "mistakes": [
+            "Не используйте пылесос и веник",
+            "Не сливайте ртуть в раковину и унитаз",
+            "Не выбрасывайте собранное в мусоропровод"
+          ],
+          "citations": [
+            {
+              "org": "ГУ МЧС России по Ивановской области",
+              "url": "https://37.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/chto-delat-esli-razbilsya-gradusnik-so-rtutyu"
+            }
+          ]
         },
         "en": {
           "title": "Mercury spill",
@@ -698,6 +813,7 @@
             "Do not throw mercury devices into regular trash"
           ],
           "during": [
+            "Call 112 and report the emergency",
             "Take people and pets out of the room",
             "Close the door, open the window, but do not create a draft",
             "Put on gloves and collect the droplets with a rubber bulb",
@@ -718,6 +834,18 @@
           "source": "EMERCOM Main Directorate for Ivanovo Oblast · https://37.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/chto-delat-esli-razbilsya-gradusnik-so-rtutyu",
           "contacts": [
             "112"
+          ],
+          "quick": "Call 112",
+          "mistakes": [
+            "Do not use a vacuum cleaner or a broom",
+            "Do not pour mercury down the sink or toilet",
+            "Do not throw collected mercury into the garbage chute"
+          ],
+          "citations": [
+            {
+              "org": "ГУ МЧС России по Ивановской области",
+              "url": "https://37.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/chto-delat-esli-razbilsya-gradusnik-so-rtutyu"
+            }
           ]
         },
         "zh": {
@@ -736,6 +864,7 @@
             "不要把含汞器具丢进普通垃圾"
           ],
           "during": [
+            "拨打112并报告情况",
             "让人员和宠物离开房间",
             "关门、开窗，但不要形成穿堂风",
             "戴上手套，用橡胶球吸取汞珠",
@@ -756,7 +885,19 @@
           "contacts": [
             "112"
           ],
-          "source": "俄罗斯紧急情况部伊万诺沃州总局 · https://37.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/chto-delat-esli-razbilsya-gradusnik-so-rtutyu"
+          "source": "俄罗斯紧急情况部伊万诺沃州总局 · https://37.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/chto-delat-esli-razbilsya-gradusnik-so-rtutyu",
+          "quick": "拨打112",
+          "mistakes": [
+            "不要使用吸尘器或扫帚",
+            "不要把水银倒入水槽或马桶",
+            "不要把收集的水银丢进垃圾道"
+          ],
+          "citations": [
+            {
+              "org": "ГУ МЧС России по Ивановской области",
+              "url": "https://37.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/chto-delat-esli-razbilsya-gradusnik-so-rtutyu"
+            }
+          ]
         },
         "tt": {
           "title": "Терекөмеш түгелү",
@@ -774,6 +915,7 @@
             "Терекөмеш приборларын гади чүпкә ташламагыз"
           ],
           "during": [
+            "112 телефонына шалтыратып хәбәр итегез",
             "Кешеләрне һәм йорт хайваннарын бүлмәдән чыгарыгыз",
             "Ишекне ябыгыз, тәрәзәне ачыгыз, ләкин сквозняк ясамагыз",
             "Бияләй киеп, тамчыларны резина груша белән җыегыз",
@@ -794,7 +936,19 @@
           "contacts": [
             "112"
           ],
-          "source": "Иваново өлкәсе буенча Россия МЧСы баш идарәсе · https://37.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/chto-delat-esli-razbilsya-gradusnik-so-rtutyu"
+          "source": "Иваново өлкәсе буенча Россия МЧСы баш идарәсе · https://37.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/chto-delat-esli-razbilsya-gradusnik-so-rtutyu",
+          "quick": "112 телефонына шалтыратыгыз",
+          "mistakes": [
+            "Пылесос һәм себерке кулланмагыз",
+            "Терекөмешне раковинага һәм бәдрәфкә түкмәгез",
+            "Җыелганын чүпүткәргечкә ташламагыз"
+          ],
+          "citations": [
+            {
+              "org": "ГУ МЧС России по Ивановской области",
+              "url": "https://37.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/chto-delat-esli-razbilsya-gradusnik-so-rtutyu"
+            }
+          ]
         }
       },
       "quiz": {
@@ -950,7 +1104,8 @@
             "explanation": "Кешеләрне чыгаралар, бүлмәне сквозняксыз җилләтәләр, ә җыюны сакланган кешеләргә яки хезмәткә ышанып тапшыралар."
           }
         ]
-      }
+      },
+      "updated": "2026-11-20"
     },
     {
       "slug": "chem-household",
@@ -972,6 +1127,7 @@
             "Работайте в перчатках и проветривайте помещение"
           ],
           "during": [
+            "Позвоните 112 и сообщите о случившемся",
             "Прекратите уборку и выйдите на свежий воздух",
             "Откройте окна и уберите детей и животных из комнаты",
             "При попадании на кожу смойте средство большим количеством воды",
@@ -992,7 +1148,19 @@
           "contacts": [
             "112"
           ],
-          "source": "ГУ МЧС России по Алтайскому краю · https://22.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/otravlenie-preparatami-bytovoy-himii-pervaya-pomoshch"
+          "source": "ГУ МЧС России по Алтайскому краю · https://22.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/otravlenie-preparatami-bytovoy-himii-pervaya-pomoshch",
+          "quick": "Позвоните 112",
+          "mistakes": [
+            "Не смешивайте средства с хлором и кислотой",
+            "Не храните химию рядом с продуктами и лекарствами",
+            "Не промывайте желудок самостоятельно"
+          ],
+          "citations": [
+            {
+              "org": "ГУ МЧС России по Алтайскому краю",
+              "url": "https://22.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/otravlenie-preparatami-bytovoy-himii-pervaya-pomoshch"
+            }
+          ]
         },
         "en": {
           "title": "Household chemicals",
@@ -1010,6 +1178,7 @@
             "Wear gloves and ventilate the room"
           ],
           "during": [
+            "Call 112 and report the emergency",
             "Stop cleaning and go out into fresh air",
             "Open the windows and remove children and pets from the room",
             "If the product gets on your skin, wash it off with plenty of water",
@@ -1030,6 +1199,18 @@
           "source": "EMERCOM Main Directorate for Altai Krai · https://22.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/otravlenie-preparatami-bytovoy-himii-pervaya-pomoshch",
           "contacts": [
             "112"
+          ],
+          "quick": "Call 112",
+          "mistakes": [
+            "Do not mix chlorine-based products with acids",
+            "Do not store chemicals near food or medicines",
+            "Do not rinse the stomach yourself"
+          ],
+          "citations": [
+            {
+              "org": "ГУ МЧС России по Алтайскому краю",
+              "url": "https://22.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/otravlenie-preparatami-bytovoy-himii-pervaya-pomoshch"
+            }
           ]
         },
         "zh": {
@@ -1048,6 +1229,7 @@
             "戴手套并给房间通风"
           ],
           "during": [
+            "拨打112并报告情况",
             "停止清洁并到新鲜空气中",
             "开窗，让儿童和宠物离开房间",
             "产品沾到皮肤时用大量水冲洗",
@@ -1068,7 +1250,19 @@
           "contacts": [
             "112"
           ],
-          "source": "俄罗斯紧急情况部阿尔泰边疆区总局 · https://22.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/otravlenie-preparatami-bytovoy-himii-pervaya-pomoshch"
+          "source": "俄罗斯紧急情况部阿尔泰边疆区总局 · https://22.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/otravlenie-preparatami-bytovoy-himii-pervaya-pomoshch",
+          "quick": "拨打112",
+          "mistakes": [
+            "不要将含氯产品与酸混合",
+            "不要把化学品存放在食物或药品附近",
+            "不要自行洗胃"
+          ],
+          "citations": [
+            {
+              "org": "ГУ МЧС России по Алтайскому краю",
+              "url": "https://22.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/otravlenie-preparatami-bytovoy-himii-pervaya-pomoshch"
+            }
+          ]
         },
         "tt": {
           "title": "Көнкүреш химиясе",
@@ -1086,6 +1280,7 @@
             "Бияләй киеп эшләгез һәм бүлмәне җилләтегез"
           ],
           "during": [
+            "112 телефонына шалтыратып хәбәр итегез",
             "Җыештыруны туктатыгыз һәм саф һавага чыгыгыз",
             "Тәрәзәләрне ачыгыз, балаларны һәм хайваннарны бүлмәдән чыгарыгыз",
             "Тәнгә эләксә, чараны күп су белән юыгыз",
@@ -1106,7 +1301,19 @@
           "contacts": [
             "112"
           ],
-          "source": "Алтай крае буенча Россия МЧСы баш идарәсе · https://22.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/otravlenie-preparatami-bytovoy-himii-pervaya-pomoshch"
+          "source": "Алтай крае буенча Россия МЧСы баш идарәсе · https://22.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/otravlenie-preparatami-bytovoy-himii-pervaya-pomoshch",
+          "quick": "112 телефонына шалтыратыгыз",
+          "mistakes": [
+            "Хлорлы һәм кислоталы чараларны кушмагыз",
+            "Химияне ризык һәм дарулар янында сакламагыз",
+            "Ашказанын үзегез юдырмагыз"
+          ],
+          "citations": [
+            {
+              "org": "ГУ МЧС России по Алтайскому краю",
+              "url": "https://22.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/otravlenie-preparatami-bytovoy-himii-pervaya-pomoshch"
+            }
+          ]
         }
       },
       "quiz": {
@@ -1262,7 +1469,8 @@
             "explanation": "Упаковка медикларга матдәне һәм ярдәмне төгәл билгеләргә кирәк. Химияне башка савытларга күчерү ярамый."
           }
         ]
-      }
+      },
+      "updated": "2026-11-20"
     },
     {
       "slug": "chem-gas-leak",
@@ -1285,10 +1493,10 @@
             "Держите доступ к крану свободным"
           ],
           "during": [
+            "Позвоните 104 или 112 с улицы или от соседей",
             "Перекройте газовый кран и откройте окна и двери",
             "Не включайте и не выключайте свет и приборы",
             "Выведите людей, не пользуйтесь лифтом, спускайтесь по лестнице",
-            "Позвоните 104 или 112 с улицы или от соседей",
             "Предупредите соседей стуком в дверь, не звоните в звонок"
           ],
           "after": [
@@ -1307,7 +1515,19 @@
             "104",
             "112"
           ],
-          "source": "ГУ МЧС России по Краснодарскому краю · https://23.mchs.gov.ru/deyatelnost/press-centr/novosti/5784714"
+          "source": "ГУ МЧС России по Краснодарскому краю · https://23.mchs.gov.ru/deyatelnost/press-centr/novosti/5784714",
+          "quick": "Позвоните 104 / Позвоните 112",
+          "mistakes": [
+            "Не зажигайте спички и зажигалки",
+            "Не включайте вентилятор и вытяжку",
+            "Не звоните из загазованного помещения"
+          ],
+          "citations": [
+            {
+              "org": "ГУ МЧС России по Краснодарскому краю",
+              "url": "https://23.mchs.gov.ru/deyatelnost/press-centr/novosti/5784714"
+            }
+          ]
         },
         "en": {
           "title": "Gas leak in an apartment",
@@ -1326,10 +1546,10 @@
             "Keep access to the valve clear"
           ],
           "during": [
+            "Call 104 or 112 from the street or from neighbors",
             "Shut off the gas valve and open the windows and doors",
             "Do not turn lights or appliances on or off",
             "Get people out, do not use the elevator, go down the stairs",
-            "Call 104 or 112 from the street or from neighbors",
             "Warn neighbors by knocking on doors, do not ring the doorbell"
           ],
           "after": [
@@ -1348,6 +1568,18 @@
           "contacts": [
             "104",
             "112"
+          ],
+          "quick": "Call 104 / Call 112",
+          "mistakes": [
+            "Do not light matches or lighters",
+            "Do not use a fan or extractor hood",
+            "Do not call from inside the gas-filled room"
+          ],
+          "citations": [
+            {
+              "org": "ГУ МЧС России по Краснодарскому краю",
+              "url": "https://23.mchs.gov.ru/deyatelnost/press-centr/novosti/5784714"
+            }
           ]
         },
         "zh": {
@@ -1367,11 +1599,11 @@
             "保持通往阀门的通道畅通"
           ],
           "during": [
+            "拨打104并报告情况",
             "关闭燃气阀门，打开门窗",
             "不要开关电灯或电器",
             "疏散人员，不要乘电梯，走楼梯下楼",
-            "在街上或到邻居家拨打104或112",
-            "敲门通知邻居，不要按门铃"
+            "在街上或到邻居家拨打104或112"
           ],
           "after": [
             "未获燃气部门许可不要返回",
@@ -1389,7 +1621,19 @@
             "104",
             "112"
           ],
-          "source": "俄罗斯紧急情况部克拉斯诺达尔边疆区总局 · https://23.mchs.gov.ru/deyatelnost/press-centr/novosti/5784714"
+          "source": "俄罗斯紧急情况部克拉斯诺达尔边疆区总局 · https://23.mchs.gov.ru/deyatelnost/press-centr/novosti/5784714",
+          "quick": "拨打104 / 拨打112",
+          "mistakes": [
+            "不要点火柴或打火机",
+            "不要使用风扇或抽油烟机",
+            "不要在充满燃气的房间内打电话"
+          ],
+          "citations": [
+            {
+              "org": "ГУ МЧС России по Краснодарскому краю",
+              "url": "https://23.mchs.gov.ru/deyatelnost/press-centr/novosti/5784714"
+            }
+          ]
         },
         "tt": {
           "title": "Фатирда газ агып чыгу",
@@ -1408,10 +1652,10 @@
             "Кранга юлны ирекле тотыгыз"
           ],
           "during": [
+            "Урамнан яки күршеләрдән 104 яки 112гә шалтыратыгыз",
             "Газ кранын ябыгыз, тәрәзә һәм ишекләрне ачыгыз",
             "Яктылыкны һәм приборларны кабызмагыз һәм сүндермәгез",
             "Кешеләрне чыгарыгыз, лифт кулланмагыз, баскычтан төшегез",
-            "Урамнан яки күршеләрдән 104 яки 112гә шалтыратыгыз",
             "Күршеләрне ишек шакып кисәтегез, звонокка басмагыз"
           ],
           "after": [
@@ -1430,7 +1674,19 @@
             "104",
             "112"
           ],
-          "source": "Краснодар крае буенча Россия МЧСы баш идарәсе · https://23.mchs.gov.ru/deyatelnost/press-centr/novosti/5784714"
+          "source": "Краснодар крае буенча Россия МЧСы баш идарәсе · https://23.mchs.gov.ru/deyatelnost/press-centr/novosti/5784714",
+          "quick": "104 телефонына шалтыратыгыз / 112 телефонына шалтыратыгыз",
+          "mistakes": [
+            "Шырпы һәм зажигалка кабызмагыз",
+            "Вентилятор һәм вытяжканы кабызмагыз",
+            "Газ тулган бинадан шалтыратмагыз"
+          ],
+          "citations": [
+            {
+              "org": "ГУ МЧС России по Краснодарскому краю",
+              "url": "https://23.mchs.gov.ru/deyatelnost/press-centr/novosti/5784714"
+            }
+          ]
         }
       },
       "quiz": {
@@ -1586,7 +1842,8 @@
             "explanation": "Тыштан шалтыратырга кирәк: фатирда стационар телефон кулланырга ярамый, ә очкын куркыныч."
           }
         ]
-      }
+      },
+      "updated": "2026-11-20"
     },
     {
       "slug": "chem-acids-alkalis",
@@ -1628,7 +1885,19 @@
           "contacts": [
             "112"
           ],
-          "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/ozhogi-ozhog-verhnih-dyhatelnyh-putey_0"
+          "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/ozhogi-ozhog-verhnih-dyhatelnyh-putey_0",
+          "quick": "Позвоните 112",
+          "mistakes": [
+            "Не нейтрализуйте кислоту щёлочью и наоборот",
+            "Не вызывайте рвоту при глотке вещества",
+            "Не промывайте ожог спиртом или маслом"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/ozhogi-ozhog-verhnih-dyhatelnyh-putey_0"
+            }
+          ]
         },
         "en": {
           "title": "Acids and alkalis",
@@ -1666,6 +1935,18 @@
           "source": "EMERCOM of Russia · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/ozhogi-ozhog-verhnih-dyhatelnyh-putey_0",
           "contacts": [
             "112"
+          ],
+          "quick": "Call 112",
+          "mistakes": [
+            "Do not neutralize acid with alkali or vice versa",
+            "Do not induce vomiting if the substance is swallowed",
+            "Do not rinse the burn with alcohol or oil"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/ozhogi-ozhog-verhnih-dyhatelnyh-putey_0"
+            }
           ]
         },
         "zh": {
@@ -1684,6 +1965,7 @@
             "在手边备好清水"
           ],
           "during": [
+            "拨打112并报告情况",
             "拨打112并按调度员的指示处理",
             "脱去污染衣物和饰品",
             "用流动水冲洗皮肤20分钟",
@@ -1704,7 +1986,19 @@
           "contacts": [
             "112"
           ],
-          "source": "俄罗斯紧急情况部 · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/ozhogi-ozhog-verhnih-dyhatelnyh-putey_0"
+          "source": "俄罗斯紧急情况部 · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/ozhogi-ozhog-verhnih-dyhatelnyh-putey_0",
+          "quick": "拨打112",
+          "mistakes": [
+            "不要用碱中和酸，也不要用酸中和碱",
+            "吞下物质时不要催吐",
+            "不要用酒精或油冲洗灼伤处"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/ozhogi-ozhog-verhnih-dyhatelnyh-putey_0"
+            }
+          ]
         },
         "tt": {
           "title": "Кислоталар һәм селтелер",
@@ -1722,6 +2016,7 @@
             "Кул җитәрлек урында чиста су запасы тотыгыз"
           ],
           "during": [
+            "112 телефонына шалтыратып хәбәр итегез",
             "112гә шалтыратыгыз һәм диспетчер күрсәтмәләрен үтәгез",
             "Пычранган киемне һәм бизәкләрне салыгыз",
             "Тиредә агып торган су белән 20 минут юыгыз",
@@ -1742,7 +2037,19 @@
           "contacts": [
             "112"
           ],
-          "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/ozhogi-ozhog-verhnih-dyhatelnyh-putey_0"
+          "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/ozhogi-ozhog-verhnih-dyhatelnyh-putey_0",
+          "quick": "112 телефонына шалтыратыгыз",
+          "mistakes": [
+            "Кислотаны селте белән нейтральләштермәгез һәм киресенчә эшләмәгез",
+            "Матдә йотканда косу чакырмагыз",
+            "Пешүне спирт яки май белән юмагыз"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/ozhogi-ozhog-verhnih-dyhatelnyh-putey_0"
+            }
+          ]
         }
       },
       "quiz": {
@@ -1898,7 +2205,8 @@
             "explanation": "Косу азык юлын һәм сулыш юлларын кабат пешерә. Юарга һәм ашыгыч ярдәм чакырырга кирәк, косу — юк."
           }
         ]
-      }
+      },
+      "updated": "2026-11-20"
     },
     {
       "slug": "chem-unknown",
@@ -1920,10 +2228,10 @@
             "Не подходите к подозрительным предметам на улице"
           ],
           "during": [
+            "Позвоните 112 и опишите место и вид предмета",
             "Отойдите как можно дальше и уведите людей",
             "Не трогайте, не нюхайте и не открывайте ёмкость",
-            "Не подпускайте людей и животных ближе",
-            "Позвоните 112 и опишите место и вид предмета"
+            "Не подпускайте людей и животных ближе"
           ],
           "after": [
             "Оставайтесь у места и встретьте службы",
@@ -1941,7 +2249,19 @@
             "112",
             "102"
           ],
-          "source": "ГУ МЧС России по Архангельской области · https://29.mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pamyatka-deystviy-pri-obnaruzhenii-podozritelnogo-predmeta"
+          "source": "ГУ МЧС России по Архангельской области · https://29.mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pamyatka-deystviy-pri-obnaruzhenii-podozritelnogo-predmeta",
+          "quick": "Позвоните 112",
+          "mistakes": [
+            "Не пользуйтесь телефоном рядом с находкой",
+            "Не вскрывайте, не передвигайте и не уносите предмет",
+            "Не пытайтесь определить запах или состав"
+          ],
+          "citations": [
+            {
+              "org": "ГУ МЧС России по Архангельской области",
+              "url": "https://29.mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pamyatka-deystviy-pri-obnaruzhenii-podozritelnogo-predmeta"
+            }
+          ]
         },
         "en": {
           "title": "Unknown substance",
@@ -1959,10 +2279,10 @@
             "Do not approach suspicious objects on the street"
           ],
           "during": [
+            "Call 112 and describe the location and appearance of the object",
             "Move as far away as possible and take people with you",
             "Do not touch, smell, or open the container",
-            "Keep people and animals away",
-            "Call 112 and describe the location and appearance of the object"
+            "Keep people and animals away"
           ],
           "after": [
             "Stay near the site and meet the services",
@@ -1980,6 +2300,18 @@
           "contacts": [
             "112",
             "102"
+          ],
+          "quick": "Call 112",
+          "mistakes": [
+            "Do not use your phone near the find",
+            "Do not open, move, or take the object",
+            "Do not try to identify its smell or composition"
+          ],
+          "citations": [
+            {
+              "org": "ГУ МЧС России по Архангельской области",
+              "url": "https://29.mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pamyatka-deystviy-pri-obnaruzhenii-podozritelnogo-predmeta"
+            }
           ]
         },
         "zh": {
@@ -1998,6 +2330,7 @@
             "在街上不要靠近可疑物品"
           ],
           "during": [
+            "拨打112并报告情况",
             "尽量远离，并带走他人",
             "不要触摸、闻或打开容器",
             "阻止人员和动物靠近",
@@ -2019,7 +2352,19 @@
             "112",
             "102"
           ],
-          "source": "俄罗斯紧急情况部阿尔汉格尔斯克州总局 · https://29.mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pamyatka-deystviy-pri-obnaruzhenii-podozritelnogo-predmeta"
+          "source": "俄罗斯紧急情况部阿尔汉格尔斯克州总局 · https://29.mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pamyatka-deystviy-pri-obnaruzhenii-podozritelnogo-predmeta",
+          "quick": "拨打112",
+          "mistakes": [
+            "不要在发现物附近使用手机",
+            "不要打开、移动或拿走物品",
+            "不要试图通过气味或成分辨认"
+          ],
+          "citations": [
+            {
+              "org": "ГУ МЧС России по Архангельской области",
+              "url": "https://29.mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pamyatka-deystviy-pri-obnaruzhenii-podozritelnogo-predmeta"
+            }
+          ]
         },
         "tt": {
           "title": "Билгесез матдә",
@@ -2037,6 +2382,7 @@
             "Урамда шикле әйберләргә якын килмәгез"
           ],
           "during": [
+            "112 телефонына шалтыратып хәбәр итегез",
             "Мөмкин кадәр ерак китегез һәм кешеләрне алып китү",
             "Савытка кагылмагыз, иснәмәгез һәм ачмагыз",
             "Кешеләрне һәм хайваннарны якын җибәрмәгез",
@@ -2058,7 +2404,19 @@
             "112",
             "102"
           ],
-          "source": "Архангельск өлкәсе буенча Россия МЧСы баш идарәсе · https://29.mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pamyatka-deystviy-pri-obnaruzhenii-podozritelnogo-predmeta"
+          "source": "Архангельск өлкәсе буенча Россия МЧСы баш идарәсе · https://29.mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pamyatka-deystviy-pri-obnaruzhenii-podozritelnogo-predmeta",
+          "quick": "112 телефонына шалтыратыгыз",
+          "mistakes": [
+            "Табылдык янында телефон кулланмагыз",
+            "Әйберне ачмагыз, күчермәгез һәм алып китмәгез",
+            "Исен яки составын билгеләргә маташмагыз"
+          ],
+          "citations": [
+            {
+              "org": "ГУ МЧС России по Архангельской области",
+              "url": "https://29.mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pamyatka-deystviy-pri-obnaruzhenii-podozritelnogo-predmeta"
+            }
+          ]
         }
       },
       "quiz": {
@@ -2214,7 +2572,8 @@
             "explanation": "Табылдык турында полициягә хәбәр итәләр. 112 номеры гадәттән тыш хезмәтләр чакыруын кабул итә."
           }
         ]
-      }
+      },
+      "updated": "2026-11-20"
     }
   ]
 }
