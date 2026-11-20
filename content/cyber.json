@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "category": {
     "slug": "cyber",
     "emoji": "🔐",
@@ -31,6 +31,7 @@
             "Проверяйте домен сайта и адрес отправителя до ввода любых данных"
           ],
           "during": [
+            "Позвоните 102 и сообщите о случившемся",
             "Не переходите по ссылке: откройте сайт вручную и проверьте уведомления там",
             "Позвоните в организацию по номеру с её официального сайта",
             "Подайте жалобу на фишинговый сайт через Госуслуги, после проверки его заблокируют"
@@ -50,7 +51,19 @@
             "8 800 100-70-10 — поддержка Госуслуг",
             "102 — полиция"
           ],
-          "source": "Минцифры России · https://www.gosuslugi.ru/help/faq/personal_data/504351"
+          "source": "Минцифры России · https://www.gosuslugi.ru/help/faq/personal_data/504351",
+          "quick": "Позвоните 102",
+          "mistakes": [
+            "Переходить по ссылкам из неожиданных писем и сообщений",
+            "Сообщать коды из СМС и пароли даже «сотруднику поддержки»",
+            "Вводить данные карты на страницах, открытых по ссылке"
+          ],
+          "citations": [
+            {
+              "org": "Минцифры России",
+              "url": "https://www.gosuslugi.ru/help/faq/personal_data/504351"
+            }
+          ]
         },
         "en": {
           "title": "Phishing",
@@ -67,6 +80,7 @@
             "Check the site domain and sender address before entering any data"
           ],
           "during": [
+            "Call 102 and report the emergency",
             "Do not follow the link: open the site manually and check your notifications there",
             "Call the organization using the number from its official website",
             "Report the phishing site through Gosuslugi; after review it will be blocked"
@@ -86,6 +100,18 @@
             "8 800 300-30-00 — Bank of Russia",
             "8 800 100-70-10 — Gosuslugi support",
             "102 — police"
+          ],
+          "quick": "Call 102",
+          "mistakes": [
+            "Following links in unexpected emails and messages",
+            "Sharing SMS codes and passwords, even with a support agent",
+            "Entering card details on pages opened from a link"
+          ],
+          "citations": [
+            {
+              "org": "Минцифры России",
+              "url": "https://www.gosuslugi.ru/help/faq/personal_data/504351"
+            }
           ]
         },
         "zh": {
@@ -103,6 +129,7 @@
             "输入任何数据前核对网站域名和发件地址"
           ],
           "during": [
+            "拨打102并报告情况",
             "不要点链接：手动打开网站并在那里查看通知",
             "用官方网站上的号码给该机构打电话",
             "通过国家服务门户举报钓鱼网站，核查后会被封禁"
@@ -122,7 +149,19 @@
             "8 800 100-70-10 — 国家服务门户支持",
             "102 — 警察"
           ],
-          "source": "俄罗斯数字发展部 · https://www.gosuslugi.ru/help/faq/personal_data/504351"
+          "source": "俄罗斯数字发展部 · https://www.gosuslugi.ru/help/faq/personal_data/504351",
+          "quick": "拨打102",
+          "mistakes": [
+            "点击意外邮件和消息中的链接",
+            "把短信验证码和密码告诉任何人，即使对方自称客服",
+            "在链接打开的页面上输入银行卡信息"
+          ],
+          "citations": [
+            {
+              "org": "Минцифры России",
+              "url": "https://www.gosuslugi.ru/help/faq/personal_data/504351"
+            }
+          ]
         },
         "tt": {
           "title": "Фишинг",
@@ -139,6 +178,7 @@
             "Мәгълүмат керткәнче сайт доменын һәм җибәрүче адресын тикшерегез"
           ],
           "during": [
+            "102 телефонына шалтыратып хәбәр итегез",
             "Сылтама буенча күчмәгез: сайтны кулдан ачыгыз һәм хәбәрләрне шунда тикшерегез",
             "Оешмага аның рәсми сайтындагы номер буенча шалтыратыгыз",
             "Фишинг сайтка Госуслуги аша шикаять бирегез, тикшергәннән соң аны блоклыйлар"
@@ -158,7 +198,19 @@
             "8 800 100-70-10 — Госуслуги ярдәме",
             "102 — полиция"
           ],
-          "source": "Россия Цифрлаштыру министрлыгы · https://www.gosuslugi.ru/help/faq/personal_data/504351"
+          "source": "Россия Цифрлаштыру министрлыгы · https://www.gosuslugi.ru/help/faq/personal_data/504351",
+          "quick": "102 телефонына шалтыратыгыз",
+          "mistakes": [
+            "Көтелмәгән хатлардан һәм хәбәрләрдән сылтамаларга күчү",
+            "СМС кодларын һәм парольләрне хәтта «ярдәм хезмәте хезмәткәренә» дә әйтү",
+            "Сылтама буенча ачылган битләрдә карта мәгълүматын кертү"
+          ],
+          "citations": [
+            {
+              "org": "Минцифры России",
+              "url": "https://www.gosuslugi.ru/help/faq/personal_data/504351"
+            }
+          ]
         }
       },
       "quiz": {
@@ -314,7 +366,8 @@
             "explanation": "Дизайн һәм логотипны җиңел күчереп була. Адрес юлындагы төгәл доменны тикшерегез: артык хәреф яки символ ялганны фаш итә."
           }
         ]
-      }
+      },
+      "updated": "2026-11-20"
     },
     {
       "slug": "cyber-account-hijack",
@@ -335,6 +388,7 @@
             "Добавьте доверенный контакт, который подтвердит восстановление доступа"
           ],
           "during": [
+            "Позвоните 102 и сообщите о случившемся",
             "Смените пароль с устройства, которому доверяете",
             "Завершите все сеансы и отключите чужие устройства",
             "Проверьте привязанные номера, почту и пересылку писем"
@@ -353,7 +407,19 @@
             "8 800 100-70-10 — поддержка Госуслуг",
             "102 — полиция"
           ],
-          "source": "Минцифры России · https://www.gosuslugi.ru/help/faq/personal_data/100465"
+          "source": "Минцифры России · https://www.gosuslugi.ru/help/faq/personal_data/100465",
+          "quick": "Позвоните 102",
+          "mistakes": [
+            "Использовать один пароль для почты, банка и соцсетей",
+            "Отключать дополнительное подтверждение входа ради удобства",
+            "Пересылать коды восстановления кому-либо"
+          ],
+          "citations": [
+            {
+              "org": "Минцифры России",
+              "url": "https://www.gosuslugi.ru/help/faq/personal_data/100465"
+            }
+          ]
         },
         "en": {
           "title": "Account hacking",
@@ -370,6 +436,7 @@
             "Add a trusted contact who will confirm access recovery"
           ],
           "during": [
+            "Call 102 and report the emergency",
             "Change your password from a device you trust",
             "End all sessions and sign out unknown devices",
             "Check linked phone numbers, the recovery email, and email forwarding"
@@ -388,6 +455,18 @@
           "contacts": [
             "8 800 100-70-10 — Gosuslugi support",
             "102 — police"
+          ],
+          "quick": "Call 102",
+          "mistakes": [
+            "Use one password for email, banking, and social media",
+            "Turn off extra login verification for convenience",
+            "Send recovery codes to anyone"
+          ],
+          "citations": [
+            {
+              "org": "Минцифры России",
+              "url": "https://www.gosuslugi.ru/help/faq/personal_data/100465"
+            }
           ]
         },
         "zh": {
@@ -405,6 +484,7 @@
             "添加一位可信联系人，用于确认账号找回"
           ],
           "during": [
+            "拨打102并报告情况",
             "在可信设备上修改密码",
             "结束所有会话，退出未知设备",
             "检查绑定的电话号码、备用邮箱和邮件转发规则"
@@ -423,7 +503,19 @@
             "8 800 100-70-10 — 国家服务门户支持",
             "102 — 警察"
           ],
-          "source": "俄罗斯数字发展部 · https://www.gosuslugi.ru/help/faq/personal_data/100465"
+          "source": "俄罗斯数字发展部 · https://www.gosuslugi.ru/help/faq/personal_data/100465",
+          "quick": "拨打102",
+          "mistakes": [
+            "邮箱、银行和社交账号使用同一个密码",
+            "为了省事关掉额外的登录验证",
+            "把找回验证码发给任何人"
+          ],
+          "citations": [
+            {
+              "org": "Минцифры России",
+              "url": "https://www.gosuslugi.ru/help/faq/personal_data/100465"
+            }
+          ]
         },
         "tt": {
           "title": "Аккаунтны вату",
@@ -440,6 +532,7 @@
             "Керүне торгызуны раслаячак ышанычлы контакт өстәгез"
           ],
           "during": [
+            "102 телефонына шалтыратып хәбәр итегез",
             "Парольне ышанычлы җайланмадан алыштырыгыз",
             "Барлык сеансларны тәмамлагыз һәм чит җайланмаларны өзегез",
             "Бәйләнгән номерларны, почтаны һәм хат күчерүне тикшерегез"
@@ -458,7 +551,19 @@
             "8 800 100-70-10 — Госуслуги ярдәме",
             "102 — полиция"
           ],
-          "source": "Россия Цифрлаштыру министрлыгы · https://www.gosuslugi.ru/help/faq/personal_data/100465"
+          "source": "Россия Цифрлаштыру министрлыгы · https://www.gosuslugi.ru/help/faq/personal_data/100465",
+          "quick": "102 телефонына шалтыратыгыз",
+          "mistakes": [
+            "Почта, банк һәм социаль челтәрләр өчен бер пароль куллану",
+            "Уңайлылык өчен керүнең өстәмә раславын сүндерү",
+            "Торгызу кодларын беркемгә дә күчерү"
+          ],
+          "citations": [
+            {
+              "org": "Минцифры России",
+              "url": "https://www.gosuslugi.ru/help/faq/personal_data/100465"
+            }
+          ]
         }
       },
       "quiz": {
@@ -614,7 +719,8 @@
             "explanation": "Ватылган аккаунт дус исеменнән яза. Ышанычлы тикшерү бер: сез элек белгән номер буенча шалтырату."
           }
         ]
-      }
+      },
+      "updated": "2026-11-20"
     },
     {
       "slug": "cyber-phone-fraud",
@@ -635,6 +741,7 @@
             "Договоритесь с родными о проверочном слове для срочных просьб"
           ],
           "during": [
+            "Позвоните 102 и сообщите о случившемся",
             "Положите трубку и позвоните в банк по номеру с карты или сайта",
             "Не называйте коды из СМС, пароли и данные карты",
             "Не переводите деньги по указаниям звонящего"
@@ -653,7 +760,19 @@
             "8 800 300-30-00 — Банк России",
             "102 — полиция"
           ],
-          "source": "Банк России · https://www.cbr.ru/information_security/pmp"
+          "source": "Банк России · https://www.cbr.ru/information_security/pmp",
+          "quick": "Позвоните 102",
+          "mistakes": [
+            "Переводить деньги на «безопасный» или «специальный» счёт",
+            "Называть коды из СМС и CVV незнакомым людям",
+            "Устанавливать программы по просьбе звонящего"
+          ],
+          "citations": [
+            {
+              "org": "Банк России",
+              "url": "https://www.cbr.ru/information_security/pmp"
+            }
+          ]
         },
         "en": {
           "title": "Phone scams",
@@ -670,6 +789,7 @@
             "Agree with your family on a verification word for urgent requests"
           ],
           "during": [
+            "Call 102 and report the emergency",
             "Hang up and call your bank using the number on your card or its website",
             "Do not share SMS codes, passwords, or card details",
             "Do not transfer money as the caller instructs"
@@ -688,6 +808,18 @@
           "contacts": [
             "8 800 300-30-00 — Bank of Russia",
             "102 — police"
+          ],
+          "quick": "Call 102",
+          "mistakes": [
+            "Transfer money to a safe or special account",
+            "Give SMS codes or CVV to strangers",
+            "Install software at a caller's request"
+          ],
+          "citations": [
+            {
+              "org": "Банк России",
+              "url": "https://www.cbr.ru/information_security/pmp"
+            }
           ]
         },
         "zh": {
@@ -705,6 +837,7 @@
             "与家人约定一个用于紧急请求的核实词"
           ],
           "during": [
+            "拨打102并报告情况",
             "挂断电话，用银行卡或银行网站上的号码回拨银行",
             "不要提供短信验证码、密码或银行卡信息",
             "不要按来电者的指示转账"
@@ -723,7 +856,19 @@
             "8 800 300-30-00 — 俄罗斯银行",
             "102 — 警察"
           ],
-          "source": "俄罗斯银行 · https://www.cbr.ru/information_security/pmp"
+          "source": "俄罗斯银行 · https://www.cbr.ru/information_security/pmp",
+          "quick": "拨打102",
+          "mistakes": [
+            "向“安全账户”或“专用账户”转账",
+            "把短信验证码或CVV码告诉陌生人",
+            "按来电者要求安装软件"
+          ],
+          "citations": [
+            {
+              "org": "Банк России",
+              "url": "https://www.cbr.ru/information_security/pmp"
+            }
+          ]
         },
         "tt": {
           "title": "Телефон аша алдау",
@@ -740,6 +885,7 @@
             "Якыннарыгыз белән кичекмәстән үтенечләр өчен тикшерү сүзе турында килешегез"
           ],
           "during": [
+            "102 телефонына шалтыратып хәбәр итегез",
             "Трубканы салыгыз һәм банкка картадагы яки сайттагы номер буенча шалтыратыгыз",
             "СМС кодларын, парольләрне һәм карта мәгълүматын әйтмәгез",
             "Шалтыратучы күрсәтмәләре буенча акча күчермәгез"
@@ -758,7 +904,19 @@
             "8 800 300-30-00 — Россия Банкы",
             "102 — полиция"
           ],
-          "source": "Россия Банкы · https://www.cbr.ru/information_security/pmp"
+          "source": "Россия Банкы · https://www.cbr.ru/information_security/pmp",
+          "quick": "102 телефонына шалтыратыгыз",
+          "mistakes": [
+            "Акчаны «куркынычсыз» яки «махсус» счетка күчерү",
+            "СМС кодларын һәм CVVны таныш булмаган кешеләргә әйтү",
+            "Шалтыратучы үтенече буенча программалар урнаштыру"
+          ],
+          "citations": [
+            {
+              "org": "Банк России",
+              "url": "https://www.cbr.ru/information_security/pmp"
+            }
+          ]
         }
       },
       "quiz": {
@@ -914,7 +1072,8 @@
             "explanation": "Картаны шундук блоклыйлар, операция белән ризасызлык турында гаризаны бер тәүлек эчендә банкка бирәләр. Акчаны үзегез күчерсәгез, банк аны кайтарырга тиеш түгел."
           }
         ]
-      }
+      },
+      "updated": "2026-11-20"
     },
     {
       "slug": "cyber-malware",
@@ -935,6 +1094,7 @@
             "Скачивайте программы только с сайта разработчика или из магазина приложений"
           ],
           "during": [
+            "Позвоните 102 и сообщите о случившемся",
             "Отключите устройство от сети",
             "Не запускайте подозрительный файл и не давайте ему права администратора",
             "Запустите полную проверку антивирусом"
@@ -953,7 +1113,19 @@
             "102 — полиция",
             "8 800 300-30-00 — Банк России"
           ],
-          "source": "Минцифры России · https://www.gosuslugi.ru/help/faq/personal_data/210509"
+          "source": "Минцифры России · https://www.gosuslugi.ru/help/faq/personal_data/210509",
+          "quick": "Позвоните 102",
+          "mistakes": [
+            "Открывать вложения от незнакомых отправителей",
+            "Отключать антивирус ради установки программы",
+            "Давать неизвестным программам права администратора"
+          ],
+          "citations": [
+            {
+              "org": "Минцифры России",
+              "url": "https://www.gosuslugi.ru/help/faq/personal_data/210509"
+            }
+          ]
         },
         "en": {
           "title": "Malicious file",
@@ -970,6 +1142,7 @@
             "Download programs only from the developer's website or an app store"
           ],
           "during": [
+            "Call 102 and report the emergency",
             "Disconnect the device from the network",
             "Do not run the suspicious file and do not give it administrator rights",
             "Run a full antivirus scan"
@@ -988,6 +1161,18 @@
           "contacts": [
             "102 — police",
             "8 800 300-30-00 — Bank of Russia"
+          ],
+          "quick": "Call 102",
+          "mistakes": [
+            "Open attachments from unknown senders",
+            "Disable the antivirus to install a program",
+            "Give unknown programs administrator rights"
+          ],
+          "citations": [
+            {
+              "org": "Минцифры России",
+              "url": "https://www.gosuslugi.ru/help/faq/personal_data/210509"
+            }
           ]
         },
         "zh": {
@@ -1005,6 +1190,7 @@
             "只从开发者网站或应用商店下载程序"
           ],
           "during": [
+            "拨打102并报告情况",
             "断开设备的网络连接",
             "不要运行可疑文件，不要给它管理员权限",
             "运行一次完整的杀毒扫描"
@@ -1023,7 +1209,19 @@
             "102 — 警察",
             "8 800 300-30-00 — 俄罗斯银行"
           ],
-          "source": "俄罗斯数字发展部 · https://www.gosuslugi.ru/help/faq/personal_data/210509"
+          "source": "俄罗斯数字发展部 · https://www.gosuslugi.ru/help/faq/personal_data/210509",
+          "quick": "拨打102",
+          "mistakes": [
+            "打开陌生发件人的附件",
+            "为了安装程序而关闭杀毒软件",
+            "给未知程序管理员权限"
+          ],
+          "citations": [
+            {
+              "org": "Минцифры России",
+              "url": "https://www.gosuslugi.ru/help/faq/personal_data/210509"
+            }
+          ]
         },
         "tt": {
           "title": "Зыянлы файл",
@@ -1040,6 +1238,7 @@
             "Программаларны тик эшләүче сайтыннан яки кушымталар кибетеннән йөкләгез"
           ],
           "during": [
+            "102 телефонына шалтыратып хәбәр итегез",
             "Җайланманы челтәрдән өзегез",
             "Шикле файлны эшләтмәгез һәм аңа администратор хокукы бирмәгез",
             "Антивирус белән тулы тикшерү башлагыз"
@@ -1058,7 +1257,19 @@
             "102 — полиция",
             "8 800 300-30-00 — Россия Банкы"
           ],
-          "source": "Россия Цифрлаштыру министрлыгы · https://www.gosuslugi.ru/help/faq/personal_data/210509"
+          "source": "Россия Цифрлаштыру министрлыгы · https://www.gosuslugi.ru/help/faq/personal_data/210509",
+          "quick": "102 телефонына шалтыратыгыз",
+          "mistakes": [
+            "Таныш булмаган җибәрүчеләрдән кушымталарны ачу",
+            "Программа урнаштыру өчен антивирусны сүндерү",
+            "Билгесез программаларга администратор хокукы бирү"
+          ],
+          "citations": [
+            {
+              "org": "Минцифры России",
+              "url": "https://www.gosuslugi.ru/help/faq/personal_data/210509"
+            }
+          ]
         }
       },
       "quiz": {
@@ -1214,7 +1425,8 @@
             "explanation": "Челтәрдән өзү программаның мәгълүмат тапшыруын тоткарлый, антивирус тикшерүе зыянлы кодны таба һәм бетерә."
           }
         ]
-      }
+      },
+      "updated": "2026-11-20"
     },
     {
       "slug": "cyber-data-leak",
@@ -1235,6 +1447,7 @@
             "Заведите отдельную почту для регистраций и уникальные пароли"
           ],
           "during": [
+            "Позвоните 102 и сообщите о случившемся",
             "Смените пароль в сервисе, где произошла утечка, и включите дополнительное подтверждение входа",
             "Проверьте привязанные карты и отключите лишние",
             "Сообщите в поддержку сервиса о взломе"
@@ -1254,7 +1467,19 @@
             "8 800 300-30-00 — Банк России",
             "102 — полиция"
           ],
-          "source": "Минцифры России · https://www.gosuslugi.ru/scammer_protection"
+          "source": "Минцифры России · https://www.gosuslugi.ru/scammer_protection",
+          "quick": "Позвоните 102",
+          "mistakes": [
+            "Публиковать фото документов и карт в соцсетях и чатах",
+            "Хранить пароли и коды в открытых заметках",
+            "Сообщать личные данные по звонку без проверки"
+          ],
+          "citations": [
+            {
+              "org": "Минцифры России",
+              "url": "https://www.gosuslugi.ru/scammer_protection"
+            }
+          ]
         },
         "en": {
           "title": "Data leak",
@@ -1271,6 +1496,7 @@
             "Use a separate email for sign-ups and unique passwords"
           ],
           "during": [
+            "Call 102 and report the emergency",
             "Change your password in the service where the leak happened and enable extra login verification",
             "Check your linked cards and remove the ones you do not need",
             "Report the breach to the service's support team"
@@ -1290,6 +1516,18 @@
             "8 800 100-70-10 — Gosuslugi support",
             "8 800 300-30-00 — Bank of Russia",
             "102 — police"
+          ],
+          "quick": "Call 102",
+          "mistakes": [
+            "Posting photos of documents and cards on social media and in chats",
+            "Keeping passwords and codes in plain notes",
+            "Giving personal data over a phone call without verification"
+          ],
+          "citations": [
+            {
+              "org": "Минцифры России",
+              "url": "https://www.gosuslugi.ru/scammer_protection"
+            }
           ]
         },
         "zh": {
@@ -1307,6 +1545,7 @@
             "注册用单独的邮箱，并使用独立密码"
           ],
           "during": [
+            "拨打102并报告情况",
             "在发生泄露的服务中修改密码并开启额外的登录验证",
             "检查绑定的银行卡，移除不需要的卡",
             "向该服务的客服报告泄露"
@@ -1326,7 +1565,19 @@
             "8 800 300-30-00 — 俄罗斯银行",
             "102 — 警察"
           ],
-          "source": "俄罗斯数字发展部 · https://www.gosuslugi.ru/scammer_protection"
+          "source": "俄罗斯数字发展部 · https://www.gosuslugi.ru/scammer_protection",
+          "quick": "拨打102",
+          "mistakes": [
+            "在社交网络和聊天中发布证件和银行卡照片",
+            "把密码和验证码记在明文笔记中",
+            "未经核实就在电话中提供个人数据"
+          ],
+          "citations": [
+            {
+              "org": "Минцифры России",
+              "url": "https://www.gosuslugi.ru/scammer_protection"
+            }
+          ]
         },
         "tt": {
           "title": "Мәгълүмат чыгу",
@@ -1343,6 +1594,7 @@
             "Теркәлүләр өчен аерым почта һәм уникаль парольләр алыгыз"
           ],
           "during": [
+            "102 телефонына шалтыратып хәбәр итегез",
             "Мәгълүмат чыккан сервисда парольне алыштырыгыз һәм керүнең өстәмә раславын кабызыгыз",
             "Бәйләнгән карталарны тикшерегез һәм артыкларын өзегез",
             "Сервис ярдәменә ватылу турында хәбәр итегез"
@@ -1362,7 +1614,19 @@
             "8 800 300-30-00 — Россия Банкы",
             "102 — полиция"
           ],
-          "source": "Россия Цифрлаштыру министрлыгы · https://www.gosuslugi.ru/scammer_protection"
+          "source": "Россия Цифрлаштыру министрлыгы · https://www.gosuslugi.ru/scammer_protection",
+          "quick": "102 телефонына шалтыратыгыз",
+          "mistakes": [
+            "Документлар һәм карта фотоларын социаль челтәрләрдә һәм чатларда бастыру",
+            "Парольләрне һәм кодларны ачык язмаларда саклау",
+            "Тикшермичә шалтырату буенча шәхси мәгълүмат әйтү"
+          ],
+          "citations": [
+            {
+              "org": "Минцифры России",
+              "url": "https://www.gosuslugi.ru/scammer_protection"
+            }
+          ]
         }
       },
       "quiz": {
@@ -1518,7 +1782,8 @@
             "explanation": "Полициягә гариза һәм бюрога мөрәҗәгать чит заемны бәхәсләшергә ярдәм итә. Кредитларга үз-үзенә тыйу киләчәк өчен юлны яба."
           }
         ]
-      }
+      },
+      "updated": "2026-11-20"
     },
     {
       "slug": "cyber-public-wifi",
@@ -1538,6 +1803,7 @@
             "Уточните точное название сети у сотрудника заведения"
           ],
           "during": [
+            "Позвоните 102 и сообщите о случившемся",
             "Не входите в банк и на Госуслуги через публичную сеть",
             "Не проводите платежи и не вводите пароли",
             "Отключите общий доступ к файлам и принтерам"
@@ -1556,7 +1822,19 @@
             "8 800 300-30-00 — Банк России",
             "102 — полиция"
           ],
-          "source": "Минцифры России · https://www.gosuslugi.ru/help/faq/personal_data/210509"
+          "source": "Минцифры России · https://www.gosuslugi.ru/help/faq/personal_data/210509",
+          "quick": "Позвоните 102",
+          "mistakes": [
+            "Входить в банк через открытую сеть",
+            "Подключаться к сети с подозрительным названием",
+            "Оплачивать покупки в публичной сети"
+          ],
+          "citations": [
+            {
+              "org": "Минцифры России",
+              "url": "https://www.gosuslugi.ru/help/faq/personal_data/210509"
+            }
+          ]
         },
         "en": {
           "title": "Public Wi-Fi",
@@ -1572,6 +1850,7 @@
             "Confirm the exact network name with a staff member"
           ],
           "during": [
+            "Call 102 and report the emergency",
             "Do not log into your bank or Gosuslugi over a public network",
             "Do not make payments or enter passwords",
             "Turn off file and printer sharing"
@@ -1590,6 +1869,18 @@
           "contacts": [
             "8 800 300-30-00 — Bank of Russia",
             "102 — police"
+          ],
+          "quick": "Call 102",
+          "mistakes": [
+            "Logging into your bank over an open network",
+            "Connecting to a network with a suspicious name",
+            "Paying for purchases on a public network"
+          ],
+          "citations": [
+            {
+              "org": "Минцифры России",
+              "url": "https://www.gosuslugi.ru/help/faq/personal_data/210509"
+            }
           ]
         },
         "zh": {
@@ -1606,6 +1897,7 @@
             "向工作人员确认准确的网络名称"
           ],
           "during": [
+            "拨打102并报告情况",
             "不要在公共网络上登录银行或国家服务门户",
             "不要付款或输入密码",
             "关闭文件和打印机共享"
@@ -1624,7 +1916,19 @@
             "8 800 300-30-00 — 俄罗斯银行",
             "102 — 警察"
           ],
-          "source": "俄罗斯数字发展部 · https://www.gosuslugi.ru/help/faq/personal_data/210509"
+          "source": "俄罗斯数字发展部 · https://www.gosuslugi.ru/help/faq/personal_data/210509",
+          "quick": "拨打102",
+          "mistakes": [
+            "在开放网络上登录银行",
+            "连接名称可疑的网络",
+            "在公共网络上支付购物"
+          ],
+          "citations": [
+            {
+              "org": "Минцифры России",
+              "url": "https://www.gosuslugi.ru/help/faq/personal_data/210509"
+            }
+          ]
         },
         "tt": {
           "title": "Җәмәгать Wi-Fi",
@@ -1640,6 +1944,7 @@
             "Челтәрнең төгәл исемен йорт хезмәткәреннән ачыклагыз"
           ],
           "during": [
+            "102 телефонына шалтыратып хәбәр итегез",
             "Җәмәгать челтәре аша банкка һәм Госуслугига кермәгез",
             "Түләүләр ясамагыз һәм парольләр кертмәгез",
             "Файлларга һәм принтерларга уртак керүне өзегез"
@@ -1658,7 +1963,19 @@
             "8 800 300-30-00 — Россия Банкы",
             "102 — полиция"
           ],
-          "source": "Россия Цифрлаштыру министрлыгы · https://www.gosuslugi.ru/help/faq/personal_data/210509"
+          "source": "Россия Цифрлаштыру министрлыгы · https://www.gosuslugi.ru/help/faq/personal_data/210509",
+          "quick": "102 телефонына шалтыратыгыз",
+          "mistakes": [
+            "Ачык челтәр аша банкка керү",
+            "Шикле исемле челтәргә кушылу",
+            "Җәмәгать челтәрендә сатып алулар түләү"
+          ],
+          "citations": [
+            {
+              "org": "Минцифры России",
+              "url": "https://www.gosuslugi.ru/help/faq/personal_data/210509"
+            }
+          ]
         }
       },
       "quiz": {
@@ -1814,7 +2131,8 @@
             "explanation": "Сеансларны тәмамлау һәм парольләрне алыштыру, мәгълүмат барыбер тотылса да, керүне яба."
           }
         ]
-      }
+      },
+      "updated": "2026-11-20"
     },
     {
       "slug": "cyber-deepfake-call",
@@ -1835,6 +2153,7 @@
             "По короткой записи голоса можно сделать подделку"
           ],
           "during": [
+            "Позвоните 102 и сообщите о случившемся",
             "Прервите разговор и перезвоните человеку по известному вам номеру",
             "Задайте вопрос, ответ на который знает только он",
             "Попросите подтвердить просьбу в другом канале связи"
@@ -1853,7 +2172,19 @@
             "8 800 300-30-00 — Банк России",
             "102 — полиция"
           ],
-          "source": "Банк России · https://www.cbr.ru/information_security/pmp/15082024"
+          "source": "Банк России · https://www.cbr.ru/information_security/pmp/15082024",
+          "quick": "Позвоните 102",
+          "mistakes": [
+            "Переводить деньги по просьбе из одного звонка",
+            "Верить голосу и видео без проверки другим каналом",
+            "Действовать срочно под давлением звонящего"
+          ],
+          "citations": [
+            {
+              "org": "Банк России",
+              "url": "https://www.cbr.ru/information_security/pmp/15082024"
+            }
+          ]
         },
         "en": {
           "title": "Deepfake call",
@@ -1870,6 +2201,7 @@
             "A short voice recording is enough to make a fake"
           ],
           "during": [
+            "Call 102 and report the emergency",
             "End the call and phone the person back at a number you know",
             "Ask a question only that person can answer",
             "Ask them to confirm the request through another channel"
@@ -1888,6 +2220,18 @@
           "contacts": [
             "8 800 300-30-00 — Bank of Russia",
             "102 — police"
+          ],
+          "quick": "Call 102",
+          "mistakes": [
+            "Transfer money on the strength of a single call",
+            "Trust a voice or video without checking another way",
+            "Act in haste under pressure from the caller"
+          ],
+          "citations": [
+            {
+              "org": "Банк России",
+              "url": "https://www.cbr.ru/information_security/pmp/15082024"
+            }
           ]
         },
         "zh": {
@@ -1905,6 +2249,7 @@
             "一段很短的录音就足够制作假声音"
           ],
           "during": [
+            "拨打102并报告情况",
             "结束通话，用你知道的号码回电本人",
             "问一个只有本人能回答的问题",
             "要求对方通过另一个渠道确认请求"
@@ -1923,7 +2268,19 @@
             "8 800 300-30-00 — 俄罗斯银行",
             "102 — 警察"
           ],
-          "source": "俄罗斯银行 · https://www.cbr.ru/information_security/pmp/15082024"
+          "source": "俄罗斯银行 · https://www.cbr.ru/information_security/pmp/15082024",
+          "quick": "拨打102",
+          "mistakes": [
+            "仅凭一次通话就转账",
+            "不经其他方式核实就相信声音或视频",
+            "在对方施压下匆忙行动"
+          ],
+          "citations": [
+            {
+              "org": "Банк России",
+              "url": "https://www.cbr.ru/information_security/pmp/15082024"
+            }
+          ]
         },
         "tt": {
           "title": "Дипфейк шалтырату",
@@ -1940,6 +2297,7 @@
             "Кыска тавыш язмасы буенча да ялган эшләргә мөмкин"
           ],
           "during": [
+            "102 телефонына шалтыратып хәбәр итегез",
             "Сөйләшүне туктатыгыз һәм кешегә сез белгән номер буенча кире шалтыратыгыз",
             "Тик ул гына белә торган сорау бирегез",
             "Үтенечне бәйләнешнең башка каналында расларга сорагыз"
@@ -1958,7 +2316,19 @@
             "8 800 300-30-00 — Россия Банкы",
             "102 — полиция"
           ],
-          "source": "Россия Банкы · https://www.cbr.ru/information_security/pmp/15082024"
+          "source": "Россия Банкы · https://www.cbr.ru/information_security/pmp/15082024",
+          "quick": "102 телефонына шалтыратыгыз",
+          "mistakes": [
+            "Бер шалтыратудагы үтенеч буенча акча күчерү",
+            "Тавышка һәм видеога башка каналда тикшермичә ышану",
+            "Шалтыратучы басымы астында кичекмәстән эш итү"
+          ],
+          "citations": [
+            {
+              "org": "Банк России",
+              "url": "https://www.cbr.ru/information_security/pmp/15082024"
+            }
+          ]
         }
       },
       "quiz": {
@@ -2114,7 +2484,8 @@
             "explanation": "Тавыш һәм номер ялганлана. Шәхси сорау яки үз номерыгыз буенча шалтырату ышанычлырак."
           }
         ]
-      }
+      },
+      "updated": "2026-11-20"
     }
   ]
 }
