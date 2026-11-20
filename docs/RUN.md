@@ -194,86 +194,202 @@ root с `--no-dev`. Образ выставляет `UV_NO_DEV=1`; при пра
 читает его раньше `_env_file=None`. Запускайте тесты в чистом окружении
 (`unset WEBHOOK_SECRET` или новый терминал).
 
-## 8. Altare (altare.gg)
+## 8. Прод: Altare, Ubuntu 24.04
 
-Образ: `ghcr.io/lukavtz/byte-guardian:latest` (linux/amd64). Внутри —
-`docker-entrypoint.sh`: сначала `alembic upgrade head`, потом бот. Если миграция
-упала, контейнер пишет причину в stderr и выходит с кодом 1 — бот без схемы не
-стартует.
+Прод не контейнер: `bot` и `worker` — обычные процессы под supervisor на VPS
+Altare (Ubuntu 24.04). Postgres 16 и Redis 7 стоят на том же хосте из apt.
+Режим — `polling`: входящий порт наружу не нужен, домен и TLS не требуются.
 
-### Образ
+Схема: `/opt/bytebot` (код + `.venv` + `.env`) → supervisor → `/var/log/bytebot-*.log`.
+Файлы в `/opt/bytebot`, логи в `/var/log`, юниты в `/etc/supervisor/conf.d`.
+
+### Что установлено
 
 ```bash
-docker build --platform linux/amd64 -t ghcr.io/lukavtz/byte-guardian:latest .
-docker push ghcr.io/lukavtz/byte-guardian:latest
+sudo apt update
+sudo apt install -y postgresql-16 redis-server supervisor git curl
+curl -LsSf https://astral.sh/uv/install.sh | sudo env UV_INSTALL_DIR=/usr/local/bin sh
 ```
 
-Пакет на GHCR должен быть публичным, иначе Altare нужен registry login
-(`altr docker create --registry-user lukavtz --registry-token-stdin`).
+Python отдельно не ставится: `uv` тянет 3.14 сам (`uv python install 3.14`).
+Postgres слушает только localhost (`/etc/postgresql/16/main/postgresql.conf`),
+Redis — тоже (`bind 127.0.0.1` в `/etc/redis/redis.conf`, пароль в `requirepass`).
 
-### Ресурсы
+### Код и зависимости
 
 ```bash
-altr postgres create byte-guardian --size micro
-altr valkey create byte-guardian --size micro
-altr postgres info byte-guardian      # DATABASE_URL
-altr valkey info byte-guardian        # REDIS_URL
+sudo git clone https://github.com/lukavtz/byte-guardian.git /opt/bytebot
+cd /opt/bytebot
+uv python install 3.14
+uv sync --frozen --no-dev
 ```
 
-`DATABASE_URL` — `postgres://user:pass@host:5432/db`, `REDIS_URL` —
-`redis://:pass@host:6379/0`.
+`.venv/bin/python` — тот самый интерпретатор, который запускает supervisor.
 
-### Приложение
+### `.env`
 
 ```bash
-altr docker create byte-guardian ghcr.io/lukavtz/byte-guardian:latest \
-  --port 8080 --memory 1024 --auto-update \
-  -e BOT_MODE=webhook \
-  -e WEBHOOK_URL=https://byte-guardian.altare.app \
-  -e BOT_TOKEN=... \
-  -e WEBHOOK_SECRET=... \
-  -e DATABASE_URL=... \
-  -e REDIS_URL=... \
-  -e ADMIN_IDS=... \
-  -e LLM_BASE_URL=... -e LLM_MODEL=... -e LLM_API_KEY=...
+sudo install -m 600 /dev/null /opt/bytebot/.env
+sudoedit /opt/bytebot/.env
 ```
 
-Переменные дальше правятся без пересборки:
+Права `600`: читает только владелец файла — под ним и работают процессы.
+Обязательный минимум:
 
-```bash
-altr docker env set byte-guardian PORT=8080 LOG_LEVEL=info
-altr docker info byte-guardian       # образ, digest, последние деплои
-altr docker redeploy byte-guardian   # подтянуть новый :latest
+```dotenv
+BOT_TOKEN=
+BOT_MODE=polling
+ADMIN_IDS=
+PORT=8080
+DATABASE_URL=postgresql+asyncpg://bytebot:ПАРОЛЬ@127.0.0.1:5432/bytebot
+REDIS_URL=redis://:ПАРОЛЬ@127.0.0.1:6379/0
+LLM_BASE_URL=https://<провайдер>/v1
+LLM_MODEL=
+LLM_API_KEY=
+LOG_LEVEL=info
 ```
 
-Домен: по умолчанию Altare даёт `byte-guardian.altare.app`; свой —
-`altr domains add byte-guardian <домен>`. Затем `WEBHOOK_URL=https://<домен>`
-(без слэша в конце; Telegram ходит на `$WEBHOOK_URL/webhook`).
+`WEBHOOK_URL`/`WEBHOOK_SECRET` в polling не нужны. Секреты живут только в этом
+файле; в git, чат и логи они не попадают. Для внешних секрет-сторов есть
+варианты `*_FILE` — путь к файлу вместо значения.
 
-### Webhook
-
-Вебхук приложение не регистрирует само — после первого деплоя вызвать один раз
-(и после каждой смены домена):
+### Postgres и Redis
 
 ```bash
-curl -fsS "https://api.telegram.org/bot$BOT_TOKEN/setWebhook" \
-  -d "url=$WEBHOOK_URL/webhook" \
-  -d "secret_token=$WEBHOOK_SECRET" \
-  -d 'allowed_updates=["message","callback_query","inline_query","widget_query","shared_widget_query"]'
+sudo -u postgres createuser --pwprompt bytebot
+sudo -u postgres createdb -O bytebot bytebot
+sudo systemctl enable --now postgresql redis-server
 ```
 
-Проверка после деплоя:
+Схему создают миграции, расширения не нужны. DSN — в `.env`.
+
+### Миграции
+
+Перед каждым обновлением кода, с подгруженным окружением (тот же `.env`, что у
+процессов):
 
 ```bash
-curl -fsS https://<домен>/healthz
+cd /opt/bytebot
+set -a; . /opt/bytebot/.env; set +a
+uv run alembic upgrade head
+uv run alembic current
+```
+
+Если миграция падает — процессы не трогаем, разбираем лог `alembic` и
+откатываемся на предыдущий коммит; бот без схемы не стартует.
+
+### supervisor
+
+`/etc/supervisor/conf.d/bytebot.conf`:
+
+```ini
+[program:bytebot-bot]
+directory=/opt/bytebot
+command=/opt/bytebot/.venv/bin/python -m app.main
+autostart=true
+autorestart=true
+startsecs=10
+stopasgroup=true
+killasgroup=true
+stopwaitsecs=30
+stdout_logfile=/var/log/bytebot-bot.log
+redirect_stderr=true
+stdout_logfile_maxbytes=10MB
+stdout_logfile_backups=5
+
+[program:bytebot-worker]
+directory=/opt/bytebot
+command=/opt/bytebot/.venv/bin/python -m app.worker
+autostart=true
+autorestart=true
+startsecs=10
+stopasgroup=true
+killasgroup=true
+stopwaitsecs=30
+stdout_logfile=/var/log/bytebot-worker.log
+redirect_stderr=true
+stdout_logfile_maxbytes=10MB
+stdout_logfile_backups=5
+```
+
+`directory` обязателен: `.env` ищется относительно рабочего каталога. Если
+процессы идут под отдельным пользователем — добавьте `user=bytebot` в обе
+секции и выдайте ему `/opt/bytebot` и `.env`.
+
+```bash
+sudo supervisorctl reread
+sudo supervisorctl update
+sudo supervisorctl status bytebot-bot bytebot-worker
+```
+
+### Обновление и рестарт
+
+```bash
+cd /opt/bytebot
+git pull --ff-only
+uv sync --frozen --no-dev
+set -a; . /opt/bytebot/.env; set +a
+uv run alembic upgrade head
+sudo supervisorctl restart bytebot-bot bytebot-worker
+```
+
+Только рестарт, без обновления кода:
+
+```bash
+sudo supervisorctl restart bytebot-bot bytebot-worker
+sudo supervisorctl stop bytebot-bot bytebot-worker
+sudo supervisorctl start bytebot-bot bytebot-worker
+```
+
+### Проверка
+
+```bash
+curl -fsS localhost:8080/healthz          # {"ok": true}
+curl -fsS localhost:8080/readyz           # checks.postgres / checks.redis
+sudo tail -n 50 /var/log/bytebot-bot.log
+sudo tail -n 50 /var/log/bytebot-worker.log
+```
+
+Хранилища и Telegram:
+
+```bash
+cd /opt/bytebot && set -a; . ./.env; set +a
+redis-cli --no-auth-warning -u "$REDIS_URL" ping
+pg_isready -h 127.0.0.1 -p 5432 -U bytebot
 curl -fsS "https://api.telegram.org/bot$BOT_TOKEN/getWebhookInfo"
 ```
 
-`last_error_message` в ответе Telegram: 403 — не совпал `WEBHOOK_SECRET`,
-502/504 — приложение не слушает `PORT`.
+`redis-cli` отвечает `PONG`; у `getWebhookInfo` поле `url` пустое — иначе
+вебхук перехватывает апдейты и polling молчит:
 
-### Откат миграций
+```bash
+curl -fsS "https://api.telegram.org/bot$BOT_TOKEN/deleteWebhook"
+```
 
-Образ мигрирует при каждом старте, вперёд. Автоматического откатa нет: перед
-деплоем с новой схемой сделайте бэкап (`altr postgres backups create byte-guardian`),
-откат — новый образ со старой ревизией и ручной `alembic downgrade`.
+`readyz` отдаёт 503 — смотрим, что именно упало: `checks.postgres` (служба
+Postgres, пароль в DSN) или `checks.redis` (`requirepass` не совпал с `REDIS_URL`).
+
+### Бэкап
+
+Postgres — источник правды: карточки, пользователи, очередь, статистика.
+
+```bash
+sudo -u postgres pg_dump -Fc bytebot > /var/backups/bytebot-$(date +%F).dump
+```
+
+Ежедневно через cron в crontab пользователя `postgres` (`sudo -u postgres crontab -e`):
+
+```cron
+15 4 * * * pg_dump -Fc bytebot > /var/backups/bytebot-$(date +\%F).dump
+```
+
+Ротация — `find /var/backups -name 'bytebot-*.dump' -mtime +14 -delete`.
+Восстановление: `sudo -u postgres pg_restore --clean --if-exists -d bytebot <файл>`.
+Redis терять не страшно: там dedupe `update_id` на 24 часа и лимиты, очередь
+живёт в Postgres.
+
+### Webhook (необязательно)
+
+Прод работает на polling. Webhook нужен, только если появится домен и reverse
+proxy: `BOT_MODE=webhook`, `WEBHOOK_URL=https://<домен>`, регистрация —
+раздел 4, TLS — на прокси, дальше `localhost:8080/webhook`.

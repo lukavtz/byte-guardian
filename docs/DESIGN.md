@@ -2,8 +2,10 @@
 
 Дата: 2026-11-20
 Проект: телеграм-бот-справочник по БЖД (безопасность жизнедеятельности), практика в вузе.
-Стек: Python 3.14 + aiogram 3.31, Postgres 18, Redis 8 (dedupe, rate limit, очередь),
-Podman Compose, OpenAI-совместимый LLM.
+Стек: Python 3.14 + aiogram 3.31, Postgres 16, Redis 7 (dedupe, rate limit, очередь),
+OpenAI-совместимый LLM.
+Прод: нативный запуск под supervisor на Ubuntu 24.04 (Altare); Postgres 16 и Redis 7 —
+на том же хосте. Webhook — опция, по умолчанию polling.
 
 ## 1. Зачем
 
@@ -92,8 +94,8 @@ Podman Compose, OpenAI-совместимый LLM.
 | i18n.defaultLocale | `ru` |
 | i18n.enabled | `en`, `ru`, `zh` (+ `tt` вручную после скаффолда) |
 | admin ids | `1715051614` |
-| deploy | Dockerfile + compose.yaml, запуск через Podman |
-| mode | webhook в проде (Caddy), polling локально |
+| deploy | прод — нативно: uv + supervisor на Ubuntu 24.04; Dockerfile + compose.yaml — локально |
+| mode | polling в проде и локально; webhook — опция (Caddy) |
 
 `tt` не входит в enum BotSpec (`docs/BOT_SPEC.md:31`). Добавляется после генерации:
 `app/i18n/tt.json` + `"tt"` в `ENABLED_LOCALES`/`resolve_locale`.
@@ -242,7 +244,11 @@ Severity 1–3, рендер — `●●○` + подпись «Высокая/�
 
 - `compose.yaml`: bot + worker + migrate + Postgres + Redis + Caddy. Dockerfile
   `python:3.14-slim`, non-root, `alembic upgrade head`, health `/healthz`.
-- Podman Compose: `podman machine init && podman machine start`,
+- Прод: Postgres 16 и Redis 7 из apt на том же хосте, `bot` и `worker` под
+  supervisor (`/etc/supervisor/conf.d/bytebot.conf`), `.env` в `/opt/bytebot`
+  с правами 600, логи `/var/log/bytebot-*.log`. Режим — polling: наружу ничего
+  не публикуется, порт 8080 нужен только для `/healthz`, `/readyz`, `/metrics`.
+- Локально: `podman machine init && podman machine start`,
   `podman compose up -d --build`; точные команды — `docs/RUN.md`.
   Rootless порты 80/443 — `net.ipv4.ip_unprivileged_port_start=80`.
 - Секреты через `.env` / `*_FILE`; токен и LLM-ключ в чат не попадают.

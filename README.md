@@ -8,11 +8,13 @@
   <a href="https://t.me/ByteTisbi_bot"><img alt="Telegram: @ByteTisbi_bot" src="https://img.shields.io/badge/Telegram-@ByteTisbi__bot-2CA5E0?logo=telegram&logoColor=white&style=flat-square"></a>
   <img alt="Python 3.14" src="https://img.shields.io/badge/Python-3.14-3776AB?logo=python&logoColor=white&style=flat-square">
   <img alt="aiogram 3.31" src="https://img.shields.io/badge/aiogram-3.31-2CA5E0?style=flat-square">
-  <img alt="PostgreSQL 18" src="https://img.shields.io/badge/PostgreSQL-18-4169E1?logo=postgresql&logoColor=white&style=flat-square">
-  <img alt="Redis 8" src="https://img.shields.io/badge/Redis-8-DC382D?logo=redis&logoColor=white&style=flat-square">
-  <img alt="Podman Compose" src="https://img.shields.io/badge/Podman-compose-3B4C5A?logo=podman&logoColor=white&style=flat-square">
-  <img alt="374 теста проходят" src="https://img.shields.io/badge/tests-374%20passed-2FE0C8?style=flat-square">
+  <img alt="PostgreSQL 16" src="https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white&style=flat-square">
+  <img alt="Redis 7" src="https://img.shields.io/badge/Redis-7-DC382D?logo=redis&logoColor=white&style=flat-square">
+  <img alt="Ubuntu 24.04" src="https://img.shields.io/badge/Ubuntu-24.04-E95420?logo=ubuntu&logoColor=white&style=flat-square">
+  <img alt="478 тестов проходят" src="https://img.shields.io/badge/tests-478%20passed-2FE0C8?style=flat-square">
 </p>
+
+<p align="center">Живой бот — <a href="https://t.me/ByteTisbi_bot">@ByteTisbi_bot</a>. Прод — Altare, Ubuntu 24.04, polling.</p>
 
 <p align="center"><b>Фирменный стиль ТИСБИ.</b> Официальный синий <code>#0477D2</code>, акцент <code>#FD8749</code>, чернила <code>#444B54</code> и льдистый фон <code>#F4F8FF</code>; маскот — Байт в худи ТИСБИ. Система целиком — <a href="docs/BRAND.md">docs/BRAND.md</a>.</p>
 
@@ -52,7 +54,7 @@
 
 ## Быстрый старт
 
-Публичный инстанс — [@ByteTisbi_bot](https://t.me/ByteTisbi_bot). Локально нужен только Podman.
+Публичный инстанс — [@ByteTisbi_bot](https://t.me/ByteTisbi_bot). Локально нужен только Podman; прод — нативно на Altare, [docs/RUN.md](docs/RUN.md#8-прод-altare-ubuntu-2404).
 
 ```bash
 cp .env.example .env     # BOT_TOKEN, WEBHOOK_SECRET, POSTGRES_PASSWORD, REDIS_PASSWORD, LLM_API_KEY
@@ -64,7 +66,7 @@ podman compose up -d --build
 curl -fsS localhost:8080/healthz   # {"ok": true}
 ```
 
-`BOT_MODE=polling` по умолчанию: TLS и домен не нужны. Для продакшена — `podman compose --profile webhook up -d --build` с `BOT_MODE=webhook` и `WEBHOOK_URL=https://<домен>`; Caddy (`deploy/Caddyfile`) терминирует TLS. Диагностика и переключение режимов — [docs/RUN.md](docs/RUN.md).
+`BOT_MODE=polling` по умолчанию: TLS и домен не нужны, так работает прод. Webhook — опция: `podman compose --profile webhook up -d --build` с `BOT_MODE=webhook` и `WEBHOOK_URL=https://<домен>`; Caddy (`deploy/Caddyfile`) терминирует TLS. Диагностика — [docs/RUN.md](docs/RUN.md).
 
 ## Настройка
 
@@ -85,8 +87,8 @@ curl -fsS localhost:8080/healthz   # {"ok": true}
 ```mermaid
 flowchart LR
   TG([Telegram]) -->|webhook / polling| BOT[aiogram 3.31]
-  BOT -->|карточки, очередь| PG[(Postgres 18)]
-  BOT -->|dedupe, лимиты| RD[(Redis 8)]
+  BOT -->|карточки, очередь| PG[(Postgres 16)]
+  BOT -->|dedupe, лимиты| RD[(Redis 7)]
   BOT -->|RAG: 3 карточки| LLM[LLM API]
   BOT -.->|jobs| W[worker]
   W --> PG
@@ -115,7 +117,7 @@ flowchart LR
 ## Разработка
 
 ```bash
-uv sync && uv run pytest -q              # 374 passed
+uv sync && uv run pytest -q              # 478 passed
 uv run ruff check . && uv run mypy app
 ```
 
