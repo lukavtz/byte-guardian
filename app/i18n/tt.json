@@ -62,6 +62,7 @@
   "commands.settings": "Тел һәм тапшырулар",
   "button.search": "Эзләү",
   "button.language": "Тел",
+  "button.admin": "Админ-панель",
   "menu.search_hint": "Хәлне бер хәбәр белән языгыз — карточка табабыз.",
   "language.hint": "Интерфейс телен сайлагыз.",
   "group.private_only": "Меню һәм көйләүләр шәхси чатта: {link}",

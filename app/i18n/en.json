@@ -62,6 +62,7 @@
   "commands.settings": "Language and broadcasts",
   "button.search": "Search",
   "button.language": "Language",
+  "button.admin": "Admin panel",
   "menu.search_hint": "Describe the situation in one message — we will find a card.",
   "language.hint": "Choose the interface language.",
   "group.private_only": "Menu and settings live in a private chat: {link}",

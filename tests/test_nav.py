@@ -266,6 +266,40 @@ async def test_menu_callback_edits_in_private_chat() -> None:
 
 
 @pytest.mark.asyncio
+async def test_admin_row_is_hidden_without_admin_ids() -> None:
+    bot = FakeBot()
+    query = _query(cb_menu())
+
+    await nav.on_menu(query, bot, FakeRepo(), FakeDB().factory())
+
+    assert not any(item.callback_data == "b1:admin" for item in _buttons(bot.edited[0]))
+
+
+@pytest.mark.asyncio
+async def test_admin_row_is_visible_to_a_listed_id() -> None:
+    bot = FakeBot()
+    query = _query(cb_menu())
+    settings = SimpleNamespace(admin_id_set=frozenset({7}))
+
+    await nav.on_menu(query, bot, FakeRepo(), FakeDB().factory(), settings)
+
+    labels = [item.text for item in _buttons(bot.edited[0])]
+    assert any(label.endswith("Админ-панель") for label in labels)
+    assert any(item.callback_data == "b1:admin" for item in _buttons(bot.edited[0]))
+
+
+@pytest.mark.asyncio
+async def test_admin_row_is_hidden_from_an_unlisted_id() -> None:
+    bot = FakeBot()
+    query = _query(cb_menu())
+    settings = SimpleNamespace(admin_id_set=frozenset({99}))
+
+    await nav.on_menu(query, bot, FakeRepo(), FakeDB().factory(), settings)
+
+    assert not any(item.callback_data == "b1:admin" for item in _buttons(bot.edited[0]))
+
+
+@pytest.mark.asyncio
 async def test_group_callback_is_answered_but_not_edited() -> None:
     bot = FakeBot()
     query = _query(cb_menu(), chat_type="group")

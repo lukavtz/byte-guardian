@@ -62,6 +62,7 @@
   "commands.settings": "Язык и рассылка",
   "button.search": "Поиск",
   "button.language": "Язык",
+  "button.admin": "Админ-панель",
   "menu.search_hint": "Напишите ситуацию одним сообщением — найдём карточку.",
   "language.hint": "Выберите язык интерфейса.",
   "group.private_only": "Меню и настройки открываются в личке: {link}",

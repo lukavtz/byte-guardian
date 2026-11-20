@@ -20,6 +20,7 @@ from aiogram.types import InlineKeyboardMarkup
 
 from app.content.types import CardView, CategoryView, QuizView, ThreatView
 from app.services.callbacks import (
+    cb_admin,
     cb_card,
     cb_cat,
     cb_game,
@@ -30,7 +31,7 @@ from app.services.callbacks import (
     cb_search_hint,
 )
 from app.services.i18n import t
-from app.ui.emoji import emoji
+from app.ui.emoji import premium
 from app.ui.keyboards import PAGE_SIZE, Style, rich_button, rich_row
 
 TITLE = 120
@@ -111,15 +112,16 @@ def _share(budget: int, blocks: int) -> int:
     return min(budget, max(2, budget // blocks))
 
 
-def _details(key: str, body: str, locale: str, opened: bool = False) -> str:
+def _details(key: str, body: str, locale: str, opened: bool = False, icon: tuple[str, str] | None = None) -> str:
     if not body:
         return ""
     flag = " open" if opened else ""
-    return f"<details{flag}><summary><h2>{_esc(t(locale, key))}</h2></summary>{body}</details>"
+    lead = f"{premium(*icon)} " if icon else ""
+    return f"<details{flag}><summary><h2>{lead}{_esc(t(locale, key))}</h2></summary>{body}</details>"
 
 
 def _brand(locale: str) -> str:
-    return f"<footer>{_esc(t(locale, 'brand.footer'))}</footer>"
+    return f"<footer>{premium('duck', '🦆')} {_esc(t(locale, 'brand.footer'))}</footer>"
 
 
 def _severity(severity: int, locale: str) -> str:
@@ -151,20 +153,45 @@ def _header(slug: str, heading: str, lead: str = "") -> str:
     return f"{_art(slug)}<h1>{heading}</h1>{lead}<hr/>"
 
 
-def render_menu(categories: list[CategoryView], locale: str) -> RichScreen:
+def render_menu(categories: list[CategoryView], locale: str, is_admin: bool = False) -> RichScreen:
     rows = [
         rich_row(
-            rich_button(f"{emoji(item.slug, item.emoji)} {_clip(item.title, TITLE)}", data=cb_cat(item.slug))
+            rich_button(
+                _clip(item.title, TITLE),
+                data=cb_cat(item.slug),
+                icon=(item.slug, _esc(item.emoji)),
+            )
         )
         for item in categories[:8]
     ]
     rows.append(
         rich_row(
-            rich_button(f"{emoji('search', '🔎')} {t(locale, 'button.search')}", data=cb_search_hint()),
-            rich_button(f"{emoji('language', '🌐')} {t(locale, 'button.language')}", data=cb_lang_menu()),
+            rich_button(
+                t(locale, "button.search"),
+                data=cb_search_hint(),
+                style="primary",
+                icon=("search", "🔍"),
+            ),
+            rich_button(
+                t(locale, "button.language"),
+                data=cb_lang_menu(),
+                icon=("lang", "🌐"),
+            ),
         )
     )
-    heading = f"{emoji('shield', '🛡️')} {_esc(t(locale, 'menu.title'))}"
+    if is_admin:
+        # One small neutral row, and only for an id in ADMIN_IDS. The public
+        # command list stays the same: the panel is reached from here.
+        rows.append(
+            rich_row(
+                rich_button(
+                    t(locale, "button.admin"),
+                    data=cb_admin(),
+                    icon=("admin", "🛠"),
+                )
+            )
+        )
+    heading = f"{premium('shield', '🛡️')} {_esc(t(locale, 'menu.title'))}"
     html = _header("hero", heading, f"<p>{_esc(t(locale, 'menu.lead'))}</p>")
     return RichScreen(html + "\n".join(rows))
 
@@ -183,14 +210,22 @@ def render_category(
         nav.append(rich_button(t(locale, "button.next"), data=cb_cat(category.slug, page + 1)))
     if nav:
         rows.append(rich_row(*nav))
-    rows.append(rich_row(rich_button(f"{emoji('menu', '📂')} {t(locale, 'button.menu')}", data=cb_menu())))
+    rows.append(
+        rich_row(
+            rich_button(
+                t(locale, "button.menu"),
+                data=cb_menu(),
+                icon=("menu", "🏘"),
+            )
+        )
+    )
     lead = t(locale, "category.lead")
     meta = (
-        f"{t(locale, 'category.count', n=category.threat_count)}"
-        f" · {t(locale, 'category.page', page=page, pages=pages)}"
+        f"{premium('stats', '🔢')} {_esc(t(locale, 'category.count', n=category.threat_count))}"
+        f" · {premium('catalog', '📂')} {_esc(t(locale, 'category.page', page=page, pages=pages))}"
     )
-    heading = f"{emoji(category.slug, _esc(category.emoji))} {_esc(_clip(category.title, TITLE))}"
-    html = _header(category.slug, heading, f"<p>{_esc(lead)}</p>") + f"<footer>{_esc(meta)}</footer>"
+    heading = f"{premium(category.slug, _esc(category.emoji))} {_esc(_clip(category.title, TITLE))}"
+    html = _header(category.slug, heading, f"<p>{_esc(lead)}</p>") + f"<footer>{meta}</footer>"
     return RichScreen(html + "\n".join(rows))
 
 
@@ -233,42 +268,58 @@ def render_card(
     html = (
         _header(
             card.category_slug,
-            f"{emoji(card.category_slug, _esc(card.icon))} {_esc(title)}",
+            f"{premium(card.category_slug, _esc(card.icon))} {_esc(title)}",
             f"<p>{severity} · {_esc(category)}{_badge(card, locale)}</p>",
         )
         + (f"<p>{_esc(summary)}</p>" if summary else "")
         + (
-            f"<blockquote><b>{_esc(t(locale, 'card.signs'))}</b><br/>{signs}</blockquote>"
+            f"<blockquote><b>{premium('eyes', '👀')} {_esc(t(locale, 'card.signs'))}</b>"
+            f"<br/>{signs}</blockquote>"
             if signs
             else ""
         )
-        + _details("card.before", before, locale)
-        + _details("card.during", during, locale, opened=True)
-        + _details("card.after", after, locale)
-        + _details("card.forbidden", forbidden, locale)
-        + "<footer>" + " · ".join(_esc(part) for part in (brand, *contacts, source) if part) + "</footer>"
+        + _details("card.before", before, locale, icon=("hourglass", "⏳"))
+        + _details("card.during", during, locale, opened=True, icon=("fire", "🔥"))
+        + _details("card.after", after, locale, icon=("refresh", "🔄"))
+        + _details("card.forbidden", forbidden, locale, icon=("cancel", "❌"))
+        + "<footer>"
+        + " · ".join(
+            [f"{premium('duck', '🦆')} {_esc(brand)}", *(_esc(part) for part in (*contacts, source) if part)]
+        )
+        + "</footer>"
     )
     rows = []
     if has_quiz:
         quiz_buttons = [
             rich_button(
-                f"{emoji('quiz', '📝')} {t(locale, 'button.quiz')}",
+                t(locale, "button.quiz"),
                 data=cb_quiz_next(card.slug, "start", secrets.token_hex(2)),
                 style="primary",
+                icon=("test", "✅"),
             )
         ]
         if can_game:
             quiz_buttons.append(
                 rich_button(
-                    f"{emoji('game', '🎮')} {t(locale, 'button.game')}",
+                    t(locale, "button.game"),
                     data=cb_game(card.slug),
+                    style="success",
+                    icon=("game", "🎮"),
                 )
             )
         rows.append(rich_row(*quiz_buttons))
     rows.append(
         rich_row(
-            rich_button(f"← {t(locale, 'button.back')}", data=cb_cat(card.category_slug, page)),
-            rich_button(t(locale, "button.share"), query=_clip(card.title, TITLE)),
+            rich_button(
+                t(locale, "button.back"),
+                data=cb_cat(card.category_slug, page),
+                icon=("back", "🏠"),
+            ),
+            rich_button(
+                t(locale, "button.share"),
+                query=_clip(card.title, TITLE),
+                icon=("send", "📤"),
+            ),
         )
     )
     return RichScreen(html + "\n".join(rows))
@@ -303,7 +354,7 @@ def render_question(
         )
     if chosen is not None:
         tail = (
-            f"<blockquote><b>{_esc(t(locale, 'quiz.explanation'))}</b><br/>"
+            f"<blockquote><b>{premium('description', '📖')} {_esc(t(locale, 'quiz.explanation'))}</b><br/>"
             f"{_esc(_clip(quiz.explanation, SUMMARY))}</blockquote>"
         )
         rows.append(
@@ -312,14 +363,15 @@ def render_question(
                     t(locale, "button.next_question"),
                     data=cb_quiz_next(slug, quiz.question_id, seed),
                     style="primary",
+                    icon=("arrow", "➡️"),
                 )
             )
         )
     else:
         tail = ""
     html = (
-        _header(_art_of_threat(slug), f"{emoji('quiz', '📝')} {_esc(t(locale, 'quiz.heading'))}")
-        + f"<h2>{_esc(t(locale, 'quiz.title', index=index, total=total))}</h2>"
+        _header(_art_of_threat(slug), f"{premium('test', '📝')} {_esc(t(locale, 'quiz.heading'))}")
+        + f"<h2>{premium('hourglass', '⏳')} {_esc(t(locale, 'quiz.title', index=index, total=total))}</h2>"
         + f"<p>{_esc(_clip_sentences(_clip(quiz.prompt, SUMMARY), 2))}</p>"
         + tail
     )
@@ -332,19 +384,26 @@ def render_result(correct: int, total: int, slug: str, locale: str) -> RichScree
     rows = [
         rich_row(
             rich_button(
-                f"{emoji('refresh', '🔄')} {t(locale, 'button.retry')}",
+                t(locale, "button.retry"),
                 data=cb_quiz_next(slug, "start", secrets.token_hex(2)),
                 style="success" if passed else "primary",
+                icon=("refresh", "🔄"),
             )
         ),
-        rich_row(rich_button(f"{emoji('menu', '📂')} {t(locale, 'button.menu')}", data=cb_menu())),
+        rich_row(
+            rich_button(
+                t(locale, "button.menu"),
+                data=cb_menu(),
+                icon=("menu", "🏘"),
+            )
+        ),
     ]
     html = (
         _header(
             _art_of_threat(slug),
-            f"{emoji('done', '✅')} {_esc(t(locale, 'quiz.result.title'))}",
+            f"{premium('test', '✅')} {_esc(t(locale, 'quiz.result.title'))}",
         )
-        + f"<h2>{_esc(t(locale, 'quiz.score', correct=correct, total=total))}</h2>"
+        + f"<h2>{premium('stats', '🔢')} {_esc(t(locale, 'quiz.score', correct=correct, total=total))}</h2>"
         + f"<p>{_esc(t(locale, f'quiz.result.{verdict}'))}</p>"
         + _brand(locale)
     )
@@ -367,16 +426,30 @@ def search_screen(
     else:
         # No match: the eight sections are the useful next tap, in the message.
         rows = [
-            rich_row(rich_button(f"{emoji(item.slug, item.emoji)} {_clip(item.title, TITLE)}", data=cb_cat(item.slug)))
+            rich_row(
+                rich_button(
+                    _clip(item.title, TITLE),
+                    data=cb_cat(item.slug),
+                    icon=(item.slug, _esc(item.emoji)),
+                )
+            )
             for item in (hints or [])[:8]
         ]
-    rows.append(rich_row(rich_button(f"{emoji('menu', '📂')} {t(locale, 'button.menu')}", data=cb_menu())))
+    rows.append(
+        rich_row(
+            rich_button(
+                t(locale, "button.menu"),
+                data=cb_menu(),
+                icon=("menu", "🏘"),
+            )
+        )
+    )
     clean = _clip(query, TITLE)
     if results:
         body = f"<p>{_esc(t(locale, 'search.found', n=len(results)))}</p>"
     else:
         body = f"<p>{_esc(t(locale, 'search.empty'))}</p><p>{_esc(t(locale, 'search.hint'))}</p>"
     quote = f"<p><code>{_esc(clean)}</code></p>" if clean else ""
-    html = _header("hero", f"{emoji('search', '🔎')} {_esc(t(locale, 'search.title'))}")
+    html = _header("hero", f"{premium('search', '🔍')} {_esc(t(locale, 'search.title'))}")
     html += quote + body
     return RichScreen(html + "\n".join(rows))

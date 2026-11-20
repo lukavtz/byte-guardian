@@ -15,6 +15,8 @@ from typing import Literal
 
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
+from app.ui.emoji import first_id, premium
+
 Style = Literal["primary", "success", "danger"]
 
 MAX_BUTTONS = 8
@@ -59,8 +61,14 @@ def rich_button(
     data: str | None = None,
     style: Style | Literal["link"] | None = None,
     query: str | None = None,
+    icon: tuple[str, str] | None = None,
 ) -> str:
-    """One `<tg-button>`: `data` is callback data, `query` an inline search."""
+    """One `<tg-button>`: `data` is callback data, `query` an inline search.
+
+    `icon` is a `(name, fallback)` pair: the premium tag stays markup, the
+    label is still escaped. Its id rides along into the inline-keyboard
+    fallback, so a refused `tg-button` does not lose the icon.
+    """
     if data is not None:
         attributes = f'type="callback_data" data="{escape(data, quote=True)}"'
     elif query is not None:
@@ -69,7 +77,8 @@ def rich_button(
         raise ValueError("a rich button needs callback data or an inline query")
     if style:
         attributes += f' style="{style}"'
-    return f"<tg-button {attributes}>{escape(label, quote=False)}</tg-button>"
+    lead = premium(*icon) + " " if icon else ""
+    return f"<tg-button {attributes}>{lead}{escape(label, quote=False)}</tg-button>"
 
 
 def rich_row(*buttons: str) -> str:
@@ -104,13 +113,19 @@ def keyboard_from_rich(html: str) -> InlineKeyboardMarkup | None:
 def _inline_button(attributes: str, label: str) -> InlineKeyboardButton | None:
     values = dict(ATTRIBUTE.findall(attributes))
     text = unescape(TAGS.sub("", label)).strip()
+    icon = first_id(label)
     style = values.get("style")
     if values.get("type") == "callback_data":
         return InlineKeyboardButton(
             text=text,
             callback_data=unescape(values.get("data", "")),
             style=style,  # type: ignore[arg-type]
+            icon_custom_emoji_id=icon,
         )
     if values.get("type") == "switch_inline_query_current_chat":
-        return InlineKeyboardButton(text=text, switch_inline_query_current_chat=unescape(values.get("query", "")))
+        return InlineKeyboardButton(
+            text=text,
+            switch_inline_query_current_chat=unescape(values.get("query", "")),
+            icon_custom_emoji_id=icon,
+        )
     return None

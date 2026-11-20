@@ -9,7 +9,7 @@ import pytest
 from app.content.types import CardView, CategoryView, QuizView, ThreatView
 from app.services.callbacks import parse_cb
 from app.ui import emoji as emoji_mod
-from app.ui.emoji import emoji, plain_emoji, strip_premium
+from app.ui.emoji import DEFAULT_IDS, plain_emoji, premium, strip_premium
 from app.ui.keyboards import PAGE_SIZE, keyboard_from_rich, strip_rich_buttons
 from app.ui.render import (
     ART,
@@ -81,7 +81,8 @@ def _buttons(html: str) -> list[dict[str, str]]:
     """Every `<tg-button>` as `{"attrs": raw, **attributes, "label": text}`."""
     found = []
     for attributes, label in BUTTON.findall(html):
-        found.append({"attrs": attributes, **dict(ATTRIBUTE.findall(attributes)), "label": unescape(label)})
+        text = unescape(re.sub(r"<[^>]+>", "", label)).strip()
+        found.append({"attrs": attributes, **dict(ATTRIBUTE.findall(attributes)), "label": text})
     return found
 
 
@@ -128,18 +129,34 @@ def test_strip_premium_reduces_tags_to_their_character() -> None:
 
 def test_emoji_falls_back_to_the_character(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(emoji_mod, "CUSTOM", {})
-    assert emoji("fire", "🔥") == "🔥"
+    assert premium("fire", "🔥") == "🔥"
 
 
 def test_emoji_uses_a_pinned_id(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(emoji_mod, "CUSTOM", {"fire": "5368324170671202286"})
-    assert emoji("fire", "🔥") == '<tg-emoji emoji-id="5368324170671202286">🔥</tg-emoji>'
-    assert strip_premium(emoji("fire", "🔥")) == "🔥"
+    assert premium("fire", "🔥") == '<tg-emoji emoji-id="5368324170671202286">🔥</tg-emoji>'
+    assert strip_premium(premium("fire", "🔥")) == "🔥"
     assert plain_emoji("fire", "🔥") == "🔥"
 
 
+def test_vetted_defaults_are_installed() -> None:
+    assert DEFAULT_IDS["search"] == "5258274739041883702"
+    assert DEFAULT_IDS["test"] == "5219899949281453881"
+    assert DEFAULT_IDS["admin"] == "6021401276904905698"
+
+
+def test_every_screen_carries_premium_tags_when_ids_configured(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(emoji_mod, "CUSTOM", dict(DEFAULT_IDS))
+    for screen in _screens():
+        assert "<tg-emoji emoji-id=" in screen.html
+        for button in _buttons(screen.html):
+            assert button["label"] and "<tg-emoji" not in button["label"]
+
+
 def test_pinned_premium_emoji_stays_inside_the_button(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(emoji_mod, "CUSTOM", {"fire": "1", "shield": "2", "quiz": "3", "done": "4", "search": "5"})
+    monkeypatch.setattr(emoji_mod, "CUSTOM", dict(DEFAULT_IDS))
     for screen in _screens():
         assert "<tg-emoji" in screen.html
         for button in _buttons(screen.html):
@@ -212,7 +229,9 @@ def test_fat_card_is_trimmed_not_dumped() -> None:
 
 def test_card_footer_carries_the_brand_line() -> None:
     html = render_card(_card(), LOCALE, page=1, has_quiz=False).html
-    assert "<footer>Байт · ТИСБИ · 101 · 112 · МЧС России</footer>" in html
+    footer = re.search(r"<footer>(.*?)</footer>", html)
+    assert footer is not None
+    assert strip_premium(footer.group(1)) == "🦆 Байт · ТИСБИ · 101 · 112 · МЧС России"
 
 
 def test_screens_stay_on_the_brand_palette() -> None:
@@ -291,6 +310,62 @@ def test_menu_shows_the_shared_header_and_brand() -> None:
     assert html.index("<img ") < html.index("<h1>") < html.index("<hr/>")
 
 
+def test_menu_search_is_the_only_primary() -> None:
+    screen = render_menu([_category()], LOCALE)
+    primary = _primary(screen.html)
+    assert len(primary) == 1
+    assert parse_cb(primary[0]["data"]).action == "search_hint"
+
+
+def test_admin_row_is_hidden_from_everyone_else() -> None:
+    screen = render_menu([_category()], LOCALE)
+    assert "b1:admin" not in _data(screen.html)
+    assert not any(button["label"] == "Админ-панель" for button in _buttons(screen.html))
+
+
+def test_admin_row_is_appended_last_for_an_admin() -> None:
+    screen = render_menu([_category()], LOCALE, is_admin=True)
+    rows = _rows(screen.html)
+    assert len(rows[-1]) == 1
+    button = rows[-1][0]
+    assert button["data"] == "b1:admin"
+    assert button["label"].endswith("Админ-панель")
+    assert "style" not in button
+
+
+def test_exactly_one_primary_where_a_screen_has_one() -> None:
+    menu = render_menu([_category()], LOCALE)
+    card = render_card(_card(), LOCALE, page=1, has_quiz=True)
+    answered = render_question(_quiz(), "fire-home", 1, 3, "a3f1", LOCALE, chosen=0)
+    result = render_result(1, 3, "fire-home", LOCALE)
+    for screen in (menu, card, answered, result):
+        assert len(_primary(screen.html)) == 1
+    for screen in (
+        render_category(_category(), [_threat()], LOCALE, 1, 1),
+        render_question(_quiz(), "fire-home", 1, 3, "a3f1", LOCALE),
+        search_screen("пожар", [_threat()], LOCALE),
+    ):
+        assert not _primary(screen.html)
+
+
+def test_card_emphasis_marks_test_primary_and_game_success() -> None:
+    html = render_card(_card(), LOCALE, page=1, has_quiz=True).html
+    styles = [
+        (button["label"].split(" ", 1)[-1], button["style"]) for button in _emphasized(html)
+    ]
+    assert styles == [("Тест", "primary"), ("Играть", "success")]
+
+
+def test_inline_keyboard_fallback_keeps_plain_text_and_the_id() -> None:
+    screen = render_card(_card(), LOCALE, page=1, has_quiz=True)
+    markup = keyboard_from_rich(screen.html)
+    assert markup is not None
+    for row in markup.inline_keyboard:
+        for item in row:
+            assert "<tg-emoji" not in item.text
+            assert item.icon_custom_emoji_id is not None
+
+
 def test_menu_never_exceeds_eight_categories() -> None:
     categories = [_category(slug=f"c{i}", title=f"Раздел {i}") for i in range(9)]
     screen = render_menu(categories, LOCALE)
@@ -336,10 +411,11 @@ def test_card_uses_rich_markup() -> None:
 
 def test_card_has_a_details_block_per_step() -> None:
     html = render_card(_card(), LOCALE, page=1, has_quiz=True).html
-    summaries = re.findall(r"<summary><h2>(.*?)</h2></summary>", html)
-    assert summaries == ["До", "Во время", "После", "Нельзя"]
+    summaries = [strip_premium(text) for text in re.findall(r"<summary><h2>(.*?)</h2></summary>", html)]
+    assert [re.sub(r"^[^\w]+", "", text) for text in summaries] == ["До", "Во время", "После", "Нельзя"]
     opened = re.findall(r"<details( open)?><summary><h2>(.*?)</h2>", html)
-    assert [label for flag, label in opened if flag] == ["Во время"]
+    labels = [strip_premium(label).split(" ", 1)[-1] for flag, label in opened if flag]
+    assert labels == ["Во время"]
 
 
 def test_card_marks_ru_fallback() -> None:
@@ -407,7 +483,7 @@ def test_question_offers_four_options_one_per_row() -> None:
         ("q1", "3", "a3f1"),
     ]
     assert "Вопрос 1 из 3" in screen.html
-    assert "<h2>Вопрос 1 из 3</h2>" in screen.html
+    assert "Вопрос 1 из 3" in strip_premium(screen.html)
     assert "<h3>" not in screen.html
     assert not _primary(screen.html)
 
@@ -446,7 +522,6 @@ def test_failed_result_keeps_the_retry_primary() -> None:
 
 def test_navigation_screens_stay_neutral() -> None:
     for screen in (
-        render_menu([_category()], LOCALE),
         render_category(_category(), [_threat()], LOCALE, 1, 1),
         search_screen("пожар", [_threat()], LOCALE),
     ):
@@ -455,7 +530,7 @@ def test_navigation_screens_stay_neutral() -> None:
 
 def test_quiz_styles_per_screen() -> None:
     card = render_card(_card(), LOCALE, page=1, has_quiz=True)
-    assert [button["style"] for button in _emphasized(card.html)] == ["primary"]
+    assert [button["style"] for button in _emphasized(card.html)] == ["primary", "success"]
 
     question = render_question(_quiz(), "fire-home", 1, 3, "a3f1", LOCALE)
     assert not _emphasized(question.html)

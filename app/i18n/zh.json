@@ -62,6 +62,7 @@
   "commands.settings": "语言与推送",
   "button.search": "搜索",
   "button.language": "语言",
+  "button.admin": "管理面板",
   "menu.search_hint": "用一句话描述情况，我们会找到卡片。",
   "language.hint": "请选择界面语言。",
   "group.private_only": "菜单和设置请在私聊中打开：{link}",

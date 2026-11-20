@@ -9,12 +9,14 @@ from aiogram.filters import Command, CommandObject
 from aiogram.types import BotCommand, CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
+from app.config import Settings
 from app.content.repository import ContentRepository
 from app.handlers.nav import (
     OPT_IN_OFF,
     OPT_IN_ON,
     broadcast_opted_in,
     card_screen,
+    is_admin_id,
     menu_screen,
     pin_initial_locale,
     settings_screen,
@@ -61,6 +63,7 @@ async def start(
     bot: Bot,
     repo: ContentRepository,
     session_factory: async_sessionmaker[AsyncSession],
+    settings: Settings | None = None,
 ) -> None:
     if not await _private_only(message, bot, session_factory):
         return
@@ -68,7 +71,8 @@ async def start(
     slug = _card_from_payload(command.args or "")
     screen = card_screen(repo, slug, 1, locale) if slug else None
     if screen is None:
-        screen = await menu_screen(repo, locale)
+        user_id = message.from_user.id if message.from_user else None
+        screen = await menu_screen(repo, locale, is_admin_id(settings, user_id))
     await show(bot, message.chat.id, screen)
 
 
