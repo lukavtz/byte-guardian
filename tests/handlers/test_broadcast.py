@@ -615,7 +615,7 @@ async def test_starting_a_second_monitor_cancels_the_first(
 
 
 def test_migration_head_is_consistent_with_broadcast_total() -> None:
-    root = Path(__file__).resolve().parents[1]
+    root = Path(__file__).resolve().parents[2]
     config = Config(str(root / "alembic.ini"))
     config.set_main_option("script_location", str(root / "migrations"))
     script = ScriptDirectory.from_config(config)

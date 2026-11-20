@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-APP = Path(__file__).resolve().parents[1] / "app"
+APP = Path(__file__).resolve().parents[2] / "app"
 WORKER = (APP / "worker.py").read_text(encoding="utf-8")
 QUEUE = (APP / "runtime" / "queue.py").read_text(encoding="utf-8")
 JOBS = (APP / "jobs" / "__init__.py").read_text(encoding="utf-8")

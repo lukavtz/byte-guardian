@@ -83,7 +83,7 @@ jobs:
           enable-cache: true
       - run: uv sync --frozen
       - name: content sources (schema)
-        run: uv run pytest tests/test_content.py -q
+        run: uv run pytest tests/content/test_content.py -q
 
   image:
     name: image

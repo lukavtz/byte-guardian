@@ -418,9 +418,9 @@ def test_chat_uses_its_own_artwork() -> None:
 
 
 def test_menu_banner_is_the_readme_banner() -> None:
-    root = Path(__file__).resolve().parents[1]
-    assert BANNER.endswith("/assets/banner.jpg")
-    assert "assets/banner.jpg" in (root / "README.md").read_text(encoding="utf-8")
+    root = Path(__file__).resolve().parents[2]
+    assert BANNER.endswith("/assets/brand/banner.jpg")
+    assert "assets/brand/banner.jpg" in (root / "README.md").read_text(encoding="utf-8")
 
 
 def test_unknown_section_falls_back_to_the_hero() -> None:

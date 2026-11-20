@@ -24,7 +24,7 @@ def test_every_catalog_has_the_same_keys() -> None:
 
     from app.services.i18n import ENABLED_LOCALES, LOCALES
 
-    root = Path(__file__).resolve().parent.parent / "app" / "i18n"
+    root = Path(__file__).resolve().parents[2] / "app" / "i18n"
     catalogs = {locale: json.loads((root / f"{locale}.json").read_text(encoding="utf-8")) for locale in LOCALES}
     reference = set(catalogs[DEFAULT_LOCALE])
     for locale in ENABLED_LOCALES:

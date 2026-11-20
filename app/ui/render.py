@@ -50,7 +50,7 @@ BAR_CELLS = 10
 SEVERITIES = {1: "low", 2: "medium", 3: "high"}
 ART = "https://raw.githubusercontent.com/lukavtz/byte-guardian/main/assets/art"
 # The menu opens with the same banner the README shows, straight from assets/.
-BANNER = "https://raw.githubusercontent.com/lukavtz/byte-guardian/main/assets/banner.jpg"
+BANNER = "https://raw.githubusercontent.com/lukavtz/byte-guardian/main/assets/brand/banner.jpg"
 EXT = "jpg"
 ARTS = frozenset({"fire", "terror", "tech", "nature", "medical", "chem", "rad", "cyber", "chat"})
 

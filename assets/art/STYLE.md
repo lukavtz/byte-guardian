@@ -2,7 +2,7 @@
 
 Source of truth for colour: `docs/BRAND.md` and the official site values in
 `docs/BRAND-RESEARCH.md`. Reference renders: `assets/art/hero.jpg` (1536×1024) and
-`assets/byte.jpg` (1145×1374); their JPEG-sampled `#0237BB` is retired — it is not
+`assets/brand/byte.jpg` (1145×1374); their JPEG-sampled `#0237BB` is retired — it is not
 the university blue.
 
 Target canvas for category art: **1536×1024 (3:2)**.

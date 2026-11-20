@@ -12,7 +12,7 @@ from urllib.request import Request, urlopen
 
 import pytest
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 CONTENT = ROOT / "content"
 CATEGORIES = {"fire", "terror", "tech", "nature", "medical", "chem", "rad", "cyber"}
 LIST_FIELDS = ("signs", "before", "during", "after", "forbidden")
