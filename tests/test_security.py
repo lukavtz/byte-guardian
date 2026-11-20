@@ -24,6 +24,14 @@ def test_config_rejects_bad_token() -> None:
         Settings(bot_token="not-a-token", _env_file=None)
 
 
+def test_widgets_are_off_unless_switched_on() -> None:
+    assert Settings(bot_token=VALID_TOKEN, _env_file=None).widgets_enabled is False
+    assert (
+        Settings(bot_token=VALID_TOKEN, widgets_enabled=True, _env_file=None).widgets_enabled
+        is True
+    )
+
+
 def test_config_rejects_plain_http_webhook() -> None:
     with pytest.raises(ValidationError):
         Settings(

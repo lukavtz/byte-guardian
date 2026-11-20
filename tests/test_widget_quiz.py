@@ -252,9 +252,12 @@ def _card() -> CardView:
 
 
 def test_card_offers_the_game_only_where_widgets_work() -> None:
+    default = render_card(_card(), "ru", 1, True).html
     private = render_card(_card(), "ru", 1, True, can_game=True).html
     group = render_card(_card(), "ru", 1, True, can_game=False).html
 
+    assert "b1:game:fire-home" not in default
+    assert "b1:quiz_next:" in default
     assert "b1:game:fire-home" in private
     assert "b1:game:fire-home" not in group
 

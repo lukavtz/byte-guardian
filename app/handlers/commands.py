@@ -69,7 +69,11 @@ async def start(
         return
     locale = await pin_initial_locale(session_factory, message.from_user)
     slug = _card_from_payload(command.args or "")
-    screen = card_screen(repo, slug, 1, locale) if slug else None
+    screen = (
+        card_screen(repo, slug, 1, locale, bool(settings and settings.widgets_enabled))
+        if slug
+        else None
+    )
     if screen is None:
         user_id = message.from_user.id if message.from_user else None
         screen = await menu_screen(repo, locale, is_admin_id(settings, user_id))

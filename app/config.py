@@ -65,6 +65,9 @@ class Settings(BaseSettings):
     sentry_dsn: str = ""
     metrics_enabled: bool = True
     log_level: str = "info"
+    # Telegram closed widgets (sendWidget) for general bots, so the card shows
+    # only «Тест» unless the gate reopens and this is switched on.
+    widgets_enabled: bool = False
 
     @field_validator("bot_token")
     @classmethod

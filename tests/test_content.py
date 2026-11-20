@@ -3,7 +3,12 @@
 from __future__ import annotations
 
 import json
+import os
+import re
 from pathlib import Path
+from urllib.error import HTTPError
+from urllib.parse import urlparse
+from urllib.request import Request, urlopen
 
 import pytest
 
@@ -15,6 +20,31 @@ TEXT_FIELDS = ("title", "summary", *LIST_FIELDS, "contacts", "source")
 MAX_SUMMARY = 300
 MAX_ITEM = 160
 MIN_ITEMS, MAX_ITEMS = 2, 5
+# Only official Russian sources: a card must be explainable by a page the
+# student can open without an account. Subdomains are part of the domain
+# (www.cbr.ru, static-0.minzdrav.gov.ru, 23.mchs.gov.ru).
+SOURCE_HOSTS = frozenset(
+    {
+        "mchs.gov.ru",
+        "minzdrav.gov.ru",
+        "takzdorovo.ru",
+        "rospotrebnadzor.ru",
+        "nac.gov.ru",
+        "digital.gov.ru",
+        "cbr.ru",
+        "gosuslugi.ru",
+        "government.ru",
+        "rosatom.ru",
+        "meteonfo.ru",
+        "gibdd.ru",
+        "fsb.ru",
+        "rostekhnadzor.gov.ru",
+        "мвд.рф",
+        "xn--b1aew.xn--p1ai",
+    }
+)
+HTTPS_URL = re.compile(r"https://[^\s<>\"']+")
+LINK_CHECK_ENV = "BYTEBOT_LINK_CHECK"
 
 
 def _cards() -> list[tuple[Path, dict]]:
@@ -65,6 +95,57 @@ def test_ru_texts_are_complete() -> None:
         assert texts["title"].strip(), f"{slug}: empty title"
         assert texts["source"].strip(), f"{slug}: empty source"
         assert 0 < len(texts["summary"]) <= MAX_SUMMARY, f"{slug}: summary length {len(texts['summary'])}"
+
+
+def _source_urls() -> list[tuple[str, str]]:
+    """Every https URL in every localized source line, with its threat key."""
+    found: list[tuple[str, str]] = []
+    for slug, threat in _threats():
+        for locale, texts in threat["texts"].items():
+            for url in HTTPS_URL.findall(texts["source"]):
+                found.append((f"{slug}/{locale}", url.rstrip(".,;:")))
+    return found
+
+
+def _host_of(url: str) -> str:
+    return (urlparse(url).hostname or "").lower().rstrip(".")
+
+
+def _allowed(host: str) -> bool:
+    return any(host == domain or host.endswith("." + domain) for domain in SOURCE_HOSTS)
+
+
+def test_every_source_cites_an_allowlisted_https_page() -> None:
+    for slug, threat in _threats():
+        for locale, texts in threat["texts"].items():
+            urls = HTTPS_URL.findall(texts["source"])
+            assert urls, f"{slug}/{locale}: source has no https URL"
+            for url in urls:
+                host = _host_of(url.rstrip(".,;:"))
+                assert _allowed(host), f"{slug}/{locale}: host {host!r} is not allowlisted ({url})"
+
+
+@pytest.mark.skipif(
+    os.environ.get(LINK_CHECK_ENV) != "1",
+    reason=f"set {LINK_CHECK_ENV}=1 to check live source links",
+)
+def test_source_links_answer_200() -> None:
+    """Opt-in network check: HEAD every unique source URL, expect 200."""
+    failures: list[str] = []
+    for url in sorted({url for _key, url in _source_urls()}):
+        request = Request(
+            url, method="HEAD", headers={"User-Agent": "ByteBot-link-check/1.0"}
+        )
+        try:
+            with urlopen(request, timeout=20) as response:
+                status = response.status
+        except HTTPError as exc:
+            status = exc.code
+        except OSError as exc:
+            status = str(exc)
+        if status != 200:
+            failures.append(f"{status} {url}")
+    assert not failures, "source links failed:\n" + "\n".join(failures)
 
 
 def test_ru_lists_are_bounded() -> None:

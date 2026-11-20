@@ -343,6 +343,26 @@ async def test_card_back_button_keeps_page() -> None:
 
 
 @pytest.mark.asyncio
+async def test_card_shows_the_game_only_with_widgets_enabled() -> None:
+    off_bot = FakeBot()
+    await nav.on_card(_query(cb_card("fire-0", 1)), off_bot, FakeRepo(), FakeDB().factory())
+    off_datas = [item.callback_data for item in _buttons(off_bot.edited[0]) if item.callback_data]
+    assert "b1:game:fire-0" not in off_datas
+    assert any(data.startswith("b1:quiz_next:") for data in off_datas)
+
+    on_bot = FakeBot()
+    await nav.on_card(
+        _query(cb_card("fire-0", 1)),
+        on_bot,
+        FakeRepo(),
+        FakeDB().factory(),
+        SimpleNamespace(widgets_enabled=True),
+    )
+    on_datas = [item.callback_data for item in _buttons(on_bot.edited[0]) if item.callback_data]
+    assert "b1:game:fire-0" in on_datas
+
+
+@pytest.mark.asyncio
 async def test_language_callback_saves_and_rerenders_language_screen() -> None:
     db = FakeDB({7: False})
     bot = FakeBot()

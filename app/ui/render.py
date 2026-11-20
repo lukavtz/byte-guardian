@@ -234,9 +234,13 @@ def render_category(
 
 
 def render_card(
-    card: CardView, locale: str, page: int, has_quiz: bool, can_game: bool = True
+    card: CardView, locale: str, page: int, has_quiz: bool, can_game: bool = False
 ) -> RichScreen:
-    """Art, heading, severity, signs, three steps, bans, brand footer."""
+    """Art, heading, severity, signs, three steps, bans, brand footer.
+
+    ``can_game`` is off by default: Telegram closed HTML widgets for general
+    bots, so the card carries one primary «Тест» unless WIDGETS_ENABLED is set.
+    """
     budget = CARD_WORDS - BUTTON_WORDS
 
     title = _clip_words(_clip(card.title, TITLE), TITLE_WORDS)

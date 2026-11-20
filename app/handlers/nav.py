@@ -171,7 +171,7 @@ async def category_screen(
 
 
 def card_screen(
-    repo: ContentRepository, slug: str, page: int, locale: str, can_game: bool = True
+    repo: ContentRepository, slug: str, page: int, locale: str, can_game: bool = False
 ) -> RichScreen | None:
     card: CardView | None = repo.card(slug, locale)
     if card is None:
@@ -239,7 +239,13 @@ async def on_card(
     if callback is None or callback.action != "card":
         return
     locale = await user_locale(session_factory, query.from_user)
-    screen = card_screen(repo, callback.arg, callback.page, locale, _is_private(query))
+    screen = card_screen(
+        repo,
+        callback.arg,
+        callback.page,
+        locale,
+        bool(settings and settings.widgets_enabled and _is_private(query)),
+    )
     if screen is None:
         await _fallback(query, bot, repo, locale, settings)
         return

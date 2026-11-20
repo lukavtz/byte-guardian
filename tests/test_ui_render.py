@@ -111,6 +111,7 @@ def _screens() -> list[RichScreen]:
         render_menu([_category()], LOCALE),
         render_category(_category(), [_threat()], LOCALE, 1, 1),
         render_card(_card(), LOCALE, 1, True),
+        render_card(_card(), LOCALE, 1, True, can_game=True),
         render_question(_quiz(), "fire-home", 1, 3, "a3f1", LOCALE),
         render_result(2, 3, "fire-home", LOCALE),
         search_screen("пожар", [_threat()], LOCALE),
@@ -355,11 +356,22 @@ def test_exactly_one_primary_where_a_screen_has_one() -> None:
 
 
 def test_card_emphasis_marks_test_primary_and_game_success() -> None:
-    html = render_card(_card(), LOCALE, page=1, has_quiz=True).html
+    html = render_card(_card(), LOCALE, page=1, has_quiz=True, can_game=True).html
     styles = [
         (button["label"].split(" ", 1)[-1], button["style"]) for button in _emphasized(html)
     ]
     assert styles == [("Тест", "primary"), ("Играть", "success")]
+
+
+def test_card_without_widgets_keeps_one_primary_test_button() -> None:
+    default = render_card(_card(), LOCALE, page=1, has_quiz=True)
+    off = render_card(_card(), LOCALE, page=1, has_quiz=True, can_game=False)
+
+    for screen in (default, off):
+        assert "b1:game:fire-home" not in screen.html
+        primary = _primary(screen.html)
+        assert len(primary) == 1
+        assert "Тест" in primary[0]["label"]
 
 
 def test_inline_keyboard_fallback_keeps_plain_text_and_the_id() -> None:
@@ -535,7 +547,7 @@ def test_navigation_screens_stay_neutral() -> None:
 
 
 def test_quiz_styles_per_screen() -> None:
-    card = render_card(_card(), LOCALE, page=1, has_quiz=True)
+    card = render_card(_card(), LOCALE, page=1, has_quiz=True, can_game=True)
     assert [button["style"] for button in _emphasized(card.html)] == ["primary", "success"]
 
     question = render_question(_quiz(), "fire-home", 1, 3, "a3f1", LOCALE)
