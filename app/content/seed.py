@@ -192,15 +192,14 @@ def _citations(value: object, name: str) -> list[dict[str, str]]:
     return result
 
 
-def _updated(value: object, name: str) -> str:
+def _updated(value: object, name: str) -> dt.date:
     text = _require(value, name)
     if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", text):
         raise ValueError(f"{name}: expected ISO date")
     try:
-        dt.date.fromisoformat(text)
+        return dt.date.fromisoformat(text)
     except ValueError as exc:
         raise ValueError(f"{name}: expected valid ISO date") from exc
-    return text
 
 
 def _extract(

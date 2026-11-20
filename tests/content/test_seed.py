@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import datetime as dt
 import json
 import re
 from pathlib import Path
@@ -11,6 +12,7 @@ from sqlalchemy.dialects import postgresql
 from app.content.seed import (
     SeedReport,
     _extract,
+    _updated,
     category_upsert,
     quiz_upsert,
     seed_content,
@@ -394,7 +396,7 @@ def test_extracted_rows_map_enrichment_fields() -> None:
 
     _extract(_doc(), rows)
 
-    assert rows["threats"][0]["updated"] == "2026-11-20"
+    assert rows["threats"][0]["updated"] == dt.date(2026, 11, 20)
     text = rows["texts"][0]
     assert text["quick"] == "Звоните 101 и выходите"
     assert text["mistakes"] == ["Не открывайте окна → закройте дверь"]
@@ -425,7 +427,7 @@ async def test_enrichment_is_persisted_on_new_rows(tmp_path: Path) -> None:
     assert row["citations"] == [
         {"org": "МЧС России", "url": "https://mchs.gov.ru/pozhar"}
     ]
-    assert db.tables["threat"][("fire-home",)]["updated"] == "2026-11-20"
+    assert db.tables["threat"][("fire-home",)]["updated"] == dt.date(2026, 11, 20)
 
 
 async def test_null_enrichment_backfills_admin_edited_text_without_touching_copy(
@@ -487,13 +489,13 @@ async def test_threat_updated_backfill_is_null_only(tmp_path: Path) -> None:
     await seed_content(factory, tmp_path)
 
     threat = db.tables["threat"][("fire-home",)]
-    threat["updated"] = "2020-01-01"
+    threat["updated"] = dt.date(2020, 1, 1)
     await seed_content(factory, tmp_path)
-    assert threat["updated"] == "2020-01-01"
+    assert threat["updated"] == dt.date(2020, 1, 1)
 
     del threat["updated"]
     await seed_content(factory, tmp_path)
-    assert threat["updated"] == "2026-11-20"
+    assert threat["updated"] == dt.date(2026, 11, 20)
 
 
 @pytest.mark.parametrize(
@@ -572,3 +574,25 @@ async def test_invalid_updated_is_reported_without_partial_rows(
     assert report.files == 0
     assert any("updated" in error for error in report.errors)
     assert db.count("threat") == 0
+
+
+def test_updated_validator_returns_date_for_postgres_binding() -> None:
+    value = _updated("2026-11-20", "fire-home.updated")
+
+    assert value == dt.date(2026, 11, 20)
+    assert not isinstance(value, str)
+
+
+def test_extracted_threat_row_binds_updated_as_date() -> None:
+    rows: dict[str, list[dict[str, Any]]] = {
+        "categories": [],
+        "threats": [],
+        "texts": [],
+        "quizzes": [],
+    }
+
+    _extract(_doc(), rows)
+
+    value = rows["threats"][0]["updated"]
+    assert value == dt.date(2026, 11, 20)
+    assert not isinstance(value, str)
