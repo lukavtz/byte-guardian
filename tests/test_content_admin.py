@@ -537,6 +537,92 @@ async def test_save_category_writes_title_emoji_and_reloads() -> None:
 # --- callback payloads ----------------------------------------------------
 
 
+async def test_pending_expires_after_ten_minutes(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    db = FakeDB()
+    factory = db.factory()
+    clock = {"now": 1000.0}
+    monkeypatch.setattr(settings_service.time, "time", lambda: clock["now"])
+
+    await settings_service.edit_pending_save(
+        factory, 42, {"slug": "fire-home", "locale": "ru", "field": "signs"}
+    )
+    stored = db.settings["admin_edit:42"]
+    assert isinstance(stored, dict)
+    assert isinstance(stored["_at"], str)
+
+    clock["now"] += settings_service.EDIT_TTL_SECONDS
+    assert await settings_service.edit_pending(factory, 42) is None
+    assert "admin_edit:42" not in db.settings
+
+
+async def test_pending_without_valid_timestamp_is_dropped() -> None:
+    db = FakeDB()
+    db.settings["admin_edit:42"] = {
+        "slug": "fire-home",
+        "locale": "ru",
+        "field": "signs",
+        "_at": "not-a-number",
+    }
+
+    assert await settings_service.edit_pending(db.factory(), 42) is None
+    assert "admin_edit:42" not in db.settings
+
+
+async def test_cancel_command_clears_pending() -> None:
+    db = FakeDB()
+    factory = db.factory()
+    await settings_service.edit_pending_save(
+        factory, 42, {"slug": "fire-home", "locale": "ru", "field": "signs"}
+    )
+    message = make_message(text="/cancel")
+
+    await admin.cancel_edit(message, factory, make_settings())
+
+    message.answer.assert_awaited_once_with(admin.TOAST_CANCELLED)
+    assert "admin_edit:42" not in db.settings
+
+
+async def test_start_command_clears_pending_then_skips() -> None:
+    db = FakeDB()
+    factory = db.factory()
+    await settings_service.edit_pending_save(
+        factory, 42, {"slug": "fire-home", "locale": "ru", "field": "signs"}
+    )
+    message = make_message(text="/start")
+
+    with pytest.raises(SkipHandler):
+        await admin.clear_pending_on_start(message, factory, make_settings())
+
+    assert "admin_edit:42" not in db.settings
+
+
+async def test_validation_failure_keeps_state_with_fresh_timestamp(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    db = FakeDB()
+    factory = db.factory()
+    clock = {"now": 1000.0}
+    monkeypatch.setattr(settings_service.time, "time", lambda: clock["now"])
+    await settings_service.edit_pending_save(
+        factory, 42, {"slug": "fire-home", "locale": "ru", "field": "signs"}
+    )
+    clock["now"] += 120
+
+    await admin.admin_edit_text(
+        make_message(text="один пункт"),
+        FakeBot(),
+        factory,
+        make_settings(),
+        make_dispatcher(),
+    )
+
+    stored = db.settings["admin_edit:42"]
+    assert stored["_at"] == "1120.0"
+    assert await settings_service.edit_pending(factory, 42) is not None
+
+
 def test_content_callbacks_fit_and_parse() -> None:
     slug = "a" * 32
     payloads = [

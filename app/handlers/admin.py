@@ -688,6 +688,8 @@ async def admin_panel(
         locale = resolve_locale(message.from_user.language_code if message.from_user else None)
         await message.answer(t(locale, "admin.denied"))
         return
+    assert user_id is not None
+    await settings_service.edit_pending_discard(session_factory, user_id)
     await show(bot, message.chat.id, await _home(session_factory, dispatcher))
 
 
@@ -1091,6 +1093,34 @@ async def admin_edit_text(
         return
     await message.answer(TOAST_SAVED)
     await show(bot, message.chat.id, threat_editor_screen(detail))
+
+
+@router.message(Command("cancel"))
+async def cancel_edit(
+    message: Message,
+    session_factory: async_sessionmaker[AsyncSession],
+    settings: Settings,
+) -> None:
+    """`/cancel` always answers, even when no field was waiting."""
+    user = message.from_user
+    if user is None or not is_admin(user.id, settings.admin_id_set):
+        raise SkipHandler()
+    await settings_service.edit_pending_discard(session_factory, user.id)
+    await message.answer(TOAST_CANCELLED)
+
+
+@router.message(Command("start"))
+async def clear_pending_on_start(
+    message: Message,
+    session_factory: async_sessionmaker[AsyncSession],
+    settings: Settings,
+) -> None:
+    """An admin starting over is not mid-edit; then let `commands` draw the menu."""
+    user = message.from_user
+    if user is None or not is_admin(user.id, settings.admin_id_set):
+        raise SkipHandler()
+    await settings_service.edit_pending_discard(session_factory, user.id)
+    raise SkipHandler()
 
 
 def register(dp: Dispatcher, _bot: Bot) -> None:

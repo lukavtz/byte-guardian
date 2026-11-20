@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import math
 import time
 from typing import Any
 
@@ -13,6 +14,10 @@ DRAFT_TTL_SECONDS = 3600
 DRAFT_KEY_PREFIX = "broadcast_draft:"
 CHAT_MODE_PREFIX = "chat_mode:"
 EDIT_KEY_PREFIX = "admin_edit:"
+# A field prompt that is not answered in ten minutes is stale: the admin
+# moved on, and the next plain message must not overwrite a card.
+EDIT_TTL_SECONDS = 600
+EDIT_AT_KEY = "_at"
 
 SELECT_SQL = text("SELECT value FROM settings WHERE key = :key")
 UPSERT_SQL = text(
@@ -70,7 +75,12 @@ def edit_key(tg_id: int) -> str:
 async def edit_pending_save(
     session_factory: async_sessionmaker[AsyncSession], tg_id: int, value: dict[str, str]
 ) -> None:
-    await settings_set(session_factory, edit_key(tg_id), value)
+    # jsonb values stay strings: the epoch rides as text next to the field.
+    await settings_set(
+        session_factory,
+        edit_key(tg_id),
+        {**value, EDIT_AT_KEY: str(time.time())},
+    )
 
 
 async def edit_pending(
@@ -80,6 +90,21 @@ async def edit_pending(
     if not isinstance(value, dict):
         return None
     if not all(isinstance(item, str) for item in value.values()):
+        return None
+    stamp = value.pop(EDIT_AT_KEY, None)
+    if stamp is None:
+        await edit_pending_discard(session_factory, tg_id)
+        return None
+    try:
+        saved_at = float(stamp)
+    except ValueError:
+        await edit_pending_discard(session_factory, tg_id)
+        return None
+    if not math.isfinite(saved_at):
+        await edit_pending_discard(session_factory, tg_id)
+        return None
+    if time.time() - saved_at >= EDIT_TTL_SECONDS:
+        await edit_pending_discard(session_factory, tg_id)
         return None
     return value
 
