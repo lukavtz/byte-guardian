@@ -3,6 +3,8 @@ name = "byte_guardian-bot"
 version = "0.1.0"
 description = "Byte Guardian Telegram bot"
 requires-python = ">=3.11,<3.15"
+license = "GPL-3.0-only"
+license-files = ["LICENSE"]
 dependencies = [
   "aiogram==3.33.0",
   "pydantic-settings==2.16.3",

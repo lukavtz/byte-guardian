@@ -130,3 +130,7 @@ uv run ruff check . && uv run mypy app
 ```
 
 CI гоняет те же проверки на Python 3.14. Решения по навигации, RAG и рендеру — [docs/DESIGN.md](docs/DESIGN.md).
+
+## Лицензия
+
+GPL-3.0-only. Название и знаки TISBI, а также artwork исключены из лицензии и остаются собственностью владельцев. Подробности — [LICENSE](LICENSE).
