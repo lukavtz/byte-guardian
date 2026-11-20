@@ -1,0 +1,73 @@
+name: Сообщить об ошибке
+description: Что-то работает не так, как описано в README или карточке
+title: "[bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Спасибо, что нашли ошибку. Не вставляйте токены, пароли и содержимое `.env` — для уязвимостей есть [SECURITY.md](../security/policy).
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: Что произошло
+      description: Опишите фактическое поведение бота.
+      placeholder: На карточке «Утечка хлора» кнопка «Дальше» не отвечает.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Что ожидалось
+      description: Как должно было работать.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Как повторить
+      description: Шаги по порядку. Укажите раздел, карточку и язык интерфейса.
+      placeholder: |
+        1. /start
+        2. Химическая опасность → Хлор
+        3. Нажать «Дальше»
+    validations:
+      required: true
+  - type: dropdown
+    id: locale
+    attributes:
+      label: Язык интерфейса
+      options:
+        - ru
+        - en
+        - zh
+        - tt
+        - все
+    validations:
+      required: true
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Режим запуска
+      options:
+        - polling
+        - webhook
+        - не знаю
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Версия
+      description: Тег релиза или SHA коммита, если знаете.
+      placeholder: v0.1.0
+    validations:
+      required: false
+  - type: textarea
+    id: logs
+    attributes:
+      label: Логи или скриншот
+      description: Только то, что не содержит секретов. Токен и `WEBHOOK_SECRET` вырезайте.
+      render: text
+    validations:
+      required: false

@@ -1,0 +1,46 @@
+name: Предложить улучшение
+description: Новая функция, раздел, карточка или правка текста
+title: "[feat]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Предложения по контенту принимаются только со ссылкой на официальный российский источник (МЧС, Минздрав, Роспотребнадзор, МВД, вузовские методички). См. [CONTRIBUTING.md](../blob/main/CONTRIBUTING.md).
+  - type: textarea
+    id: problem
+    attributes:
+      label: Проблема
+      description: Чего не хватает или что неудобно сейчас.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Предложение
+      description: Как это должно выглядеть для пользователя.
+    validations:
+      required: true
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Что затрагивается
+      options:
+        - Навигация и кнопки
+        - Карточки и тексты
+        - Тест и вопросы
+        - Поиск
+        - ИИ-ответы
+        - Локализация
+        - Развёртывание и инфраструктура
+        - Другое
+    validations:
+      required: true
+  - type: textarea
+    id: sources
+    attributes:
+      label: Источники
+      description: Для изменений в контенте — ссылки на официальные сайты.
+      placeholder: https://www.mchs.gov.ru/...
+    validations:
+      required: false
