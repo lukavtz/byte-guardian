@@ -1,12 +1,22 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 from typing import Any
 
+import pytest
 from sqlalchemy.dialects import postgresql
 
-from app.content.seed import SeedReport, category_upsert, quiz_upsert, seed_content, threat_text_upsert, threat_upsert
+from app.content.seed import (
+    SeedReport,
+    _extract,
+    category_upsert,
+    quiz_upsert,
+    seed_content,
+    threat_text_upsert,
+    threat_upsert,
+)
 
 
 class FakeDB:
@@ -47,6 +57,20 @@ class FakeDB:
             merged["enabled"] = current["enabled"]
             store[key] = merged
 
+    async def apply_backfill(
+        self, table: str, column: str, rows: list[dict[str, Any]]
+    ) -> None:
+        store = self.tables[table]
+        for row in rows:
+            key = (
+                (row["threat_slug"], row["locale"])
+                if table == "threat_text"
+                else (row["threat_slug"],)
+            )
+            current = store.get(key)
+            if current is not None and current.get(column) is None:
+                current[column] = row["value"]
+
     def count(self, table: str) -> int:
         return len(self.tables[table])
 
@@ -69,8 +93,18 @@ class FakeSession:
     async def __aexit__(self, *exc: object) -> bool:
         return False
 
-    async def execute(self, statement: Any, rows: list[dict[str, Any]] | None = None) -> Any:
+    async def execute(
+        self, statement: Any, rows: list[dict[str, Any]] | None = None
+    ) -> Any:
         if rows is not None:
+            sql = " ".join(str(statement).split())
+            if sql.upper().startswith("UPDATE"):
+                match = re.search(r"SET\s+(\w+)\s*=", sql)
+                assert match is not None, sql
+                await self.db.apply_backfill(
+                    statement.table.name, match.group(1), rows
+                )
+                return None
             await self.db.apply(statement.table.name, rows)
             return None
         sql = " ".join(str(statement).split())
@@ -106,17 +140,26 @@ def _doc(*, version: int = 1, title: str = "Пожар в квартире") -> 
             {
                 "slug": "fire-home",
                 "severity": 3,
+                "updated": "2026-11-20",
                 "texts": {
                     "ru": {
                         "title": title,
                         "summary": "Дым и огонь в квартире.",
+                        "quick": "Звоните 101 и выходите",
+                        "mistakes": ["Не открывайте окна → закройте дверь"],
+                        "citations": [
+                            {
+                                "org": "МЧС России",
+                                "url": "https://mchs.gov.ru/pozhar",
+                            }
+                        ],
                         "signs": ["Дым"],
                         "before": ["Датчик"],
                         "during": ["Звоните 101"],
                         "after": ["Не входите"],
                         "forbidden": ["Не открывайте окна"],
                         "contacts": ["101"],
-                        "source": "МЧС России",
+                        "source": "МЧС России · https://mchs.gov.ru/pozhar",
                     }
                 },
                 "quiz": {
@@ -212,6 +255,9 @@ def _text_row(title: str = "План") -> dict[str, Any]:
     return {
         "title": title,
         "summary": "Дым и огонь.",
+        "quick": "Вызовите 101",
+        "mistakes": [],
+        "citations": [{"org": "МЧС России", "url": "https://mchs.gov.ru/plan"}],
         "signs": ["Дым"],
         "before": ["Датчик"],
         "during": ["Звоните 101"],
@@ -263,6 +309,7 @@ async def test_untouched_rows_still_update_next_to_edited_ones(tmp_path: Path) -
         {
             "slug": "fire-plan",
             "severity": 1,
+            "updated": "2026-11-20",
             "texts": {"ru": _text_row()},
         }
     )
@@ -331,3 +378,197 @@ async def test_non_object_category_is_reported_without_crashing(tmp_path: Path) 
     assert report.files == 0
     assert any("expected object" in error for error in report.errors)
     assert db.count("category") == 0
+
+
+def _strip_enrichment(doc: dict[str, Any]) -> dict[str, Any]:
+    return doc
+
+
+def test_extracted_rows_map_enrichment_fields() -> None:
+    rows: dict[str, list[dict[str, Any]]] = {
+        "categories": [],
+        "threats": [],
+        "texts": [],
+        "quizzes": [],
+    }
+
+    _extract(_doc(), rows)
+
+    assert rows["threats"][0]["updated"] == "2026-11-20"
+    text = rows["texts"][0]
+    assert text["quick"] == "Звоните 101 и выходите"
+    assert text["mistakes"] == ["Не открывайте окна → закройте дверь"]
+    assert text["citations"] == [
+        {"org": "МЧС России", "url": "https://mchs.gov.ru/pozhar"}
+    ]
+
+
+def test_enrichment_columns_are_in_versioned_upserts() -> None:
+    text_sql = _sql(threat_text_upsert())
+    threat_sql = _sql(threat_upsert())
+
+    assert "quick = excluded.quick" in text_sql
+    assert "mistakes = excluded.mistakes" in text_sql
+    assert "citations = excluded.citations" in text_sql
+    assert "updated = excluded.updated" in threat_sql
+
+
+async def test_enrichment_is_persisted_on_new_rows(tmp_path: Path) -> None:
+    db = FakeDB()
+    _write(tmp_path, "fire.json", _doc(version=2))
+
+    await seed_content(lambda: FakeSession(db), tmp_path)  # type: ignore[arg-type]
+
+    row = db.tables["threat_text"][("fire-home", "ru")]
+    assert row["quick"] == "Звоните 101 и выходите"
+    assert row["mistakes"] == ["Не открывайте окна → закройте дверь"]
+    assert row["citations"] == [
+        {"org": "МЧС России", "url": "https://mchs.gov.ru/pozhar"}
+    ]
+    assert db.tables["threat"][("fire-home",)]["updated"] == "2026-11-20"
+
+
+async def test_null_enrichment_backfills_admin_edited_text_without_touching_copy(
+    tmp_path: Path,
+) -> None:
+    db = FakeDB()
+    factory = lambda: FakeSession(db)  # noqa: E731
+    _write(tmp_path, "fire.json", _strip_enrichment(_doc(version=1)))
+    await seed_content(factory, tmp_path)
+
+    edited = db.tables["threat_text"][("fire-home", "ru")]
+    for key in ("quick", "mistakes", "citations"):
+        edited[key] = None
+    edited["summary"] = "Ручной текст"
+    edited["admin_version"] = 1
+    _write(tmp_path, "fire.json", _doc(version=2))
+
+    report = await seed_content(factory, tmp_path)
+
+    assert edited["summary"] == "Ручной текст"
+    assert edited["content_version"] == 1
+    assert edited["quick"] == "Звоните 101 и выходите"
+    assert edited["mistakes"] == ["Не открывайте окна → закройте дверь"]
+    assert edited["citations"] == [
+        {"org": "МЧС России", "url": "https://mchs.gov.ru/pozhar"}
+    ]
+    assert report.skipped == 1
+
+
+async def test_existing_enrichment_survives_reseed(tmp_path: Path) -> None:
+    db = FakeDB()
+    factory = lambda: FakeSession(db)  # noqa: E731
+    _write(tmp_path, "fire.json", _doc(version=1))
+    await seed_content(factory, tmp_path)
+
+    edited = db.tables["threat_text"][("fire-home", "ru")]
+    edited["admin_version"] = 1
+    edited["quick"] = "Ручное действие"
+    edited["mistakes"] = ["Своя ошибка"]
+    edited["citations"] = [{"org": "Ручной источник", "url": "https://mchs.gov.ru/ruchnoy"}]
+    newer = _doc(version=2)
+    newer["threats"][0]["texts"]["ru"]["quick"] = "Новое действие"
+    _write(tmp_path, "fire.json", newer)
+
+    await seed_content(factory, tmp_path)
+
+    assert edited["quick"] == "Ручное действие"
+    assert edited["mistakes"] == ["Своя ошибка"]
+    assert edited["citations"] == [
+        {"org": "Ручной источник", "url": "https://mchs.gov.ru/ruchnoy"}
+    ]
+
+
+async def test_threat_updated_backfill_is_null_only(tmp_path: Path) -> None:
+    db = FakeDB()
+    factory = lambda: FakeSession(db)  # noqa: E731
+    doc = _doc()
+    _write(tmp_path, "fire.json", doc)
+    await seed_content(factory, tmp_path)
+
+    threat = db.tables["threat"][("fire-home",)]
+    threat["updated"] = "2020-01-01"
+    await seed_content(factory, tmp_path)
+    assert threat["updated"] == "2020-01-01"
+
+    del threat["updated"]
+    await seed_content(factory, tmp_path)
+    assert threat["updated"] == "2026-11-20"
+
+
+@pytest.mark.parametrize(
+    "bad_quick", ["x" * 121, "Звоните 101\nи выходите", "Смотрите https://mchs.gov.ru"]
+)
+async def test_invalid_quick_is_reported_without_partial_rows(
+    tmp_path: Path, bad_quick: str
+) -> None:
+    db = FakeDB()
+    doc = _doc()
+    doc["threats"][0]["texts"]["ru"]["quick"] = bad_quick
+    _write(tmp_path, "fire.json", doc)
+
+    report = await seed_content(lambda: FakeSession(db), tmp_path)  # type: ignore[arg-type]
+
+    assert report.files == 0
+    assert any("quick" in error for error in report.errors)
+    assert db.count("threat_text") == 0
+
+
+@pytest.mark.parametrize(
+    "bad_mistakes",
+    [["a"] * 4, ["x" * 141], "Не бегите"],
+)
+async def test_invalid_mistakes_are_reported_without_partial_rows(
+    tmp_path: Path, bad_mistakes: object
+) -> None:
+    db = FakeDB()
+    doc = _doc()
+    doc["threats"][0]["texts"]["ru"]["mistakes"] = bad_mistakes
+    _write(tmp_path, "fire.json", doc)
+
+    report = await seed_content(lambda: FakeSession(db), tmp_path)  # type: ignore[arg-type]
+
+    assert report.files == 0
+    assert any("mistakes" in error for error in report.errors)
+    assert db.count("threat_text") == 0
+
+
+@pytest.mark.parametrize(
+    "bad_citations",
+    [
+        [{"org": "МЧС России", "url": "https://example.com/x"}],
+        [{"org": "МЧС России", "url": "http://mchs.gov.ru/x"}],
+        [{"org": "М", "url": "https://mchs.gov.ru/x"}],
+        [{"org": "МЧС России", "url": "https://mchs.gov.ru/x"}] * 2,
+        [],
+    ],
+)
+async def test_invalid_citations_are_reported_without_partial_rows(
+    tmp_path: Path, bad_citations: object
+) -> None:
+    db = FakeDB()
+    doc = _doc()
+    doc["threats"][0]["texts"]["ru"]["citations"] = bad_citations
+    _write(tmp_path, "fire.json", doc)
+
+    report = await seed_content(lambda: FakeSession(db), tmp_path)  # type: ignore[arg-type]
+
+    assert report.files == 0
+    assert any("citations" in error for error in report.errors)
+    assert db.count("threat_text") == 0
+
+
+@pytest.mark.parametrize("bad_updated", ["20.11.2026", "2026-02-30"])
+async def test_invalid_updated_is_reported_without_partial_rows(
+    tmp_path: Path, bad_updated: str
+) -> None:
+    db = FakeDB()
+    doc = _doc()
+    doc["threats"][0]["updated"] = bad_updated
+    _write(tmp_path, "fire.json", doc)
+
+    report = await seed_content(lambda: FakeSession(db), tmp_path)  # type: ignore[arg-type]
+
+    assert report.files == 0
+    assert any("updated" in error for error in report.errors)
+    assert db.count("threat") == 0

@@ -7,6 +7,7 @@ import datetime as dt
 from sqlalchemy import (
     BigInteger,
     Boolean,
+    Date,
     DateTime,
     ForeignKey,
     Integer,
@@ -55,6 +56,7 @@ class Threat(Base):
     content_version: Mapped[int] = mapped_column(
         Integer, nullable=False, server_default="0"
     )
+    updated: Mapped[dt.date | None] = mapped_column(Date)
     edited_at: Mapped[dt.datetime | None] = mapped_column(DateTime(timezone=True))
 
 
@@ -70,6 +72,9 @@ class ThreatText(Base):
     locale: Mapped[str] = mapped_column(Text, nullable=False)
     title: Mapped[str] = mapped_column(Text, nullable=False)
     summary: Mapped[str] = mapped_column(Text, nullable=False)
+    quick: Mapped[str | None] = mapped_column(Text)
+    mistakes: Mapped[list[str] | None] = mapped_column(postgresql.JSONB)
+    citations: Mapped[list[dict[str, str]] | None] = mapped_column(postgresql.JSONB)
     signs: Mapped[list[str]] = mapped_column(postgresql.JSONB, nullable=False)
     before: Mapped[list[str]] = mapped_column(postgresql.JSONB, nullable=False)
     during: Mapped[list[str]] = mapped_column(postgresql.JSONB, nullable=False)

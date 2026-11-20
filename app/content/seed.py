@@ -2,16 +2,41 @@
 
 from __future__ import annotations
 
+import datetime as dt
 import json
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlparse
 
-from sqlalchemy import Insert, func, select
+from sqlalchemy import BindParameter, Insert, func, select, update
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.db.content import Category, QuizQuestion, Threat, ThreatText
+
+SOURCE_HOSTS = frozenset(
+    {
+        "mchs.gov.ru",
+        "minzdrav.gov.ru",
+        "takzdorovo.ru",
+        "rospotrebnadzor.ru",
+        "nac.gov.ru",
+        "digital.gov.ru",
+        "cbr.ru",
+        "gosuslugi.ru",
+        "government.ru",
+        "rosatom.ru",
+        "meteonfo.ru",
+        "gibdd.ru",
+        "fsb.ru",
+        "rostekhnadzor.gov.ru",
+        "мвд.рф",
+        "xn--b1aew.xn--p1ai",
+    }
+)
+ENRICHMENT_TEXT_FIELDS = ("quick", "mistakes", "citations")
 
 
 @dataclass(slots=True)
@@ -48,6 +73,7 @@ def threat_upsert() -> Insert:
             "severity": excluded.severity,
             "sort": excluded.sort,
             "content_version": excluded.content_version,
+            "updated": excluded.updated,
         },
         where=excluded.content_version > Threat.content_version,
     )
@@ -61,6 +87,9 @@ def threat_text_upsert() -> Insert:
         set_={
             "title": excluded.title,
             "summary": excluded.summary,
+            "quick": excluded.quick,
+            "mistakes": excluded.mistakes,
+            "citations": excluded.citations,
             "signs": excluded.signs,
             "before": excluded.before,
             "during": excluded.during,
@@ -96,6 +125,16 @@ def quiz_upsert() -> Insert:
     )
 
 
+def _backfill_statement(model: Any, column: str, *, localized: bool) -> Any:
+    """UPDATE that fills one NULL column without touching admin-written values."""
+    key = model.threat_slug if hasattr(model, "threat_slug") else model.slug
+    stmt = update(model).values({column: BindParameter("value")})
+    stmt = stmt.where(key == BindParameter("threat_slug"))
+    if localized:
+        stmt = stmt.where(model.locale == BindParameter("locale"))
+    return stmt.where(getattr(model, column).is_(None))
+
+
 def _lines(value: object, name: str) -> list[str]:
     if value is None:
         return []
@@ -108,6 +147,60 @@ def _require(value: object, name: str) -> str:
     if not isinstance(value, str) or not value.strip():
         raise ValueError(f"{name}: expected non-empty string")
     return value
+
+
+def _quick(value: object, name: str) -> str:
+    text = _require(value, name)
+    if len(text) > 120 or "\n" in text or "\r" in text:
+        raise ValueError(f"{name}: expected single line of at most 120 chars")
+    if "http://" in text or "https://" in text:
+        raise ValueError(f"{name}: URLs are not allowed")
+    return text
+
+
+def _mistakes(value: object, name: str) -> list[str]:
+    items = _lines(value, name)
+    if len(items) > 3 or any(not item.strip() or len(item) > 140 for item in items):
+        raise ValueError(f"{name}: expected 0-3 items of 1-140 chars")
+    return items
+
+
+def _citations(value: object, name: str) -> list[dict[str, str]]:
+    if not isinstance(value, list) or not 1 <= len(value) <= 2:
+        raise ValueError(f"{name}: expected 1-2 citations")
+    seen: set[str] = set()
+    result: list[dict[str, str]] = []
+    for index, item in enumerate(value, start=1):
+        label = f"{name}[{index}]"
+        if not isinstance(item, dict):
+            raise ValueError(f"{label}: expected object")
+        org = _require(item.get("org"), f"{label}.org")
+        url = _require(item.get("url"), f"{label}.url")
+        if not 2 <= len(org) <= 60:
+            raise ValueError(f"{label}.org: expected 2-60 chars")
+        parsed = urlparse(url)
+        host = (parsed.hostname or "").lower().rstrip(".")
+        allowed = any(
+            host == domain or host.endswith("." + domain) for domain in SOURCE_HOSTS
+        )
+        if parsed.scheme != "https" or not allowed:
+            raise ValueError(f"{label}.url: expected HTTPS URL on an official host")
+        if url in seen:
+            raise ValueError(f"{name}: duplicate URL")
+        seen.add(url)
+        result.append({"org": org, "url": url})
+    return result
+
+
+def _updated(value: object, name: str) -> str:
+    text = _require(value, name)
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", text):
+        raise ValueError(f"{name}: expected ISO date")
+    try:
+        dt.date.fromisoformat(text)
+    except ValueError as exc:
+        raise ValueError(f"{name}: expected valid ISO date") from exc
+    return text
 
 
 def _extract(
@@ -155,6 +248,7 @@ def _extract(
                 "severity": severity,
                 "sort": index,
                 "content_version": version,
+                "updated": _updated(threat.get("updated"), f"{threat_slug}.updated"),
             }
         )
         threat_count += 1
@@ -174,6 +268,9 @@ def _extract(
                     "summary": _require(
                         text.get("summary"), f"{prefix}.summary"
                     ),
+                    "quick": _quick(text.get("quick"), f"{prefix}.quick"),
+                    "mistakes": _mistakes(text.get("mistakes"), f"{prefix}.mistakes"),
+                    "citations": _citations(text.get("citations"), f"{prefix}.citations"),
                     "signs": _lines(text.get("signs"), f"{prefix}.signs"),
                     "before": _lines(text.get("before"), f"{prefix}.before"),
                     "during": _lines(text.get("during"), f"{prefix}.during"),
@@ -292,6 +389,29 @@ async def seed_content(
             if not rows[key]:
                 continue
             await session.execute(statement, rows[key])
+        for column in ENRICHMENT_TEXT_FIELDS:
+            backfill_rows = [
+                {
+                    "threat_slug": row["threat_slug"],
+                    "locale": row["locale"],
+                    "value": row[column],
+                }
+                for row in rows["texts"]
+            ]
+            if backfill_rows:
+                await session.execute(
+                    _backfill_statement(ThreatText, column, localized=True),
+                    backfill_rows,
+                )
+        updated_rows = [
+            {"threat_slug": row["slug"], "value": row["updated"]}
+            for row in rows["threats"]
+        ]
+        if updated_rows:
+            await session.execute(
+                _backfill_statement(Threat, "updated", localized=False),
+                updated_rows,
+            )
         await session.commit()
         # The upsert silently keeps edited rows; report how many so a reseed
         # never looks like it replaced the owner's text. COUNT runs after the

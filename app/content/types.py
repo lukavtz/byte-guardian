@@ -6,6 +6,12 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen=True, slots=True)
+class SourceCitation:
+    org: str
+    url: str
+
+
+@dataclass(frozen=True, slots=True)
 class CategoryView:
     slug: str
     title: str
@@ -44,6 +50,10 @@ class CardView:
     contacts: tuple[str, ...]
     source: str
     icon: str
+    quick: str = ""
+    mistakes: tuple[str, ...] = ()
+    citations: tuple[SourceCitation, ...] = ()
+    updated: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -54,3 +64,12 @@ class QuizView:
     options: tuple[str, ...]
     answer: int
     explanation: str
+
+
+__all__ = [
+    "CardView",
+    "CategoryView",
+    "QuizView",
+    "SourceCitation",
+    "ThreatView",
+]

@@ -11,7 +11,7 @@ from pathlib import Path
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from app.content.types import CardView, CategoryView, QuizView, ThreatView
+from app.content.types import CardView, CategoryView, QuizView, SourceCitation, ThreatView
 from app.db.content import Category, QuizQuestion, Threat, ThreatText
 
 DEFAULT_LOCALE = "ru"
@@ -38,6 +38,7 @@ class ThreatRow:
     severity: int
     sort: int
     enabled: bool = True
+    updated: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -53,6 +54,9 @@ class TextRow:
     forbidden: tuple[str, ...]
     contacts: tuple[str, ...]
     source: str
+    quick: str = ""
+    mistakes: tuple[str, ...] = ()
+    citations: tuple[SourceCitation, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -154,12 +158,23 @@ def _read_aliases(path: Path | None) -> dict[str, dict[str, frozenset[str]]]:
     }
 
 
+def _citation(value: object) -> SourceCitation:
+    if isinstance(value, SourceCitation):
+        return value
+    if isinstance(value, dict):
+        return SourceCitation(org=str(value["org"]), url=str(value["url"]))
+    raise TypeError(f"unsupported citation: {value!r}")
+
+
 def _text_row(row: ThreatText) -> TextRow:
     return TextRow(
         threat_slug=row.threat_slug,
         locale=row.locale,
         title=row.title,
         summary=row.summary,
+        quick=row.quick or "",
+        mistakes=tuple(row.mistakes or ()),
+        citations=tuple(_citation(value) for value in row.citations or ()),
         signs=tuple(row.signs),
         before=tuple(row.before),
         during=tuple(row.during),
@@ -196,6 +211,7 @@ async def _load_from_db(
                 severity=row.severity,
                 sort=row.sort,
                 enabled=row.enabled,
+                updated=str(row.updated) if row.updated is not None else None,
             )
             for row in threats
         ],
@@ -205,6 +221,9 @@ async def _load_from_db(
                 locale=row.locale,
                 title=row.title,
                 summary=row.summary,
+                quick=row.quick or "",
+                mistakes=tuple(row.mistakes or ()),
+                citations=tuple(_citation(value) for value in row.citations or ()),
                 signs=tuple(row.signs),
                 before=tuple(row.before),
                 during=tuple(row.during),
@@ -403,6 +422,10 @@ class ContentRepository:
             fallback=fallback,
             title=text.title,
             summary=text.summary,
+            quick=text.quick,
+            mistakes=text.mistakes,
+            citations=text.citations,
+            updated=threat.updated,
             signs=text.signs,
             before=text.before,
             during=text.during,
