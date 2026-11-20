@@ -193,3 +193,87 @@ root с `--no-dev`. Образ выставляет `UV_NO_DEV=1`; при пра
 `set -a; . ./.env` экспортирует `WEBHOOK_SECRET` в шелл, `pydantic-settings`
 читает его раньше `_env_file=None`. Запускайте тесты в чистом окружении
 (`unset WEBHOOK_SECRET` или новый терминал).
+
+## 8. Altare (altare.gg)
+
+Образ: `ghcr.io/lukavtz/byte-guardian:latest` (linux/amd64). Внутри —
+`docker-entrypoint.sh`: сначала `alembic upgrade head`, потом бот. Если миграция
+упала, контейнер пишет причину в stderr и выходит с кодом 1 — бот без схемы не
+стартует.
+
+### Образ
+
+```bash
+docker build --platform linux/amd64 -t ghcr.io/lukavtz/byte-guardian:latest .
+docker push ghcr.io/lukavtz/byte-guardian:latest
+```
+
+Пакет на GHCR должен быть публичным, иначе Altare нужен registry login
+(`altr docker create --registry-user lukavtz --registry-token-stdin`).
+
+### Ресурсы
+
+```bash
+altr postgres create byte-guardian --size micro
+altr valkey create byte-guardian --size micro
+altr postgres info byte-guardian      # DATABASE_URL
+altr valkey info byte-guardian        # REDIS_URL
+```
+
+`DATABASE_URL` — `postgres://user:pass@host:5432/db`, `REDIS_URL` —
+`redis://:pass@host:6379/0`.
+
+### Приложение
+
+```bash
+altr docker create byte-guardian ghcr.io/lukavtz/byte-guardian:latest \
+  --port 8080 --memory 1024 --auto-update \
+  -e BOT_MODE=webhook \
+  -e WEBHOOK_URL=https://byte-guardian.altare.app \
+  -e BOT_TOKEN=... \
+  -e WEBHOOK_SECRET=... \
+  -e DATABASE_URL=... \
+  -e REDIS_URL=... \
+  -e ADMIN_IDS=... \
+  -e LLM_BASE_URL=... -e LLM_MODEL=... -e LLM_API_KEY=...
+```
+
+Переменные дальше правятся без пересборки:
+
+```bash
+altr docker env set byte-guardian PORT=8080 LOG_LEVEL=info
+altr docker info byte-guardian       # образ, digest, последние деплои
+altr docker redeploy byte-guardian   # подтянуть новый :latest
+```
+
+Домен: по умолчанию Altare даёт `byte-guardian.altare.app`; свой —
+`altr domains add byte-guardian <домен>`. Затем `WEBHOOK_URL=https://<домен>`
+(без слэша в конце; Telegram ходит на `$WEBHOOK_URL/webhook`).
+
+### Webhook
+
+Вебхук приложение не регистрирует само — после первого деплоя вызвать один раз
+(и после каждой смены домена):
+
+```bash
+curl -fsS "https://api.telegram.org/bot$BOT_TOKEN/setWebhook" \
+  -d "url=$WEBHOOK_URL/webhook" \
+  -d "secret_token=$WEBHOOK_SECRET" \
+  -d 'allowed_updates=["message","callback_query","inline_query","widget_query","shared_widget_query"]'
+```
+
+Проверка после деплоя:
+
+```bash
+curl -fsS https://<домен>/healthz
+curl -fsS "https://api.telegram.org/bot$BOT_TOKEN/getWebhookInfo"
+```
+
+`last_error_message` в ответе Telegram: 403 — не совпал `WEBHOOK_SECRET`,
+502/504 — приложение не слушает `PORT`.
+
+### Откат миграций
+
+Образ мигрирует при каждом старте, вперёд. Автоматического откатa нет: перед
+деплоем с новой схемой сделайте бэкап (`altr postgres backups create byte-guardian`),
+откат — новый образ со старой ревизией и ручной `alembic downgrade`.
