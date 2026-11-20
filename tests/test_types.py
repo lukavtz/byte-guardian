@@ -3,6 +3,7 @@ from __future__ import annotations
 import dataclasses
 
 import pytest
+
 from app.content.types import CardView, CategoryView, QuizView, ThreatView
 
 
