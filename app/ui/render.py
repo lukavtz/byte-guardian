@@ -46,6 +46,8 @@ SHARE = "https://t.me/share/url?"
 BAR_CELLS = 10
 SEVERITIES = {1: "low", 2: "medium", 3: "high"}
 ART = "https://raw.githubusercontent.com/lukavtz/byte-guardian/main/assets/art"
+# The menu opens with the same banner the README shows, straight from assets/.
+BANNER = "https://raw.githubusercontent.com/lukavtz/byte-guardian/main/assets/banner.jpg"
 EXT = "jpg"
 ARTS = frozenset({"fire", "terror", "tech", "nature", "medical", "chem", "rad", "cyber", "chat"})
 
@@ -173,7 +175,7 @@ def render_menu(categories: list[CategoryView], locale: str, is_admin: bool = Fa
             )
         )
     heading = f"{premium('shield', '🛡️')} {_esc(t(locale, 'menu.title'))}"
-    html = f'<img src="{ART}/menu.{EXT}"/><h1>{heading}</h1><p>{_esc(t(locale, "menu.lead"))}</p><hr/>'
+    html = f'<img src="{BANNER}"/><h1>{heading}</h1><p>{_esc(t(locale, "menu.lead"))}</p><hr/>'
     return RichScreen(html + "\n".join(rows))
 
 

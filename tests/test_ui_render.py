@@ -24,7 +24,9 @@ from app.ui.emoji import (
 from app.ui.keyboards import PAGE_SIZE, keyboard_from_rich, strip_rich_buttons
 from app.ui.render import (
     ART,
+    BANNER,
     CARD_CAP,
+    EXT,
     RichScreen,
     render_card,
     render_category,
@@ -361,7 +363,8 @@ def test_category_artwork_matches_the_section(slug: str) -> None:
 
 def test_menu_opens_with_its_banner() -> None:
     html = render_menu([_category()], LOCALE).html
-    assert f'<img src="{ART}/menu.jpg"/>' in html
+    assert f'<img src="{BANNER}"/>' in html
+    assert f'<img src="{ART}/menu.{EXT}"/>' not in html
     assert html.index("<img") < html.index("<h1>")
 
 
@@ -369,16 +372,10 @@ def test_chat_uses_its_own_artwork() -> None:
     assert f'<img src="{ART}/chat.jpg"/>' in render_chat(LOCALE).html
 
 
-def test_app_does_not_reference_the_removed_banner_but_readme_does() -> None:
+def test_menu_banner_is_the_readme_banner() -> None:
     root = Path(__file__).resolve().parents[1]
-    asset = "banner" + ".jpg"
-    offenders = [
-        path.relative_to(root).as_posix()
-        for path in root.joinpath("app").rglob("*.py")
-        if asset in path.read_text(encoding="utf-8")
-    ]
-    assert not offenders
-    assert asset in (root / "README.md").read_text(encoding="utf-8")
+    assert BANNER.endswith("/assets/banner.jpg")
+    assert "assets/banner.jpg" in (root / "README.md").read_text(encoding="utf-8")
 
 
 def test_unknown_section_falls_back_to_the_hero() -> None:
