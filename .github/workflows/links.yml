@@ -1,0 +1,27 @@
+name: links
+
+on:
+  schedule:
+    - cron: "17 4 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  live-links:
+    name: live source links
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: "3.14"
+          enable-cache: true
+      - run: uv sync --frozen
+      - name: content sources (live links)
+        env:
+          BYTEBOT_LINK_CHECK: "1"
+        run: uv run pytest tests/test_content.py -q -k link
