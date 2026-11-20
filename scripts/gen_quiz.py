@@ -9,10 +9,10 @@ Usage:
     uv run python scripts/gen_quiz.py --card content/fire.json --dry-run
 
 ``--check`` only reports threats without a quiz. ``--dry-run`` prints the merged
-card without touching the card or cache. Generated quizzes are cached under
-``.cache/quiz/<hash>.json`` by card content, prompt version and model; unchanged
-cards skip the LLM. ``--force`` bypasses the cache. The API key is read from the
-environment and is never printed.
+card without touching the card or cache. Generated quizzes are cached per threat
+under ``.cache/quiz/<hash>.json`` by card and threat content, slug, locale,
+question count, prompt version and model. ``--force`` bypasses the cache. The
+API key is read from the environment and is never printed.
 """
 
 from __future__ import annotations
@@ -182,26 +182,59 @@ def fill_card(
     locale: str = "ru",
     *,
     count: int = DEFAULT_QUESTION_COUNT,
-) -> int:
-    """Fill every missing quiz block in place; returns the number of threats filled."""
-    filled = 0
+) -> list[list[dict[str, Any]]]:
+    """Fill every missing quiz block in place; returns generated quizzes in gap order."""
+    generated: list[list[dict[str, Any]]] = []
     for threat in find_gaps(card, locale):
         questions = validate_quiz(client.chat(_messages(threat, locale, count)), count)
         threat.setdefault("quiz", {})[locale] = questions
-        filled += 1
-    return filled
+        generated.append(questions)
+    return generated
 
+
+def _read_cached_quiz(path: Path, count: int) -> list[dict[str, Any]] | None:
+    """Read a supported cache file; drop unsupported or invalid files."""
+    if not path.exists():
+        return None
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        questions = data.get("questions") if isinstance(data, dict) else data
+        if not isinstance(questions, list):
+            raise ValueError("cache has no questions list")
+        return validate_quiz(json.dumps({"questions": questions}), count)
+    except (OSError, TypeError, ValueError):
+        path.unlink(missing_ok=True)
+        return None
 
 def cache_path(
     card: dict[str, Any],
+    threat: dict[str, Any],
+    locale: str = "ru",
     cache_dir: Path = DEFAULT_CACHE_DIR,
     *,
+    card_path: Path | None = None,
     count: int = DEFAULT_QUESTION_COUNT,
     model: str = "",
 ) -> Path:
-    """Deterministic cache path for a generated quiz block."""
+    """Deterministic cache path for one threat's generated quiz."""
+    card_identity = {
+        "path": str(card_path) if card_path is not None else "",
+        "category": card.get("category", ""),
+        "threats": [
+            {key: value for key, value in item.items() if key != "quiz"}
+            for item in card.get("threats", [])
+        ],
+    }
     payload = json.dumps(
-        {"card": card, "prompt_version": PROMPT_VERSION, "count": count, "model": model},
+        {
+            "card": card_identity,
+            "slug": threat.get("slug", ""),
+            "threat": {key: value for key, value in threat.items() if key != "quiz"},
+            "locale": locale,
+            "prompt_version": PROMPT_VERSION,
+            "count": count,
+            "model": model,
+        },
         ensure_ascii=False,
         sort_keys=True,
         separators=(",", ":"),
@@ -254,35 +287,43 @@ def run(
 
     chat_client = client or build_client()
     resolved_model = model or getattr(chat_client, "model", getattr(chat_client, "_model", ""))
-    path = cache_path(card, cache_dir, count=count, model=resolved_model)
-    cached: list[dict[str, Any]] | None = None
-    if path.exists() and not force:
-        try:
-            cached = json.loads(path.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError):
-            cached = None
-    if cached is not None:
-        questions = validate_quiz(json.dumps({"questions": cached}), count)
-        for threat in gaps:
-            threat.setdefault("quiz", {})[locale] = questions
-        filled = len(gaps)
-    else:
-        filled = fill_card(card, chat_client, locale, count=count)
-        if filled and not dry_run:
-            path.parent.mkdir(parents=True, exist_ok=True)
-            payload = json.dumps(card["threats"][0]["quiz"][locale], ensure_ascii=False, indent=2) + "\n"
-            handle = tempfile.NamedTemporaryFile(
-                "w", encoding="utf-8", dir=path.parent, prefix=f".{path.name}.", suffix=".tmp", delete=False
-            )
-            try:
-                with handle:
-                    handle.write(payload)
-                    handle.flush()
-                    os.fsync(handle.fileno())
-                os.replace(handle.name, path)
-            except BaseException:
-                Path(handle.name).unlink(missing_ok=True)
-                raise
+    generated: list[tuple[dict[str, Any], list[dict[str, Any]]]] = []
+    pending: list[dict[str, Any]] = []
+    for threat in gaps:
+        path = cache_path(card, threat, locale, cache_dir, card_path=card_path, count=count, model=resolved_model)
+        cached_questions = _read_cached_quiz(path, count) if not force else None
+        if cached_questions is None:
+            pending.append(threat)
+            continue
+        threat.setdefault("quiz", {})[locale] = cached_questions
+        generated.append((threat, cached_questions))
+
+    if pending:
+        original_gaps = list(find_gaps(card, locale))
+        fresh = fill_card(card, chat_client, locale, count=count)
+        for threat, questions in zip(original_gaps, fresh, strict=True):
+            if threat not in pending:
+                continue
+            generated.append((threat, questions))
+            if not dry_run:
+                path = cache_path(
+                    card, threat, locale, cache_dir, card_path=card_path, count=count, model=resolved_model
+                )
+                path.parent.mkdir(parents=True, exist_ok=True)
+                payload = json.dumps(questions, ensure_ascii=False, indent=2) + "\n"
+                handle = tempfile.NamedTemporaryFile(
+                    "w", encoding="utf-8", dir=path.parent, prefix=f".{path.name}.", suffix=".tmp", delete=False
+                )
+                try:
+                    with handle:
+                        handle.write(payload)
+                        handle.flush()
+                        os.fsync(handle.fileno())
+                    os.replace(handle.name, path)
+                except BaseException:
+                    Path(handle.name).unlink(missing_ok=True)
+                    raise
+    filled = len(generated)
     if filled:
         card["version"] = int(card.get("version", 1)) + 1
     if dry_run:

@@ -62,6 +62,33 @@ class ExplodingClient:
         raise AssertionError("client must not be called")
 
 
+class MappingClient:
+    def __init__(self, payloads: dict[str, Any]) -> None:
+        self.payloads = payloads
+        self.calls: list[list[dict[str, str]]] = []
+
+    def chat(self, messages: list[dict[str, str]]) -> str:
+        self.calls.append(messages)
+        user = messages[-1]["content"]
+        for marker, payload in self.payloads.items():
+            if marker in user:
+                return payload if isinstance(payload, str) else json.dumps(payload, ensure_ascii=False)
+        raise AssertionError(f"unexpected prompt: {user}")
+
+
+def quiz_payload(prefix: str) -> dict[str, Any]:
+    return {
+        "questions": [
+            {
+                "prompt": f"{prefix} {n}?",
+                "options": ["a", "b", "c", "d"],
+                "answer": 0,
+                "explanation": f"explanation {n}",
+            }
+            for n in range(1, 4)
+        ]
+    }
+
 def make_threat(slug: str = "fire-home", *, quiz: Any = None) -> dict[str, Any]:
     threat: dict[str, Any] = {
         "slug": slug,
@@ -128,7 +155,7 @@ def test_fill_card_merges_and_preserves_existing() -> None:
 
     filled = fill_card(card, client)
 
-    assert filled == 1
+    assert len(filled) == 1
     assert card["threats"][1]["quiz"]["ru"] == existing
     questions = card["threats"][0]["quiz"]["ru"]
     assert [q["id"] for q in questions] == ["q1", "q2", "q3"]
@@ -181,9 +208,29 @@ def test_fill_card_propagates_rejection_without_mutation() -> None:
     assert "quiz" not in card["threats"][0]
 
 
-def _cache_key(card: dict[str, Any], *, count: int = 3, model: str = "") -> str:
+def _cache_key(
+    card: dict[str, Any],
+    threat: dict[str, Any],
+    card_path: Path,
+    *,
+    count: int = 3,
+    model: str = "",
+) -> str:
+    identity = {
+        "path": str(card_path),
+        "category": card.get("category", ""),
+        "threats": [{k: v for k, v in item.items() if k != "quiz"} for item in card.get("threats", [])],
+    }
     payload = json.dumps(
-        {"card": card, "prompt_version": PROMPT_VERSION, "count": count, "model": model},
+        {
+            "card": identity,
+            "slug": threat.get("slug", ""),
+            "threat": {k: v for k, v in threat.items() if k != "quiz"},
+            "locale": "ru",
+            "prompt_version": PROMPT_VERSION,
+            "count": count,
+            "model": model,
+        },
         ensure_ascii=False,
         sort_keys=True,
         separators=(",", ":"),
@@ -193,10 +240,13 @@ def _cache_key(card: dict[str, Any], *, count: int = 3, model: str = "") -> str:
 
 def test_cache_path_is_deterministic_and_gitignored(tmp_path: Path) -> None:
     card = make_card(make_threat())
-    expected = tmp_path / "quiz" / f"{_cache_key(card)}.json"
-    assert cache_path(card, tmp_path) == expected
+    card_path = tmp_path / "fire.json"
+    expected = tmp_path / "quiz" / f"{_cache_key(card, card['threats'][0], card_path)}.json"
+    assert cache_path(card, card["threats"][0], card_path=card_path, cache_dir=tmp_path) == expected
     assert ".cache/" in (Path(__file__).parents[2] / ".gitignore").read_text(encoding="utf-8")
-    assert cache_path(card, tmp_path) == cache_path(card, tmp_path)
+    assert cache_path(card, card["threats"][0], cache_dir=tmp_path) == cache_path(
+        card, card["threats"][0], cache_dir=tmp_path
+    )
 
 
 def test_run_uses_cache_and_force_bypasses(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -208,7 +258,7 @@ def test_run_uses_cache_and_force_bypasses(tmp_path: Path, monkeypatch: pytest.M
 
     first = FakeClient()
     assert run(card_path, client=first, cache_dir=cache_dir, model="test-model") == 1
-    stored = cache_dir / "quiz" / f"{_cache_key(original, model='test-model')}.json"
+    stored = cache_dir / "quiz" / f"{_cache_key(original, original['threats'][0], card_path, model='test-model')}.json"
     assert stored.exists()
     assert first.calls
 
@@ -237,6 +287,56 @@ def test_run_cache_invalidates_on_card_change(tmp_path: Path) -> None:
     after_change = FakeClient()
     run(card_path, client=after_change, cache_dir=cache_dir, model="test-model")
     assert after_change.calls
+
+
+def test_run_two_gap_cache_keeps_threat_quizzes_distinct(tmp_path: Path) -> None:
+    card_path = tmp_path / "fire.json"
+    first = make_threat("fire-a")
+    second = make_threat("fire-b")
+    second["texts"]["ru"]["title"] = "Пожар в офисе"
+    original = make_card(first, second)
+    card_path.write_text(json.dumps(original), encoding="utf-8")
+    cache_dir = tmp_path / ".cache"
+    payloads = {
+        "Пожар в квартире": quiz_payload("home"),
+        "Пожар в офисе": quiz_payload("office"),
+    }
+
+    generated = MappingClient(payloads)
+    assert run(card_path, client=generated, cache_dir=cache_dir, model="test-model") == 2
+    assert len(generated.calls) == 2
+    stored = json.loads(card_path.read_text(encoding="utf-8"))
+    home = [q["prompt"] for q in stored["threats"][0]["quiz"]["ru"]]
+    office = [q["prompt"] for q in stored["threats"][1]["quiz"]["ru"]]
+    assert home == ["home 1?", "home 2?", "home 3?"]
+    assert office == ["office 1?", "office 2?", "office 3?"]
+    assert list(cache_dir.joinpath("quiz").glob("*.json"))
+
+    card_path.write_text(json.dumps(original), encoding="utf-8")
+    cached = MappingClient(payloads)
+    assert run(card_path, client=cached, cache_dir=cache_dir, model="test-model") == 2
+    assert not cached.calls
+    stored = json.loads(card_path.read_text(encoding="utf-8"))
+    assert [q["prompt"] for q in stored["threats"][0]["quiz"]["ru"]] == home
+    assert [q["prompt"] for q in stored["threats"][1]["quiz"]["ru"]] == office
+
+
+def test_run_unsupported_cache_file_is_rebuilt(tmp_path: Path) -> None:
+    card_path = tmp_path / "fire.json"
+    original = make_card(make_threat())
+    card_path.write_text(json.dumps(original), encoding="utf-8")
+    cache_dir = tmp_path / ".cache"
+    cache_file = cache_path(
+        original, original["threats"][0], card_path=card_path, cache_dir=cache_dir, model="test-model"
+    )
+    cache_file.parent.mkdir(parents=True)
+    cache_file.write_text('{"questions": []}', encoding="utf-8")
+
+    assert run(card_path, client=FakeClient(), cache_dir=cache_dir, model="test-model") == 1
+    rebuilt = json.loads(cache_file.read_text(encoding="utf-8"))
+    assert [q["prompt"] for q in rebuilt] == ["Что делать первым?", "Чего нельзя делать?", "Куда идти?"]
+    stored = json.loads(card_path.read_text(encoding="utf-8"))
+    assert stored["threats"][0]["quiz"]["ru"] == rebuilt
 
 
 def test_run_dry_run_writes_no_card_and_no_cache(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
