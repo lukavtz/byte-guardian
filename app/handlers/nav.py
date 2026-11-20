@@ -12,7 +12,7 @@ import math
 
 import asyncpg
 from aiogram import Bot, F, Router
-from aiogram.types import CallbackQuery, InlineKeyboardMarkup
+from aiogram.types import CallbackQuery
 from sqlalchemy import text
 from sqlalchemy.exc import ProgrammingError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
@@ -142,15 +142,9 @@ def _category(repo: ContentRepository, slug: str) -> CategoryView | None:
 
 
 async def menu_screen(repo: ContentRepository, locale: str) -> RichScreen:
-    screen = render_menu(repo.categories(), locale)
-    rows = list(screen.keyboard.inline_keyboard) if screen.keyboard else []
-    rows.append(
-        [
-            button(t(locale, "button.search"), cb_search_hint()),
-            button(t(locale, "button.language"), cb_lang_menu()),
-        ]
-    )
-    return RichScreen(screen.html, InlineKeyboardMarkup(inline_keyboard=rows))
+    # The search/language row is part of the rich message, like every other
+    # button: nothing is appended to a keyboard underneath it.
+    return render_menu(repo.categories(), locale)
 
 
 async def category_screen(

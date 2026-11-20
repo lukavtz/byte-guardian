@@ -18,6 +18,7 @@ from app.services.callbacks import (
     cb_search_hint,
     parse_cb,
 )
+from app.ui.keyboards import keyboard_from_rich
 
 
 class _Result:
@@ -186,7 +187,10 @@ def _query(data: str, *, chat_type: str = "private") -> SimpleNamespace:
 
 
 def _buttons(kwargs: dict) -> list[object]:
-    markup = kwargs.get("reply_markup")
+    """The screen's controls: in-message buttons first, then the keyboard."""
+    rich = kwargs.get("rich_message")
+    markup = keyboard_from_rich(rich.html or "") if rich is not None else None
+    markup = markup or kwargs.get("reply_markup")
     return [item for row in (markup.inline_keyboard if markup else []) for item in row]
 
 

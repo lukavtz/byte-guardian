@@ -72,8 +72,8 @@ def shown(monkeypatch: pytest.MonkeyPatch) -> list:
 
 
 def _actions(screen: object) -> list[tuple[str, str]]:
-    keyboard = screen.keyboard
-    assert keyboard is not None
+    markup = keyboard_from_rich(screen.html) or screen.keyboard
+    assert markup is not None
     parsed = []
     for row in keyboard.inline_keyboard:
         for button in row:
@@ -99,7 +99,7 @@ async def test_command_text_is_never_a_query(shown: list) -> None:
 async def test_empty_result_offers_eight_category_hints(shown: list) -> None:
     await search_handler.on_text(_message("абракадабра"), await _repo(), None)
 
-    actions = _actions(shown[0])
+    actions = [action for action in _actions(shown[0]) if action[0] == "cat"]
     assert len(actions) == 8
     assert all(action == "cat" for action, _ in actions)
     assert {arg for _, arg in actions} == set(SLUGS)

@@ -41,11 +41,7 @@ async def on_text(
         return
     locale = await _locale(session_factory, message.from_user)
     results = repo.search(query, locale)
-    screen = search_screen(query, results, locale)
-    if not results:
-        # No match: the eight sections are the useful next tap.
-        hints = [button(f"{category.emoji} {category.title}", cb_cat(category.slug)) for category in repo.categories()]
-        screen = RichScreen(screen.html, markup(paired(hints)))
+    screen = search_screen(query, results, locale, None if results else repo.categories())
     await show(bot, message.chat.id, screen)
 
 
