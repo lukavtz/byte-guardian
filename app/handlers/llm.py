@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
+from contextlib import suppress
 
 from aiogram import Bot, Dispatcher, F, Router
 from aiogram.dispatcher.event.bases import SkipHandler
-from aiogram.enums import ChatType
+from aiogram.enums import ChatAction, ChatType
 from aiogram.filters import Command, CommandObject
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
@@ -35,6 +37,8 @@ from app.ui.render import search_screen
 logger = logging.getLogger(__name__)
 
 BOT_USERNAME: str | None = None
+
+TYPING_INTERVAL = 4.0
 
 LIMITER = RateLimiter()
 
@@ -123,6 +127,25 @@ async def _send(message: Message, text: str, *, group: bool, markup: InlineKeybo
         await message.answer(text, reply_markup=markup)
 
 
+async def _typing_ping(bot: Bot, chat_id: int) -> None:
+    """The first indicator is best-effort: a missing one must not fail the answer."""
+    try:
+        await bot.send_chat_action(chat_id=chat_id, action=ChatAction.TYPING)
+    except Exception:
+        logger.debug("typing indicator unavailable", exc_info=True)
+
+
+async def _keep_typing(bot: Bot, chat_id: int) -> None:
+    """Refresh the indicator every few seconds until the caller cancels the task."""
+    while True:
+        await asyncio.sleep(TYPING_INTERVAL)
+        try:
+            await bot.send_chat_action(chat_id=chat_id, action=ChatAction.TYPING)
+        except Exception:
+            logger.debug("typing indicator stopped", exc_info=True)
+            return
+
+
 async def _fallback(
     message: Message,
     question: str,
@@ -171,10 +194,19 @@ async def respond(
         await _fallback(message, question, bot=bot, repository=repository, locale=locale, group=group)
         return
     messages = build_messages(question, locale, cards)
+    await _typing_ping(bot, message.chat.id)
+    typing = asyncio.create_task(_keep_typing(bot, message.chat.id))
+    failed = False
     try:
         async with client:
             raw = await llm_service.answer(client, messages, settings.llm_model)
     except llm_service.LlmUnavailable:
+        failed = True
+    finally:
+        typing.cancel()
+        with suppress(asyncio.CancelledError):
+            await typing
+    if failed:
         await _fallback(message, question, bot=bot, repository=repository, locale=locale, group=group)
         return
     text = strip_html(raw)

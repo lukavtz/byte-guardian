@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import json
 import re
 from types import SimpleNamespace
@@ -171,6 +172,31 @@ def test_strip_html_marks_an_overflow_that_spans_nodes() -> None:
 
 def test_strip_html_rejects_unknown_tags_but_keeps_text() -> None:
     assert service.strip_html("<div><s>gone</s></div>") == "<s>gone</s>"
+
+
+def test_strip_html_turns_bold_markdown_into_bold() -> None:
+    assert service.strip_html("**112**") == "<b>112</b>"
+    assert service.strip_html("Звоните **112** сразу") == "Звоните <b>112</b> сразу"
+    assert service.strip_html("__важно__ тут") == "<b>важно</b> тут"
+
+
+def test_strip_html_turns_single_asterisks_into_italic() -> None:
+    assert service.strip_html("*важно* знать") == "<i>важно</i> знать"
+
+
+def test_strip_html_leaves_identifiers_and_arithmetic_alone() -> None:
+    text = "obj.__init__() и snake_case_name, 2*3*4"
+    assert service.strip_html(text) == text
+
+
+def test_strip_html_leaves_unmatched_markers_literal() -> None:
+    assert service.strip_html("**непарный") == "**непарный"
+    assert service.strip_html("непарный *тут") == "непарный *тут"
+
+
+def test_strip_html_keeps_markdown_inside_code_untouched() -> None:
+    assert service.strip_html("`a**b**c`") == "`a**b**c`"
+    assert service.strip_html("<code>**x**</code> и **да**") == "<code>**x**</code> и <b>да</b>"
 
 
 # --- is_addressed ---------------------------------------------------------
@@ -367,6 +393,37 @@ async def test_respond_sends_html_answer_with_card_button(monkeypatch: pytest.Mo
     assert text == "<b>Ответ</b>x"
     markup = message.answer.await_args.kwargs["reply_markup"]
     assert markup.inline_keyboard[0][0].url == "https://t.me/bytebot?start=card_fire-home"
+
+
+async def test_respond_shows_typing_and_cancels_the_repeat(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, json={"choices": [{"message": {"content": "ok"}}]})
+
+    monkeypatch.setattr(service, "client_for", lambda settings: _client(handler))
+    message = _message("/ask что делать?")
+    bot = SimpleNamespace(id=999, send_chat_action=AsyncMock())
+
+    await handlers.respond(
+        message,
+        "что делать?",
+        bot=bot,
+        settings=_settings(),
+        repository=_Repo([_card()]),
+        bot_username="bytebot",
+    )
+
+    assert bot.send_chat_action.await_count >= 1
+    assert bot.send_chat_action.await_args.kwargs["chat_id"] == 7
+    assert bot.send_chat_action.await_args.kwargs["action"] == "typing"
+    pending = [
+        task
+        for task in asyncio.all_tasks()
+        if getattr(task.get_coro(), "__name__", "") == "_keep_typing"
+    ]
+    assert pending == []
+    message.answer.assert_awaited_once()
 
 
 async def test_respond_replies_in_group(monkeypatch: pytest.MonkeyPatch) -> None:

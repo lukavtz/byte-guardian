@@ -29,9 +29,9 @@ from app.services.callbacks import (
     cb_search_hint,
     parse_cb,
 )
-from app.services.i18n import DEFAULT_LOCALE, ENABLED_LOCALES, resolve_locale, t
+from app.services.i18n import ENABLED_LOCALES, resolve_locale, t
 from app.services.settings import set_chat_mode
-from app.services.user_locale import get_locale, set_locale
+from app.services.user_locale import get_locale, locale_state, set_locale
 from app.ui.delivery import show
 from app.ui.emoji import custom_id, premium
 from app.ui.keyboards import PAGE_SIZE, button, markup, paired, rich_button, rich_row
@@ -73,18 +73,18 @@ async def user_locale(
 async def pin_initial_locale(
     session_factory: async_sessionmaker[AsyncSession], user: object | None
 ) -> str:
-    """Write the Telegram language while the row is still the default.
+    """Seed the Telegram language once, never over an explicit choice.
 
-    A language the user picked in the UI is never overwritten by ``/start``.
+    ``locale_chosen`` marks a language the user picked in the UI, so a later
+    ``/start`` after a Telegram language change leaves it alone.
     """
     if user is None:
         return resolve_locale(None)
     user_id = int(getattr(user, "id", 0))
-    locale = await get_locale(
-        session_factory, user_id, getattr(user, "language_code", None)
-    )
-    if locale == DEFAULT_LOCALE:
-        locale = resolve_locale(getattr(user, "language_code", None))
+    stored, chosen = await locale_state(session_factory, user_id)
+    if chosen and stored:
+        return stored
+    locale = resolve_locale(getattr(user, "language_code", None))
     await set_locale(session_factory, user_id, locale)
     return locale
 

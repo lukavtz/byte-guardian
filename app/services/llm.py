@@ -41,6 +41,39 @@ MAX_BUCKETS = 10_000
 
 _ASK_RE = re.compile(r"^/ask(?:@[A-Za-z0-9_]+)?(?:\s|$)", re.IGNORECASE)
 
+# Models often answer in Markdown even when asked for HTML. Convert the two
+# emphasis forms, and leave anything inside code alone.
+_CODE_SPAN_RE = re.compile(
+    r"```.*?```|`[^`\n]*`|<code>.*?</code>", re.DOTALL | re.IGNORECASE
+)
+_BOLD_RE = re.compile(r"\*\*(?=\S)(.+?\S)\*\*")
+_UNDER_BOLD_RE = re.compile(r"(?<![\w])__(?=\S)(.+?\S)__(?![\w])")
+_ITALIC_RE = re.compile(r"(?<![\w*])\*(?=[^\s*])([^*\n]+?)(?<=[^\s*])\*(?![\w*])")
+_IDENTIFIER_RE = re.compile(r"[A-Za-z_][A-Za-z0-9_]*\Z")
+
+
+def _emphasis(chunk: str) -> str:
+    def wrap(match: re.Match[str], tag: str) -> str:
+        inner = match.group(1)
+        # ``__init__`` is an identifier, not emphasis.
+        return match.group(0) if _IDENTIFIER_RE.match(inner) else f"<{tag}>{inner}</{tag}>"
+
+    chunk = _BOLD_RE.sub(r"<b>\1</b>", chunk)
+    chunk = _UNDER_BOLD_RE.sub(lambda m: wrap(m, "b"), chunk)
+    return _ITALIC_RE.sub(lambda m: wrap(m, "i"), chunk)
+
+
+def markdown_to_html(text: str) -> str:
+    """``**x**``/``__x__`` become bold and ``*x*`` italic, outside code spans."""
+    out: list[str] = []
+    position = 0
+    for span in _CODE_SPAN_RE.finditer(text):
+        out.append(_emphasis(text[position : span.start()]))
+        out.append(span.group(0))
+        position = span.end()
+    out.append(_emphasis(text[position:]))
+    return "".join(out)
+
 
 class LlmUnavailable(RuntimeError):
     """The model could not produce a usable answer; callers fall back to search."""
@@ -270,7 +303,7 @@ class _Cleaner(HTMLParser):
 def strip_html(text: str) -> str:
     """Keep b/i/u/s/code, turn br into a newline, escape the rest, cap 1200 chars."""
     cleaner = _Cleaner()
-    cleaner.feed(text or "")
+    cleaner.feed(markdown_to_html(text or ""))
     cleaner.close()
     return "".join(cleaner.parts).strip()
 

@@ -79,7 +79,7 @@ class FakeDB:
             def mappings(self) -> Result:
                 return self
 
-        if sql.startswith("SELECT locale FROM users"):
+        if sql.startswith("SELECT locale, locale_chosen FROM users"):
             return Result([])
         if sql.startswith("INSERT INTO quiz_answer"):
             if any(

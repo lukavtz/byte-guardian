@@ -26,6 +26,24 @@ def _display_name(first_name: str, last_name: str | None) -> str:
     return " ".join(part for part in (first_name, last_name) if part)[:MAX_DISPLAY_NAME]
 
 
+def update_user(event: TelegramObject | None) -> Any:
+    """The sender of an ``Update``, whatever kind of event it carries.
+
+    Update-level middleware receives the ``Update`` wrapper, not the message
+    or callback query, so the sender lives one level down.
+    """
+    if event is None:
+        return None
+    user = getattr(event, "from_user", None)
+    if user is not None:
+        return user
+    try:
+        inner = getattr(event, "event", None)
+    except RuntimeError:  # an Update with no known event type
+        return None
+    return getattr(inner, "from_user", None)
+
+
 class UserSyncMiddleware(BaseMiddleware):
     def __init__(
         self, session_factory: async_sessionmaker[AsyncSession] | None = None
@@ -38,7 +56,7 @@ class UserSyncMiddleware(BaseMiddleware):
         event: TelegramObject,
         data: dict[str, Any],
     ) -> Any:
-        user = getattr(event, "from_user", None)
+        user = update_user(event)
         session_factory = data.get("session_factory") or self._session_factory
         if user is not None and session_factory is not None:
             username = user.username[:MAX_USERNAME] if user.username else None

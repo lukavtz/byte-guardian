@@ -42,6 +42,7 @@ class FakeDB:
         self.settings: dict[str, object] = {}
         self.users = dict(opt_in or {})
         self.locales = dict(locales or {})
+        self.chosen: dict[int, bool] = {user_id: True for user_id in self.locales}
 
     def factory(self) -> FakeSessionFactory:
         return FakeSessionFactory(self)
@@ -57,11 +58,14 @@ class FakeDB:
             return _Result([(self.settings[key],)] if key in self.settings else [])
         if sql.startswith("DELETE FROM settings"):
             return _Result([])
-        if sql.startswith("SELECT locale FROM users"):
+        if sql.startswith("SELECT locale, locale_chosen FROM users"):
             user_id = params["user_id"]
-            return _Result([(self.locales[user_id],)] if user_id in self.locales else [])
+            if user_id not in self.locales:
+                return _Result([])
+            return _Result([(self.locales[user_id], self.chosen.get(user_id, False))])
         if sql.startswith("UPDATE users SET locale"):
             self.locales[params["user_id"]] = params["locale"]
+            self.chosen[params["user_id"]] = True
             return _Result([])
         if sql.startswith("SELECT broadcasts_opt_in"):
             user_id = params["user_id"]

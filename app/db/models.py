@@ -34,6 +34,9 @@ class User(Base):
         Boolean, nullable=False, server_default="true"
     )
     locale: Mapped[str] = mapped_column(Text, nullable=False, server_default="ru")
+    locale_chosen: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, server_default="false"
+    )
     created_at: Mapped[dt.datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=sa_text("now()")
     )
