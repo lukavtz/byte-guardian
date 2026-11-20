@@ -96,7 +96,7 @@
   "button.chat": "问 Byte",
   "button.chat_exit": "退出",
   "chat.title": "与 Byte 对话",
-  "chat.lead": "写下安全问题——我按卡片回答。退出请按下方按钮。",
+  "chat.lead": "写下安全问题——我按卡片回答。下方按钮退出聊天。",
   "menu.search_hint": "用一句话描述情况，我们会找到卡片。",
   "language.hint": "请选择界面语言。",
   "group.private_only": "菜单和设置请在私聊中打开：{link}",

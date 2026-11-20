@@ -508,10 +508,9 @@ def test_sections_screen_lists_eight_sections_then_a_menu_button() -> None:
     assert _rows(screen.html)[-1][-1]["data"] == "b1:menu"
 
 
-def test_every_screen_but_the_menu_ends_with_one_success_menu_button() -> None:
+def test_every_screen_but_the_menu_and_chat_ends_with_one_success_menu_button() -> None:
     screens = [
         render_sections([_category()], LOCALE),
-        render_chat(LOCALE),
         render_category(_category(), [_threat()], LOCALE, 1, 1),
         render_card(_card(), LOCALE, page=1, has_quiz=True),
         render_card(_card(), LOCALE, page=1, has_quiz=False),
@@ -644,17 +643,16 @@ def test_sections_screen_never_exceeds_eight_categories() -> None:
     assert "b1:cat:c8:1" not in _data(screen.html)
 
 
-def test_chat_screen_carries_the_heading_lead_and_two_ways_out() -> None:
+def test_chat_screen_has_one_styled_way_out() -> None:
     screen = render_chat(LOCALE)
     assert "<h1>" in screen.html and "Чат с Байтом" in screen.html
-    assert "Напишите вопрос по БЖД — отвечу по карточкам. Выйти — кнопка ниже." in screen.html
+    assert "Напишите вопрос по БЖД — отвечу по карточкам." in screen.html
     rows = _rows(screen.html)
-    assert [len(row) for row in rows] == [1, 1]
-    assert [button["data"] for button in rows[0]] == ["b1:chat_exit"]
-    assert [button["data"] for button in rows[1]] == ["b1:menu"]
-    assert "style" not in rows[0][0]
-    assert rows[1][0]["style"] == "success"
-    assert rows[1][0]["label"].endswith("Меню")
+    assert len(rows) == 1 and len(rows[0]) == 1
+    exit_button = rows[0][0]
+    assert exit_button["data"] == "b1:chat_exit"
+    assert exit_button["style"] == "danger"
+    assert "Меню" not in exit_button["label"]
 
 
 # --- category ------------------------------------------------------------

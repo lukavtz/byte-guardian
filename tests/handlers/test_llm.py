@@ -244,7 +244,7 @@ async def test_missing_key_falls_back(monkeypatch: pytest.MonkeyPatch) -> None:
     assert "поиска" in message.answer.await_args.args[0]
 
 
-async def test_chat_mode_replies_with_exit_buttons(monkeypatch: pytest.MonkeyPatch) -> None:
+async def test_chat_mode_replies_with_one_styled_exit_button(monkeypatch: pytest.MonkeyPatch) -> None:
     db = FakeDB()
     await set_chat_mode(db.factory(), 42, True)
     monkeypatch.setattr(service, "client_for", lambda settings: _ok())
@@ -257,10 +257,11 @@ async def test_chat_mode_replies_with_exit_buttons(monkeypatch: pytest.MonkeyPat
         session_factory=db.factory(),  # type: ignore[arg-type]
     )
     markup = message.answer.await_args.kwargs["reply_markup"]
-    assert [item.callback_data for row in markup.inline_keyboard for item in row] == [
-        "b1:menu",
-        "b1:chat_exit",
-    ]
+    buttons = [item for row in markup.inline_keyboard for item in row]
+    assert len(buttons) == 1
+    assert buttons[0].callback_data == "b1:chat_exit"
+    assert buttons[0].style == "danger"
+    assert buttons[0].icon_custom_emoji_id is not None
 
 
 async def test_group_reply_still_replies(monkeypatch: pytest.MonkeyPatch) -> None:

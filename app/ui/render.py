@@ -263,16 +263,16 @@ def render_language(locale: str, names: Mapping[str, str]) -> RichScreen:
 
 
 def render_chat(locale: str) -> RichScreen:
-    """The chat screen: one lead line, the way out, and the menu button."""
+    """One lead line and one danger exit — no duplicate menu row."""
     rows = [
         rich_row(
             rich_button(
                 t(locale, "button.chat_exit"),
                 data=cb_chat_exit(),
+                style="danger",
                 icon=("cancel", "❌"),
             )
-        ),
-        rich_row(menu_button(locale)),
+        )
     ]
     heading = f"{premium('support', '💬')} {_esc(t(locale, 'chat.title'))}"
     html = _header("chat", heading, f"<p>{_esc(t(locale, 'chat.lead'))}</p>")

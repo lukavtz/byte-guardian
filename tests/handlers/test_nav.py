@@ -564,7 +564,7 @@ async def test_chat_callback_opens_the_chat_screen_and_keeps_the_mode() -> None:
     assert _edited_message_id(bot.edited) == 10
     assert "Чат с Байтом" in bot.edited[0]["rich_message"].html
     datas = [item.callback_data for item in _buttons(bot.edited[0]) if item.callback_data]
-    assert {cb_chat_exit(), cb_menu()} <= set(datas)
+    assert datas == [cb_chat_exit()]
 
 
 @pytest.mark.asyncio

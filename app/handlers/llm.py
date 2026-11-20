@@ -19,7 +19,7 @@ from app.config import Settings
 from app.content.repository import ContentRepository
 from app.content.types import CardView
 from app.services import llm as llm_service
-from app.services.callbacks import cb_chat_exit, cb_menu
+from app.services.callbacks import cb_chat_exit
 from app.services.conversation import ConversationStore
 from app.services.i18n import resolve_locale, t
 from app.services.llm import (
@@ -120,20 +120,16 @@ def _card_keyboard(card: CardView | None, bot_username: str | None, locale: str)
 
 
 def _chat_keyboard(locale: str) -> InlineKeyboardMarkup:
-    """The chat answer keeps both ways out within one tap."""
+    """One danger exit mirrors the chat screen; no duplicate menu button."""
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
                 button(
-                    t(locale, "button.menu"),
-                    cb_menu(),
-                    icon_custom_emoji_id=custom_id("menu"),
-                ),
-                button(
                     t(locale, "button.chat_exit"),
                     cb_chat_exit(),
+                    style="danger",
                     icon_custom_emoji_id=custom_id("cancel"),
-                ),
+                )
             ]
         ]
     )
