@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "category": {
     "slug": "nature",
     "emoji": "🌪️",
@@ -30,11 +30,11 @@
             "Зарядите телефон и следите за предупреждениями МЧС"
           ],
           "during": [
+            "Позвоните 112 и сообщите о случившемся",
             "В доме отойдите от окна, проводки и антенны",
             "На улице укройтесь в здании или в салоне автомобиля",
             "В лесу выберите низкорослый участок, подальше от высоких деревьев",
-            "В поле сядьте на корточки в ложбине и обхватите ноги руками",
-            "Отойдите от воды и от металлических предметов"
+            "В поле сядьте на корточки в ложбине и обхватите ноги руками"
           ],
           "after": [
             "Дождитесь, пока гроза отойдёт: гром слышно позже вспышки",
@@ -50,7 +50,19 @@
           "contacts": [
             "112"
           ],
-          "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/deystviya-pri-groze_6"
+          "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/deystviya-pri-groze_6",
+          "quick": "Позвоните 112",
+          "mistakes": [
+            "Прятаться под одиноким деревом или на возвышении",
+            "Оставаться в воде или на берегу",
+            "Держать в руках зонт, удочку или другой металлический предмет"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/deystviya-pri-groze_6"
+            }
+          ]
         },
         "en": {
           "title": "Thunderstorm and lightning",
@@ -66,11 +78,11 @@
             "Charge your phone and follow EMERCOM warnings"
           ],
           "during": [
+            "Call 112 and report the emergency",
             "Inside, move away from windows, wiring, and antennas",
             "Outdoors, shelter in a building or inside a car",
             "In a forest, choose low-growing terrain far from tall trees",
-            "In an open field, crouch in a hollow and wrap your arms around your legs",
-            "Move away from water and metal objects"
+            "In an open field, crouch in a hollow and wrap your arms around your legs"
           ],
           "after": [
             "Wait until the storm moves away: thunder is heard after the flash",
@@ -86,6 +98,18 @@
           "source": "EMERCOM of Russia · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/deystviya-pri-groze_6",
           "contacts": [
             "112"
+          ],
+          "quick": "Call 112",
+          "mistakes": [
+            "Shelter under a lone tree or on high ground",
+            "Stay in the water or on the shore",
+            "Hold an umbrella, fishing rod, or other metal object"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/deystviya-pri-groze_6"
+            }
           ]
         },
         "zh": {
@@ -102,11 +126,11 @@
             "给手机充电，关注紧急情况部的预警"
           ],
           "during": [
+            "拨打112并报告情况",
             "在室内远离窗户、电线和天线",
             "在室外，到建筑物内或车内躲避",
             "在森林里选择低矮地势，远离高树",
-            "在开阔地蹲在洼处，双手抱住双腿",
-            "远离水域和金属物体"
+            "在开阔地蹲在洼处，双手抱住双腿"
           ],
           "after": [
             "等雷暴远离：闪电之后仍能听到雷声",
@@ -122,7 +146,19 @@
           "contacts": [
             "112"
           ],
-          "source": "俄罗斯紧急情况部 · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/deystviya-pri-groze_6"
+          "source": "俄罗斯紧急情况部 · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/deystviya-pri-groze_6",
+          "quick": "拨打112",
+          "mistakes": [
+            "躲在高大的孤树下或高地上",
+            "留在水中或岸边",
+            "举着雨伞、鱼竿等金属物品"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/deystviya-pri-groze_6"
+            }
+          ]
         },
         "tt": {
           "title": "Күк күкрәү һәм яшен",
@@ -138,11 +174,11 @@
             "Телефонны зарядлагыз һәм МЧС кисәтүләрен күзәтегез"
           ],
           "during": [
+            "112 телефонына шалтыратып хәбәр итегез",
             "Өйдә тәрәзәдән, чыбыклардан һәм антеннадан ерак китегез",
             "Урамда бинага яки машина салонына сыеныгыз",
             "Урманда тәбәнәк участок сайлагыз, биек агачлардан ерак",
-            "Кырда чокырда чүгәләп, аякларны куллар белән кочаклагыз",
-            "Судан һәм металл әйберләрдән китегез"
+            "Кырда чокырда чүгәләп, аякларны куллар белән кочаклагыз"
           ],
           "after": [
             "Күк күкрәү узганчы көтегез: гром яктыртудан соң ишетелә",
@@ -158,7 +194,19 @@
           "contacts": [
             "112"
           ],
-          "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/deystviya-pri-groze_6"
+          "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/deystviya-pri-groze_6",
+          "quick": "112 телефонына шалтыратыгыз",
+          "mistakes": [
+            "Ялгыз агач яки калкулык астында яшеренү",
+            "Суда яки ярда калу",
+            "Кулда зонтик, кармак яки башка металл әйбер тоту"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/deystviya-pri-groze_6"
+            }
+          ]
         }
       },
       "quiz": {
@@ -314,7 +362,8 @@
             "explanation": "Стационар телефон тышкы чыбыкларга бәйле, ә тәрәзә урамга карый, анда яшен сугуы мөмкин."
           }
         ]
-      }
+      },
+      "updated": "2026-11-20"
     },
     {
       "slug": "nature-hurricane",
@@ -334,6 +383,7 @@
             "Перейдите из лёгких построек в прочное здание или укрытие"
           ],
           "during": [
+            "Позвоните 112 и сообщите о случившемся",
             "Оставайтесь в прочном здании, подальше от окон",
             "Спуститесь в подвал или погреб",
             "На улице держитесь подальше от щитов, деревьев и проводов",
@@ -354,7 +404,23 @@
           "contacts": [
             "112"
           ],
-          "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/uragannyy-veter_2 · ГУ МЧС России по Калужской области · https://40.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki/chrezvychaynye-situacii-prirodnogo-haraktera/pravila-povedeniya-pri-bure-smerche-uragane"
+          "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/uragannyy-veter_2 · ГУ МЧС России по Калужской области · https://40.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki/chrezvychaynye-situacii-prirodnogo-haraktera/pravila-povedeniya-pri-bure-smerche-uragane",
+          "quick": "Позвоните 112",
+          "mistakes": [
+            "Стоять у окон и выходить на балкон",
+            "Укрываться за рекламными щитами, деревьями и заборами",
+            "Заходить в ветхие и повреждённые здания"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/uragannyy-veter_2"
+            },
+            {
+              "org": "ГУ МЧС России по Калужской области",
+              "url": "https://40.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki/chrezvychaynye-situacii-prirodnogo-haraktera/pravila-povedeniya-pri-bure-smerche-uragane"
+            }
+          ]
         },
         "en": {
           "title": "Hurricane and strong wind",
@@ -370,6 +436,7 @@
             "Move from light structures to a sturdy building or shelter"
           ],
           "during": [
+            "Call 112 and report the emergency",
             "Stay in a sturdy building, away from windows",
             "Go down to a basement or cellar",
             "Outdoors, stay away from billboards, trees and wires",
@@ -390,6 +457,22 @@
           "source": "EMERCOM of Russia · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/uragannyy-veter_2 · EMERCOM Main Directorate for Kaluga Oblast · https://40.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki/chrezvychaynye-situacii-prirodnogo-haraktera/pravila-povedeniya-pri-bure-smerche-uragane",
           "contacts": [
             "112"
+          ],
+          "quick": "Call 112",
+          "mistakes": [
+            "Standing near windows or going out on the balcony",
+            "Taking cover behind billboards, trees or fences",
+            "Entering dilapidated or damaged buildings"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/uragannyy-veter_2"
+            },
+            {
+              "org": "ГУ МЧС России по Калужской области",
+              "url": "https://40.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki/chrezvychaynye-situacii-prirodnogo-haraktera/pravila-povedeniya-pri-bure-smerche-uragane"
+            }
           ]
         },
         "zh": {
@@ -406,6 +489,7 @@
             "从轻质建筑转移到坚固的建筑物或避难所"
           ],
           "during": [
+            "拨打112并报告情况",
             "待在坚固的建筑物内，远离窗户",
             "下到地下室或地窖",
             "在室外要远离广告牌、树木和电线",
@@ -426,7 +510,23 @@
           "contacts": [
             "112"
           ],
-          "source": "俄罗斯紧急情况部 · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/uragannyy-veter_2 · 俄罗斯紧急情况部卡卢加州总局 · https://40.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki/chrezvychaynye-situacii-prirodnogo-haraktera/pravila-povedeniya-pri-bure-smerche-uragane"
+          "source": "俄罗斯紧急情况部 · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/uragannyy-veter_2 · 俄罗斯紧急情况部卡卢加州总局 · https://40.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki/chrezvychaynye-situacii-prirodnogo-haraktera/pravila-povedeniya-pri-bure-smerche-uragane",
+          "quick": "拨打112",
+          "mistakes": [
+            "站在窗边或走到阳台上",
+            "在广告牌、树木或围栏后躲避",
+            "进入破旧或受损的建筑物"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/uragannyy-veter_2"
+            },
+            {
+              "org": "ГУ МЧС России по Калужской области",
+              "url": "https://40.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki/chrezvychaynye-situacii-prirodnogo-haraktera/pravila-povedeniya-pri-bure-smerche-uragane"
+            }
+          ]
         },
         "tt": {
           "title": "Давыл һәм көчле җил",
@@ -442,6 +542,7 @@
             "Җиңел корылмалардан нык бинага яки сыену урынына күчегез"
           ],
           "during": [
+            "112 телефонына шалтыратып хәбәр итегез",
             "Нык бинада, тәрәзәләрдән ерак торыгыз",
             "Подвалга яки базга төшегез",
             "Урамда щитлардан, агачлардан һәм чыбыклардан ерак торыгыз",
@@ -462,7 +563,23 @@
           "contacts": [
             "112"
           ],
-          "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/uragannyy-veter_2 · Калуга өлкәсе буенча Россия МЧСы баш идарәсе · https://40.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki/chrezvychaynye-situacii-prirodnogo-haraktera/pravila-povedeniya-pri-bure-smerche-uragane"
+          "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/uragannyy-veter_2 · Калуга өлкәсе буенча Россия МЧСы баш идарәсе · https://40.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki/chrezvychaynye-situacii-prirodnogo-haraktera/pravila-povedeniya-pri-bure-smerche-uragane",
+          "quick": "112 телефонына шалтыратыгыз",
+          "mistakes": [
+            "Тәрәзә янында тору һәм балконга чыгу",
+            "Реклама щитлары, агачлар һәм коймалар артына яшеренү",
+            "Иске һәм зыян күргән биналарга керү"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/uragannyy-veter_2"
+            },
+            {
+              "org": "ГУ МЧС России по Калужской области",
+              "url": "https://40.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki/chrezvychaynye-situacii-prirodnogo-haraktera/pravila-povedeniya-pri-bure-smerche-uragane"
+            }
+          ]
         }
       },
       "quiz": {
@@ -618,7 +735,8 @@
             "explanation": "Җил кабат көчәергә мөмкин, ә урамда өзелгән чыбыклар һәм тирбәлүчән конструкцияләр кала."
           }
         ]
-      }
+      },
+      "updated": "2026-11-20"
     },
     {
       "slug": "nature-flood",
@@ -639,6 +757,7 @@
             "Поднимите ценные вещи на верхние этажи или чердак"
           ],
           "during": [
+            "Позвоните 112 и сообщите о случившемся",
             "Поднимитесь на верхние этажи, чердак или крышу",
             "Не переходите воду вброд и не ездите через затопленные дороги",
             "Подавайте сигналы бедствия светом и голосом",
@@ -660,7 +779,19 @@
           "contacts": [
             "112"
           ],
-          "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/navodneniya-i-vesennie-pavodki_7"
+          "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/navodneniya-i-vesennie-pavodki_7",
+          "quick": "Позвоните 112",
+          "mistakes": [
+            "Переходить затопленную дорогу пешком или на машине",
+            "Пить воду из открытых источников",
+            "Включать электроприборы в мокром доме"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/navodneniya-i-vesennie-pavodki_7"
+            }
+          ]
         },
         "en": {
           "title": "Flood and freshet",
@@ -677,6 +808,7 @@
             "Move valuables to upper floors or the attic"
           ],
           "during": [
+            "Call 112 and report the emergency",
             "Go to upper floors, the attic, or the roof",
             "Do not wade through water and do not drive through flooded roads",
             "Signal for help with light and your voice",
@@ -698,6 +830,18 @@
           "source": "EMERCOM of Russia · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/navodneniya-i-vesennie-pavodki_7",
           "contacts": [
             "112"
+          ],
+          "quick": "Call 112",
+          "mistakes": [
+            "Walking or driving across a flooded road",
+            "Drinking water from open sources",
+            "Turning on electrical appliances in a wet house"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/navodneniya-i-vesennie-pavodki_7"
+            }
           ]
         },
         "zh": {
@@ -715,6 +859,7 @@
             "把贵重物品移到上层或阁楼"
           ],
           "during": [
+            "拨打112并报告情况",
             "上到上层、阁楼或屋顶",
             "不要涉水，不要开车穿过被淹的道路",
             "用灯光和声音发出求救信号",
@@ -736,7 +881,19 @@
           "contacts": [
             "112"
           ],
-          "source": "俄罗斯紧急情况部 · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/navodneniya-i-vesennie-pavodki_7"
+          "source": "俄罗斯紧急情况部 · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/navodneniya-i-vesennie-pavodki_7",
+          "quick": "拨打112",
+          "mistakes": [
+            "步行或开车穿过被淹的道路",
+            "饮用开放水源的水",
+            "在潮湿的房子里开启电器"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/navodneniya-i-vesennie-pavodki_7"
+            }
+          ]
         },
         "tt": {
           "title": "Су басу һәм ташкын",
@@ -753,6 +910,7 @@
             "Кыйммәтле әйберләрне өске катларга яки чардакка күтәрегез"
           ],
           "during": [
+            "112 телефонына шалтыратып хәбәр итегез",
             "Өске катларга, чардакка яки түбәгә күтәрелегез",
             "Суны кичеп чыкмагыз һәм су баскан юллардан бармагыз",
             "Яктылык һәм тавыш белән бәла сигналлары бирегез",
@@ -774,7 +932,19 @@
           "contacts": [
             "112"
           ],
-          "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/navodneniya-i-vesennie-pavodki_7"
+          "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/navodneniya-i-vesennie-pavodki_7",
+          "quick": "112 телефонына шалтыратыгыз",
+          "mistakes": [
+            "Су баскан юлны җәяү яки машина белән кичү",
+            "Ачык чыганаклардан су эчү",
+            "Юеш өйдә электр приборларын кабызу"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/navodneniya-i-vesennie-pavodki_7"
+            }
+          ]
         }
       },
       "quiz": {
@@ -930,7 +1100,8 @@
             "explanation": "Судан соң газ агуы һәм чыбык зыяны мөмкин, шуңа күрә башта тикшерү."
           }
         ]
-      }
+      },
+      "updated": "2026-11-20"
     },
     {
       "slug": "nature-thin-ice",
@@ -950,6 +1121,7 @@
             "Возьмите верёвку и заряженный телефон"
           ],
           "during": [
+            "Позвоните 112 и сообщите о случившемся",
             "Лягте на лёд, раскиньте руки и ползите к берегу",
             "Двигайтесь в ту сторону, откуда пришли: там лёд уже держал",
             "Зовите на помощь и не делайте резких движений",
@@ -969,7 +1141,19 @@
           "contacts": [
             "112"
           ],
-          "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pravila-povedeniya-na-ldu-i-vyezd-na-perepravu_7"
+          "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pravila-povedeniya-na-ldu-i-vyezd-na-perepravu_7",
+          "quick": "Позвоните 112",
+          "mistakes": [
+            "Проверять лёд ударом ноги",
+            "Собираться группой на одном участке льда",
+            "Выходить на лёд в оттепель и ночью"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pravila-povedeniya-na-ldu-i-vyezd-na-perepravu_7"
+            }
+          ]
         },
         "en": {
           "title": "Thin ice and ice cover",
@@ -985,6 +1169,7 @@
             "Take a rope and a charged phone"
           ],
           "during": [
+            "Call 112 and report the emergency",
             "Lie flat on the ice, spread your arms and crawl to shore",
             "Move back the way you came: the ice there already held your weight",
             "Call for help and make no sudden movements",
@@ -1004,6 +1189,18 @@
           "source": "EMERCOM of Russia · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pravila-povedeniya-na-ldu-i-vyezd-na-perepravu_7",
           "contacts": [
             "112"
+          ],
+          "quick": "Call 112",
+          "mistakes": [
+            "Testing the ice by kicking it",
+            "Gathering in a group on one spot of ice",
+            "Going on the ice during a thaw or at night"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pravila-povedeniya-na-ldu-i-vyezd-na-perepravu_7"
+            }
           ]
         },
         "zh": {
@@ -1020,6 +1217,7 @@
             "带上绳子，手机保持电量"
           ],
           "during": [
+            "拨打112并报告情况",
             "趴在冰面上，张开双臂向岸边爬",
             "沿原路返回：那里的冰已承受过你的重量",
             "呼救，不要做突然的动作",
@@ -1039,7 +1237,19 @@
           "contacts": [
             "112"
           ],
-          "source": "俄罗斯紧急情况部 · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pravila-povedeniya-na-ldu-i-vyezd-na-perepravu_7"
+          "source": "俄罗斯紧急情况部 · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pravila-povedeniya-na-ldu-i-vyezd-na-perepravu_7",
+          "quick": "拨打112",
+          "mistakes": [
+            "用脚踹冰来试探",
+            "一群人聚在冰面的同一处",
+            "在融冰期或夜间上冰"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pravila-povedeniya-na-ldu-i-vyezd-na-perepravu_7"
+            }
+          ]
         },
         "tt": {
           "title": "Нечкә боз һәм боз кату",
@@ -1055,6 +1265,7 @@
             "Аркан һәм зарядлы телефон алыгыз"
           ],
           "during": [
+            "112 телефонына шалтыратып хәбәр итегез",
             "Бозга ятыгыз, кулларны җәегез һәм ярга таба шуыгыгыз",
             "Килгән якка хәрәкәт итегез: анда боз инде тота иде",
             "Ярдәм чакырыгыз һәм кинәт хәрәкәт итмәгез",
@@ -1074,7 +1285,19 @@
           "contacts": [
             "112"
           ],
-          "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pravila-povedeniya-na-ldu-i-vyezd-na-perepravu_7"
+          "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pravila-povedeniya-na-ldu-i-vyezd-na-perepravu_7",
+          "quick": "112 телефонына шалтыратыгыз",
+          "mistakes": [
+            "Бозны аяк белән тибү",
+            "Бозның бер участогында төркем булып җыелу",
+            "Җылынганда һәм төнлә бозга чыгу"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pravila-povedeniya-na-ldu-i-vyezd-na-perepravu_7"
+            }
+          ]
         }
       },
       "quiz": {
@@ -1230,7 +1453,8 @@
             "explanation": "Ярдәмче шуышып якынлаша һәм бозга йөк салмыйча коткару чарасы бирә."
           }
         ]
-      }
+      },
+      "updated": "2026-11-20"
     },
     {
       "slug": "nature-heat",
@@ -1250,11 +1474,11 @@
             "Приготовьте светлую одежду из хлопка и головной убор"
           ],
           "during": [
+            "Позвоните 112 и сообщите о случившемся",
             "Пейте воду часто и понемногу",
             "Носите светлую одежду и головной убор",
             "Передвигайтесь не спеша и чаще бывайте в тени",
-            "При слабости перейдите в тень или прохладное помещение",
-            "При тепловом ударе облейтесь водой и медленно выпейте много воды"
+            "При слабости перейдите в тень или прохладное помещение"
           ],
           "after": [
             "Продолжайте пить воду и избегайте нагрузки",
@@ -1270,7 +1494,19 @@
           "contacts": [
             "112"
           ],
-          "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/deystviya-pri-silnoy-zhare-zasuhe_3"
+          "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/deystviya-pri-silnoy-zhare-zasuhe_3",
+          "quick": "Позвоните 112",
+          "mistakes": [
+            "Пить пиво и другие алкогольные напитки",
+            "Работать на солнце без головного убора",
+            "Терпеть жажду и сухость во рту"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/deystviya-pri-silnoy-zhare-zasuhe_3"
+            }
+          ]
         },
         "en": {
           "title": "Extreme heat",
@@ -1286,11 +1522,11 @@
             "Prepare light cotton clothing and a hat"
           ],
           "during": [
+            "Call 112 and report the emergency",
             "Drink water often and in small amounts",
             "Wear light clothing and a hat",
             "Move slowly and stay in the shade more often",
-            "If you feel weak, move to shade or a cool room",
-            "In case of heat stroke, douse yourself with water and slowly drink plenty of water"
+            "If you feel weak, move to shade or a cool room"
           ],
           "after": [
             "Keep drinking water and avoid exertion",
@@ -1306,6 +1542,18 @@
           "source": "EMERCOM of Russia · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/deystviya-pri-silnoy-zhare-zasuhe_3",
           "contacts": [
             "112"
+          ],
+          "quick": "Call 112",
+          "mistakes": [
+            "Drinking beer and other alcoholic beverages",
+            "Working in the sun without a hat",
+            "Ignoring thirst and dry mouth"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/deystviya-pri-silnoy-zhare-zasuhe_3"
+            }
           ]
         },
         "zh": {
@@ -1322,11 +1570,11 @@
             "准备轻薄的棉质衣物和帽子"
           ],
           "during": [
+            "拨打112并报告情况",
             "经常喝水，每次少量",
             "穿轻薄衣物，戴帽子",
             "放慢动作，多待在阴凉处",
-            "感到乏力时到阴凉处或凉爽的房间",
-            "中暑时用水浇身，并慢慢喝大量水"
+            "感到乏力时到阴凉处或凉爽的房间"
           ],
           "after": [
             "继续喝水，避免体力消耗",
@@ -1342,7 +1590,19 @@
           "contacts": [
             "112"
           ],
-          "source": "俄罗斯紧急情况部 · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/deystviya-pri-silnoy-zhare-zasuhe_3"
+          "source": "俄罗斯紧急情况部 · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/deystviya-pri-silnoy-zhare-zasuhe_3",
+          "quick": "拨打112",
+          "mistakes": [
+            "喝啤酒和其他含酒精饮料",
+            "不戴帽子在太阳下干活",
+            "忽视口渴和口干"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/deystviya-pri-silnoy-zhare-zasuhe_3"
+            }
+          ]
         },
         "tt": {
           "title": "Гадәттән тыш эсселек",
@@ -1358,11 +1618,11 @@
             "Якты төстәге мамык кием һәм баш киеме әзерләгез"
           ],
           "during": [
+            "112 телефонына шалтыратып хәбәр итегез",
             "Суны еш һәм аз-аз эчегез",
             "Якты кием һәм баш киеме киегез",
             "Ашыкмыйча хәрәкәт итегез һәм күләгәдә ешрак булыгыз",
-            "Хәлсезлек булса, күләгәгә яки салкын бүлмәгә күчегез",
-            "Җылылык сугуында су сибелегез һәм әкренләп күп су эчегез"
+            "Хәлсезлек булса, күләгәгә яки салкын бүлмәгә күчегез"
           ],
           "after": [
             "Су эчүне дәвам итегез һәм йөктән качыгыз",
@@ -1378,7 +1638,19 @@
           "contacts": [
             "112"
           ],
-          "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/deystviya-pri-silnoy-zhare-zasuhe_3"
+          "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/deystviya-pri-silnoy-zhare-zasuhe_3",
+          "quick": "112 телефонына шалтыратыгыз",
+          "mistakes": [
+            "Сыра һәм башка спиртлы эчемлек эчү",
+            "Баш киемесез кояшта эшләү",
+            "Сусауны һәм авыз корылыгын түзү"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/deystviya-pri-silnoy-zhare-zasuhe_3"
+            }
+          ]
         }
       },
       "quiz": {
@@ -1534,7 +1806,8 @@
             "explanation": "МЧС шундук күләгәгә яки душка китәргә һәм әкренләп күп су эчәргә киңәш итә."
           }
         ]
-      }
+      },
+      "updated": "2026-11-20"
     },
     {
       "slug": "nature-cold",
@@ -1554,11 +1827,11 @@
             "Возьмите термос, телефон и запасные рукавицы"
           ],
           "during": [
+            "Позвоните 112 и сообщите о случившемся",
             "Двигайтесь, но не допускайте переутомления и пота",
             "Закройте от ветра лицо и руки",
             "Замёрзшего занесите в тёплое помещение",
-            "Снимите мокрую одежду и дайте тёплое питьё, если человек в сознании",
-            "Наложите сухую повязку на обмороженный участок"
+            "Снимите мокрую одежду и дайте тёплое питьё, если человек в сознании"
           ],
           "after": [
             "Не растирайте и не массируйте поражённые участки",
@@ -1574,7 +1847,19 @@
           "contacts": [
             "112"
           ],
-          "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pervaya-pomoshch-pri-obmorozhenii_0"
+          "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pervaya-pomoshch-pri-obmorozhenii_0",
+          "quick": "Позвоните 112",
+          "mistakes": [
+            "Растирать кожу снегом или спиртом",
+            "Погружать обмороженные конечности в горячую воду",
+            "Смазывать обморожение маслом или кремом"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pervaya-pomoshch-pri-obmorozhenii_0"
+            }
+          ]
         },
         "en": {
           "title": "Frost and hypothermia",
@@ -1590,11 +1875,11 @@
             "Take a thermos, a phone, and spare mittens"
           ],
           "during": [
+            "Call 112 and report the emergency",
             "Keep moving, but avoid exhaustion and sweating",
             "Protect your face and hands from the wind",
             "Bring a frozen person into a warm room",
-            "Remove wet clothing and give warm drinks if the person is conscious",
-            "Apply a dry dressing to the frostbitten area"
+            "Remove wet clothing and give warm drinks if the person is conscious"
           ],
           "after": [
             "Do not rub or massage the affected areas",
@@ -1610,6 +1895,18 @@
           "source": "EMERCOM of Russia · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pervaya-pomoshch-pri-obmorozhenii_0",
           "contacts": [
             "112"
+          ],
+          "quick": "Call 112",
+          "mistakes": [
+            "Rubbing skin with snow or alcohol",
+            "Placing frostbitten limbs in hot water",
+            "Applying oil or cream to frostbite"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pervaya-pomoshch-pri-obmorozhenii_0"
+            }
           ]
         },
         "zh": {
@@ -1626,11 +1923,11 @@
             "带上保温瓶、手机和备用手套"
           ],
           "during": [
+            "拨打112并报告情况",
             "保持活动，但避免力竭和出汗",
             "保护面部和手不受风吹",
             "把冻僵的人带进温暖的房间",
-            "脱去湿衣物，清醒时给温热饮品",
-            "在冻伤部位做干燥包扎"
+            "脱去湿衣物，清醒时给温热饮品"
           ],
           "after": [
             "不要揉搓或按摩冻伤部位",
@@ -1646,7 +1943,19 @@
           "contacts": [
             "112"
           ],
-          "source": "俄罗斯紧急情况部 · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pervaya-pomoshch-pri-obmorozhenii_0"
+          "source": "俄罗斯紧急情况部 · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pervaya-pomoshch-pri-obmorozhenii_0",
+          "quick": "拨打112",
+          "mistakes": [
+            "用雪或酒精揉搓皮肤",
+            "把冻伤的肢体放进热水",
+            "在冻伤处涂油或药膏"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pervaya-pomoshch-pri-obmorozhenii_0"
+            }
+          ]
         },
         "tt": {
           "title": "Салкын һәм өшү",
@@ -1662,11 +1971,11 @@
             "Термос, телефон һәм запас бияләйләр алыгыз"
           ],
           "during": [
+            "112 телефонына шалтыратып хәбәр итегез",
             "Хәрәкәт итегез, ләкин артык арудан һәм тирләүдән качыгыз",
             "Йөзне һәм кулларны җилдән каплагыз",
             "Өшәгән кешене җылы бүлмәгә кертегез",
-            "Юеш киемне салыгыз һәм кеше һушында булса, җылы эчемлек бирегез",
-            "Туңган участокка коры бәйләвеч салыгыз"
+            "Юеш киемне салыгыз һәм кеше һушында булса, җылы эчемлек бирегез"
           ],
           "after": [
             "Зарарланган участокларны ышкымагыз һәм массажламагыз",
@@ -1682,7 +1991,19 @@
           "contacts": [
             "112"
           ],
-          "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pervaya-pomoshch-pri-obmorozhenii_0"
+          "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pervaya-pomoshch-pri-obmorozhenii_0",
+          "quick": "112 телефонына шалтыратыгыз",
+          "mistakes": [
+            "Тишене кар яки спирт белән ышку",
+            "Туңган очлыкларны кайнар суга төшерү",
+            "Туңуны май яки крем белән сылау"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pervaya-pomoshch-pri-obmorozhenii_0"
+            }
+          ]
         }
       },
       "quiz": {
@@ -1838,7 +2159,8 @@
             "explanation": "Агару һәм ою тукымаларда кан әйләнеше бозылуны аңлата."
           }
         ]
-      }
+      },
+      "updated": "2026-11-20"
     },
     {
       "slug": "nature-earthquake",
@@ -1858,11 +2180,11 @@
             "Подготовьте аптечку, фонарь, воду и документы"
           ],
           "during": [
+            "Позвоните 112 и сообщите о случившемся",
             "В здании укройтесь под столом или кроватью, встаньте в дверном проёме или в углу капитальных стен",
             "Держитесь подальше от окон: стекло бьётся",
             "На улице отойдите от домов, столбов и линий электропередачи",
-            "В машине остановитесь вдали от мостов и домов",
-            "Не пользуйтесь лифтом"
+            "В машине остановитесь вдали от мостов и домов"
           ],
           "after": [
             "Выйдите на открытое место по лестнице, не бегом",
@@ -1879,7 +2201,19 @@
           "contacts": [
             "112"
           ],
-          "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/zemletryasenie_3"
+          "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/zemletryasenie_3",
+          "quick": "Позвоните 112",
+          "mistakes": [
+            "Пользоваться лифтом и спичками",
+            "Стоять у окон и на балконе",
+            "Подходить к оборванным проводам и шатким стенам"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/zemletryasenie_3"
+            }
+          ]
         },
         "en": {
           "title": "Earthquake",
@@ -1895,11 +2229,11 @@
             "Prepare a first aid kit, flashlight, water and documents"
           ],
           "during": [
+            "Call 112 and report the emergency",
             "Indoors, take cover under a table or bed, or stand in a doorway or the corner of load-bearing walls",
             "Stay away from windows: glass shatters",
             "Outdoors, move away from buildings, poles and power lines",
-            "In a car, stop away from bridges and buildings",
-            "Do not use the elevator"
+            "In a car, stop away from bridges and buildings"
           ],
           "after": [
             "Leave by the stairs to an open area, without running",
@@ -1916,6 +2250,18 @@
           "source": "EMERCOM of Russia · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/zemletryasenie_3",
           "contacts": [
             "112"
+          ],
+          "quick": "Call 112",
+          "mistakes": [
+            "Use the elevator or matches",
+            "Stand near windows or on the balcony",
+            "Approach broken wires or unstable walls"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/zemletryasenie_3"
+            }
           ]
         },
         "zh": {
@@ -1932,11 +2278,11 @@
             "准备急救包、手电筒、水和证件"
           ],
           "during": [
+            "拨打112并报告情况",
             "在室内躲到桌子或床下，或站在门洞、承重墙的墙角",
             "远离窗户，玻璃会破碎",
             "在室外远离建筑物、电杆和电线",
-            "在车内，要停在远离桥梁和建筑物的位置",
-            "不要乘电梯"
+            "在车内，要停在远离桥梁和建筑物的位置"
           ],
           "after": [
             "走楼梯到开阔地带，不要奔跑",
@@ -1953,7 +2299,19 @@
           "contacts": [
             "112"
           ],
-          "source": "俄罗斯紧急情况部 · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/zemletryasenie_3"
+          "source": "俄罗斯紧急情况部 · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/zemletryasenie_3",
+          "quick": "拨打112",
+          "mistakes": [
+            "乘电梯或点火柴",
+            "站在窗边或阳台上",
+            "靠近断落的电线或不稳的墙"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/zemletryasenie_3"
+            }
+          ]
         },
         "tt": {
           "title": "Җир тетрәү",
@@ -1969,11 +2327,11 @@
             "Аптечка, фонарь, су һәм документлар әзерләгез"
           ],
           "during": [
+            "112 телефонына шалтыратып хәбәр итегез",
             "Бинада өстәл яки карават астына сыеныгыз, ишек уемына яки йөртүче стеналар почмагына басыгыз",
             "Тәрәзәләрдән ерак торыгыз: пыяла ватыла",
             "Урамда йортлардан, баганалардан һәм электр тапшыру линияләреннән китегез",
-            "Машинада күперләрдән һәм йортлардан ерак туктагыз",
-            "Лифт кулланмагыз"
+            "Машинада күперләрдән һәм йортлардан ерак туктагыз"
           ],
           "after": [
             "Ачык урынга баскычтан, йөгермичә чыгыгыз",
@@ -1990,7 +2348,19 @@
           "contacts": [
             "112"
           ],
-          "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/zemletryasenie_3"
+          "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/zemletryasenie_3",
+          "quick": "112 телефонына шалтыратыгыз",
+          "mistakes": [
+            "Лифт һәм шырпы куллану",
+            "Тәрәзә һәм балкон янында тору",
+            "Өзелгән чыбыкларга һәм тирбәлүчән стеналарга якын килү"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/zemletryasenie_3"
+            }
+          ]
         }
       },
       "quiz": {
@@ -2146,7 +2516,8 @@
             "explanation": "Лифт тоткарланырга яки кабат тетрәүләрдә җимерелергә мөмкин."
           }
         ]
-      }
+      },
+      "updated": "2026-11-20"
     },
     {
       "slug": "nature-wildfire",
@@ -2166,10 +2537,10 @@
             "Подготовьте документы, воду и влажную повязку"
           ],
           "during": [
+            "Сообщите о пожаре в противопожарную службу по номеру 101 или 112",
             "Выходите перпендикулярно движению огня — к дороге, просеке или водоёму",
             "Дышите у земли через мокрую ткань",
-            "Если уйти не удаётся, войдите в водоём или накройтесь мокрой одеждой",
-            "Сообщите о пожаре в противопожарную службу по номеру 101 или 112"
+            "Если уйти не удаётся, войдите в водоём или накройтесь мокрой одеждой"
           ],
           "after": [
             "Выходите из зоны пожара только по безопасному пути",
@@ -2185,7 +2556,19 @@
           "contacts": [
             "112"
           ],
-          "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/prirodnye-pozhary_6"
+          "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/prirodnye-pozhary_6",
+          "quick": "Позвоните 101 / Позвоните 112",
+          "mistakes": [
+            "Бросать горящие спички и окурки",
+            "Разводить костёр в хвойном молодняке и под кронами",
+            "Сжигать траву и мусор рядом с лесом"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/prirodnye-pozhary_6"
+            }
+          ]
         },
         "en": {
           "title": "Wildfire",
@@ -2201,10 +2584,10 @@
             "Prepare documents, water, and a wet cloth"
           ],
           "during": [
+            "Report the fire to the fire service by calling 101 or 112",
             "Move perpendicular to the direction of the fire, toward a road, firebreak, or body of water",
             "Breathe close to the ground through a wet cloth",
-            "If you cannot escape, get into a body of water or cover yourself with wet clothing",
-            "Report the fire to the fire service by calling 101 or 112"
+            "If you cannot escape, get into a body of water or cover yourself with wet clothing"
           ],
           "after": [
             "Leave the fire area only by a safe route",
@@ -2220,6 +2603,18 @@
           "source": "EMERCOM of Russia · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/prirodnye-pozhary_6",
           "contacts": [
             "112"
+          ],
+          "quick": "Call 101 / Call 112",
+          "mistakes": [
+            "Throwing away burning matches and cigarette butts",
+            "Building fires in young conifer stands or under tree crowns",
+            "Burning grass and trash near the forest"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/prirodnye-pozhary_6"
+            }
           ]
         },
         "zh": {
@@ -2236,6 +2631,7 @@
             "备好证件、水和湿布"
           ],
           "during": [
+            "拨打112并报告情况",
             "沿与火头垂直的方向移动，前往道路、防火带或水域",
             "用湿布遮住口鼻，贴近地面呼吸",
             "无法脱身时进入水域，或用湿衣物覆盖身体",
@@ -2255,7 +2651,19 @@
           "contacts": [
             "112"
           ],
-          "source": "俄罗斯紧急情况部 · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/prirodnye-pozhary_6"
+          "source": "俄罗斯紧急情况部 · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/prirodnye-pozhary_6",
+          "quick": "拨打101 / 拨打112",
+          "mistakes": [
+            "丢弃燃烧的火柴和烟头",
+            "在幼龄针叶林或树冠下生火",
+            "在森林附近烧草和垃圾"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/prirodnye-pozhary_6"
+            }
+          ]
         },
         "tt": {
           "title": "Урман янгыны",
@@ -2271,10 +2679,10 @@
             "Документлар, су һәм юеш бәйләвеч әзерләгез"
           ],
           "during": [
+            "Янгын турында янгын саклау хезмәтенә 101 яки 112 номеры буенча хәбәр итегез",
             "Ут хәрәкәтенә аркылы — юлга, кисем урынына яки сулыкка таба чыгыгыз",
             "Җир янында юеш тукыма аша сулагыз",
-            "Китә алмасагыз, сулыкка керегез яки юеш кием белән капланыгыз",
-            "Янгын турында янгын саклау хезмәтенә 101 яки 112 номеры буенча хәбәр итегез"
+            "Китә алмасагыз, сулыкка керегез яки юеш кием белән капланыгыз"
           ],
           "after": [
             "Янгын зонасыннан тик имин юл белән чыгыгыз",
@@ -2290,7 +2698,19 @@
           "contacts": [
             "112"
           ],
-          "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/prirodnye-pozhary_6"
+          "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/prirodnye-pozhary_6",
+          "quick": "101 телефонына шалтыратыгыз / 112 телефонына шалтыратыгыз",
+          "mistakes": [
+            "Кабынган шырпы һәм тәмәке төпчекләре ташлау",
+            "Ылыслы яшь урманда һәм агач төбендә ут ягу",
+            "Урман янында үлән һәм чүп яндыру"
+          ],
+          "citations": [
+            {
+              "org": "МЧС России",
+              "url": "https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/prirodnye-pozhary_6"
+            }
+          ]
         }
       },
       "quiz": {
@@ -2446,7 +2866,8 @@
             "explanation": "Җилле һавада үлән яндыру һәм чүп яндыру тиз урман янгынына әйләнә."
           }
         ]
-      }
+      },
+      "updated": "2026-11-20"
     }
   ]
 }
