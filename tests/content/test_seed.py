@@ -7,10 +7,13 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+from sqlalchemy import create_engine, select
 from sqlalchemy.dialects import postgresql
+from sqlalchemy.orm import Session
 
 from app.content.seed import (
     SeedReport,
+    _backfill_statement,
     _extract,
     _updated,
     category_upsert,
@@ -65,9 +68,9 @@ class FakeDB:
         store = self.tables[table]
         for row in rows:
             key = (
-                (row["threat_slug"], row["locale"])
+                (row["b_threat_slug"], row["b_locale"])
                 if table == "threat_text"
-                else (row["threat_slug"],)
+                else (row["b_threat_slug"],)
             )
             current = store.get(key)
             if current is not None and current.get(column) is None:
@@ -596,3 +599,50 @@ def test_extracted_threat_row_binds_updated_as_date() -> None:
     value = rows["threats"][0]["updated"]
     assert value == dt.date(2026, 11, 20)
     assert not isinstance(value, str)
+
+
+def test_backfill_works_with_persistent_object_loaded() -> None:
+    """Bulk update with WHERE must set synchronize_session=None to avoid InvalidRequestError."""
+    from sqlalchemy import text
+
+    from app.db.content import ThreatText
+
+    engine = create_engine("sqlite://")
+    with engine.begin() as conn:
+        conn.execute(
+            text(
+                "CREATE TABLE threat_text ("
+                "threat_slug TEXT NOT NULL, locale TEXT NOT NULL, "
+                "title TEXT NOT NULL, summary TEXT NOT NULL, "
+                "quick TEXT, mistakes TEXT, citations TEXT, "
+                "signs TEXT NOT NULL, before TEXT NOT NULL, during TEXT NOT NULL, "
+                "after TEXT NOT NULL, forbidden TEXT NOT NULL, contacts TEXT NOT NULL, "
+                "source TEXT NOT NULL DEFAULT '', content_version INTEGER NOT NULL DEFAULT 0, "
+                "admin_version INTEGER NOT NULL DEFAULT 0, edited_at DATETIME, "
+                "PRIMARY KEY (threat_slug, locale))"
+            )
+        )
+    with Session(engine) as session:
+        session.add(
+            ThreatText(
+                threat_slug="x",
+                locale="ru",
+                title="t",
+                summary="s",
+                signs=[],
+                before=[],
+                during=[],
+                after=[],
+                forbidden=[],
+                contacts=[],
+            )
+        )
+        session.commit()
+        session.execute(select(ThreatText)).scalar_one()  # load persistent object
+        session.execute(
+            _backfill_statement(ThreatText, "quick", localized=True),
+            [{"b_threat_slug": "x", "b_locale": "ru", "value": "v"}],
+        )
+        session.commit()
+        session.expire_all()
+        assert session.execute(select(ThreatText.quick)).scalar_one() == "v"

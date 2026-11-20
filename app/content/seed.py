@@ -128,11 +128,13 @@ def quiz_upsert() -> Insert:
 def _backfill_statement(model: Any, column: str, *, localized: bool) -> Any:
     """UPDATE that fills one NULL column without touching admin-written values."""
     key = model.threat_slug if hasattr(model, "threat_slug") else model.slug
-    stmt = update(model).values({column: BindParameter("value")})
-    stmt = stmt.where(key == BindParameter("threat_slug"))
+    stmt = update(model.__table__).values({column: BindParameter("value")})
+    stmt = stmt.where(key == BindParameter("b_threat_slug"))
     if localized:
-        stmt = stmt.where(model.locale == BindParameter("locale"))
-    return stmt.where(getattr(model, column).is_(None))
+        stmt = stmt.where(model.locale == BindParameter("b_locale"))
+    return stmt.where(getattr(model, column).is_(None)).execution_options(
+        synchronize_session=None
+    )
 
 
 def _lines(value: object, name: str) -> list[str]:
@@ -391,8 +393,8 @@ async def seed_content(
         for column in ENRICHMENT_TEXT_FIELDS:
             backfill_rows = [
                 {
-                    "threat_slug": row["threat_slug"],
-                    "locale": row["locale"],
+                    "b_threat_slug": row["threat_slug"],
+                    "b_locale": row["locale"],
                     "value": row[column],
                 }
                 for row in rows["texts"]
@@ -403,7 +405,7 @@ async def seed_content(
                     backfill_rows,
                 )
         updated_rows = [
-            {"threat_slug": row["slug"], "value": row["updated"]}
+            {"b_threat_slug": row["slug"], "value": row["updated"]}
             for row in rows["threats"]
         ]
         if updated_rows:
