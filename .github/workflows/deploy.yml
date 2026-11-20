@@ -70,7 +70,7 @@ jobs:
           fi
           set -a; . /opt/bytebot/.env; set +a
           uv run alembic upgrade head
-          sudo supervisorctl restart bytebot-bot bytebot-worker
+          supervisorctl restart bytebot-bot bytebot-worker
           for i in $(seq 1 30); do
             if curl -fsS -o /dev/null localhost:8080/healthz \
                && curl -fsS -o /dev/null localhost:8080/readyz; then
@@ -79,6 +79,6 @@ jobs:
             sleep 2
           done
           echo "health check failed after 60s" >&2
-          sudo tail -n 50 /var/log/bytebot-bot.log >&2 || true
+          tail -n 50 /var/log/bytebot-bot.log >&2 || true
           exit 1
           REMOTE
