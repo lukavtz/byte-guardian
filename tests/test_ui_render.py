@@ -270,8 +270,13 @@ def test_category_artwork_matches_the_section(slug: str) -> None:
     assert f'<img src="{ART}/{slug}.png"/>' in screen.html
 
 
+def test_menu_uses_its_own_banner() -> None:
+    html = render_menu([_category()], LOCALE).html
+    assert f'<img src="{ART}/menu.png"/>' in html
+    assert f'<img src="{ART}/hero.png"/>' not in html
+
+
 def test_unknown_section_falls_back_to_the_hero() -> None:
-    assert f'<img src="{ART}/hero.png"/>' in render_menu([_category()], LOCALE).html
     assert f'<img src="{ART}/hero.png"/>' in search_screen("x", [], LOCALE).html
     unknown = render_category(_category(slug="space"), [_threat()], LOCALE, 1, 1)
     assert f'<img src="{ART}/hero.png"/>' in unknown.html

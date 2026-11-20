@@ -49,7 +49,7 @@ BUTTON_WORDS = 8
 WORD = re.compile(r"\w+")
 SEVERITIES = {1: "low", 2: "medium", 3: "high"}
 ART = "https://raw.githubusercontent.com/lukavtz/byte-guardian/main/assets/art"
-ARTS = frozenset({"fire", "terror", "tech", "nature", "medical", "chem", "rad", "cyber"})
+ARTS = frozenset({"fire", "terror", "tech", "nature", "medical", "chem", "rad", "cyber", "menu"})
 
 
 @dataclass(frozen=True, slots=True)
@@ -192,7 +192,7 @@ def render_menu(categories: list[CategoryView], locale: str, is_admin: bool = Fa
             )
         )
     heading = f"{premium('shield', '🛡️')} {_esc(t(locale, 'menu.title'))}"
-    html = _header("hero", heading, f"<p>{_esc(t(locale, 'menu.lead'))}</p>")
+    html = _header("menu", heading, f"<p>{_esc(t(locale, 'menu.lead'))}</p>")
     return RichScreen(html + "\n".join(rows))
 
 
