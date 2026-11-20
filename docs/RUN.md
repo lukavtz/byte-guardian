@@ -184,6 +184,7 @@ root с `--no-dev`. Образ выставляет `UV_NO_DEV=1`; при пра
 **`rootlessport cannot expose privileged port 80`**
 `caddy` включён профилем `webhook`. Локально:
 `podman compose up -d` (без caddy) — либо `--profile webhook` с портами ≥1024.
+
 **Порт 8080 на хосте занят**
 Публикация бота — `${HEALTH_HOST_PORT:-8080}:${PORT:-8080}`. Задайте
 `HEALTH_HOST_PORT=18080`, иначе `up` упадёт на конфликте порта.
