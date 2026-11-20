@@ -26,6 +26,7 @@ from app.services.callbacks import (
 )
 from app.services.settings import chat_mode_on, set_chat_mode
 from app.ui.keyboards import keyboard_from_rich
+from app.ui.render import ART
 
 
 class _Result:
@@ -527,6 +528,12 @@ def test_language_screen_marks_the_current_locale_success() -> None:
     styles = {item.text.split(" ", 1)[-1]: item.style for item in buttons}
     assert styles["Русский"] == "success"
     assert [item.style for item in buttons].count("primary") == 0
+
+
+def test_language_screen_opens_with_its_own_banner() -> None:
+    html = nav.language_screen("ru").html
+    assert f'<img src="{ART}/lang.jpg"/>' in html
+    assert html.index("<img") < html.index("<h1>") < html.index("<hr/>")
 
 
 @pytest.mark.asyncio

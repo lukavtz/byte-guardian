@@ -24,7 +24,6 @@ from app.content.types import CardView, CategoryView
 from app.services.callbacks import (
     cb_chat,
     cb_chat_exit,
-    cb_lang,
     cb_lang_menu,
     cb_menu,
     cb_random,
@@ -44,6 +43,7 @@ from app.ui.render import (
     render_card,
     render_category,
     render_chat,
+    render_language,
     render_menu,
     render_not_found,
     render_sections,
@@ -164,25 +164,7 @@ def help_screen(locale: str) -> RichScreen:
 
 
 def language_screen(locale: str) -> RichScreen:
-    languages = [
-        rich_button(
-            LANGUAGE_NAMES[code],
-            data=cb_lang(code),
-            style="success" if code == locale else None,
-            icon=("lang", "🌐"),
-        )
-        for code in ENABLED_LOCALES
-    ]
-    rows = [
-        rich_row(*languages[index : index + 2])
-        for index in range(0, len(languages), 2)
-    ]
-    rows.append(rich_row(menu_button(locale)))
-    html = (
-        f"<h1>{premium('lang', '🌐')} {t(locale, 'settings.language')}</h1>"
-        f"<p>{t(locale, 'language.hint')}</p>"
-    )
-    return RichScreen(html + "\n".join(rows))
+    return render_language(locale, LANGUAGE_NAMES)
 
 
 def _is_private(query: CallbackQuery) -> bool:

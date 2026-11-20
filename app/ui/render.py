@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import math
 import secrets
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from html import escape
 from urllib.parse import quote, urlencode
@@ -29,6 +29,7 @@ from app.services.callbacks import (
     cb_chat,
     cb_chat_exit,
     cb_game,
+    cb_lang,
     cb_lang_menu,
     cb_menu,
     cb_quiz,
@@ -39,7 +40,7 @@ from app.services.callbacks import (
     cb_sections,
     cb_settings,
 )
-from app.services.i18n import t
+from app.services.i18n import ENABLED_LOCALES, t
 from app.ui.emoji import premium
 from app.ui.keyboards import PAGE_SIZE, Style, menu_button, rich_button, rich_row
 
@@ -52,7 +53,7 @@ ART = "https://raw.githubusercontent.com/lukavtz/byte-guardian/main/assets/art"
 # The menu opens with the same banner the README shows, straight from assets/.
 BANNER = "https://raw.githubusercontent.com/lukavtz/byte-guardian/main/assets/brand/banner.jpg"
 EXT = "jpg"
-ARTS = frozenset({"fire", "terror", "tech", "nature", "medical", "chem", "rad", "cyber", "chat"})
+ARTS = frozenset({"fire", "terror", "tech", "nature", "medical", "chem", "rad", "cyber", "chat", "lang"})
 
 
 @dataclass(frozen=True, slots=True)
@@ -209,6 +210,30 @@ def render_sections(categories: list[CategoryView], locale: str) -> RichScreen:
     rows.append(rich_row(menu_button(locale)))
     heading = f"{premium('catalog', '📂')} {_esc(t(locale, 'button.sections'))}"
     html = _header("hero", heading, f"<p>{_esc(t(locale, 'sections.lead'))}</p>")
+    return RichScreen(html + "\n".join(rows))
+
+
+def render_language(locale: str, names: Mapping[str, str]) -> RichScreen:
+    """Language switch: its own banner, then four options and the menu button."""
+    languages = [
+        rich_button(
+            names[code],
+            data=cb_lang(code),
+            style="success" if code == locale else None,
+            icon=("lang", "🌐"),
+        )
+        for code in ENABLED_LOCALES
+    ]
+    rows = [
+        rich_row(*languages[index : index + 2])
+        for index in range(0, len(languages), 2)
+    ]
+    rows.append(rich_row(menu_button(locale)))
+    html = _header(
+        "lang",
+        f"{premium('lang', '🌐')} {_esc(t(locale, 'settings.language'))}",
+        f"<p>{_esc(t(locale, 'language.hint'))}</p>",
+    )
     return RichScreen(html + "\n".join(rows))
 
 
