@@ -396,9 +396,14 @@ async def test_game_button_sends_the_widget() -> None:
     assert len(sent[0]["html"].encode("utf-8")) <= HTML_LIMIT
 
 
+@pytest.fixture(autouse=True)
+def _open_widget_gate(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(widget_handler, "_widget_refused_until", 0.0)
+
+
 @pytest.mark.asyncio
 async def test_refused_widget_falls_back_to_the_rich_quiz() -> None:
-    bot = FakeBot(widget_error="Bad Request: widgets are unavailable")
+    bot = FakeBot(widget_error="Bad Request: INPUT_MEDIA_WIDGET_NOT_ALLOWED")
 
     await widget_handler.on_game(
         query=_callback("b1:game:fire-home", bot),
@@ -411,7 +416,65 @@ async def test_refused_widget_falls_back_to_the_rich_quiz() -> None:
     assert len(edits) == 1
     html = edits[0]["rich_message"].html
     assert "Вопрос 1/3" in html
-    assert "Мини-игра недоступна" in html
+    assert "Мини-игра сейчас недоступна" in html
+
+
+@pytest.mark.asyncio
+async def test_closed_widget_gate_skips_the_api_call() -> None:
+    refused = FakeBot(widget_error="Bad Request: INPUT_MEDIA_WIDGET_NOT_ALLOWED")
+    await widget_handler.on_game(
+        query=_callback("b1:game:fire-home", refused),
+        bot=refused,
+        repo=FakeRepo(),
+        session_factory=FakeDB().factory(),
+    )
+
+    # Telegram's refusal must not cost a round-trip on every later tap.
+    second = FakeBot()
+    await widget_handler.on_game(
+        query=_callback("b1:game:fire-home", second),
+        bot=second,
+        repo=FakeRepo(),
+        session_factory=FakeDB().factory(),
+    )
+
+    assert not [name for name, _ in second.calls if name == "send_widget"]
+    assert [name for name, _ in second.calls].count("edit_message_text") == 1
+
+
+@pytest.mark.asyncio
+async def test_widget_gate_expires(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(
+        widget_handler, "_widget_refused_until", 1.0
+    )  # a timestamp from the past
+    bot = FakeBot()
+
+    await widget_handler.on_game(
+        query=_callback("b1:game:fire-home", bot),
+        bot=bot,
+        repo=FakeRepo(),
+        session_factory=FakeDB().factory(),
+    )
+
+    assert len([name for name, _ in bot.calls if name == "send_widget"]) == 1
+
+
+@pytest.mark.asyncio
+async def test_payload_refusal_keeps_the_widget_retryable(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # A real bug of ours (HTML too large) must stay visible and must not be
+    # mistaken for the platform gate.
+    bot = FakeBot(widget_error="Bad Request: INPUT_MEDIA_WIDGET_TOO_LARGE")
+    await widget_handler.on_game(
+        query=_callback("b1:game:fire-home", bot),
+        bot=bot,
+        repo=FakeRepo(),
+        session_factory=FakeDB().factory(),
+    )
+
+    assert widget_handler._widget_allowed()
+    assert not [name for name, _ in bot.calls if name == "send_widget"]
 
 
 @pytest.mark.asyncio

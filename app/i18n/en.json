@@ -72,6 +72,6 @@
   "game.error": "No answer. Try again.",
   "game.offline": "Open this in the Telegram app.",
   "game.finish": "Result",
-  "game.fallback": "This client has no widgets — showing the regular quiz.",
+  "game.fallback": "The mini-game is unavailable right now — showing the regular quiz.",
   "game.private": "The mini-game opens in the private chat with the bot."
 }

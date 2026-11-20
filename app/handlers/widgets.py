@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 import logging
 import secrets
+import time
 from html import escape
 
 from aiogram import Bot, Dispatcher, F, Router
@@ -46,6 +47,13 @@ router = Router(name="widgets")
 
 WIDGET_WIDTH = 360
 WIDGET_HEIGHT = 480
+# Telegram closed sendWidget for general bots on 2026-11-13 (levlam, tdlib
+# issue #947) and gave no ETA. Stop paying an API round-trip per tap: after a
+# refusal, every game goes straight to the rich quiz for an hour. The window
+# expires on its own, so delivery resumes when Telegram reopens the gate.
+WIDGET_RETRY_SECONDS = 3600.0
+WIDGET_CLOSED = "INPUT_MEDIA_WIDGET_NOT_ALLOWED"
+_widget_refused_until = 0.0
 EXPLANATION_LIMIT = 200
 TITLE_LIMIT = 100
 HEX = frozenset("0123456789abcdef")
@@ -164,6 +172,43 @@ async def _handle(
     )
 
 
+def _widget_allowed() -> bool:
+    return time.monotonic() >= _widget_refused_until
+
+
+def _note_refusal(exc: TelegramBadRequest) -> None:
+    """Remember a closed widget gate; keep real payload bugs loud."""
+    global _widget_refused_until
+    reason = str(exc)
+    if WIDGET_CLOSED in reason:
+        _widget_refused_until = time.monotonic() + WIDGET_RETRY_SECONDS
+        logger.warning(
+            "widgets are closed for bots (%s); rich quiz for %ds",
+            WIDGET_CLOSED,
+            WIDGET_RETRY_SECONDS,
+        )
+        return
+    logger.warning("widget refused; falling back to the rich quiz", exc_info=True)
+
+
+async def _rich_quiz(
+    bot: Bot,
+    message: Message,
+    questions: list[QuizView],
+    slug: str,
+    seed: str,
+    locale: str,
+) -> None:
+    screen = render_question(questions[0], slug, 1, len(questions), seed, locale)
+    note = f"<p>{escape(t(locale, 'game.fallback'))}</p>"
+    await show(
+        bot,
+        message.chat.id,
+        RichScreen(screen.html + note, screen.keyboard),
+        message.message_id,
+    )
+
+
 @router.widget_query()
 async def on_widget_query(
     query: WidgetQuery,
@@ -220,6 +265,10 @@ async def on_game(
         return
     await query.answer()
 
+    if not _widget_allowed():
+        await _rich_quiz(bot, message, questions, parsed.arg, seed, locale)
+        return
+
     card = repo.card(parsed.arg, locale)
     caption = (
         t(locale, "game.caption", title=_clip(card.title, TITLE_LIMIT))
@@ -235,19 +284,9 @@ async def on_game(
             width=WIDGET_WIDTH,
             height=WIDGET_HEIGHT,
         )
-    except TelegramBadRequest:
-        # Older clients and bots without Bot API 10.4 get the rich quiz instead.
-        logger.warning("widget refused; falling back to the rich quiz", exc_info=True)
-        screen = render_question(
-            questions[0], parsed.arg, 1, len(questions), seed, locale
-        )
-        note = f"<p>{escape(t(locale, 'game.fallback'))}</p>"
-        await show(
-            bot,
-            message.chat.id,
-            RichScreen(screen.html + note, screen.keyboard),
-            message.message_id,
-        )
+    except TelegramBadRequest as exc:
+        _note_refusal(exc)
+        await _rich_quiz(bot, message, questions, parsed.arg, seed, locale)
 
 
 def register(dp: Dispatcher, _bot: Bot) -> None:

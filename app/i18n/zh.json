@@ -72,6 +72,6 @@
   "game.error": "未收到答复，请重试。",
   "game.offline": "请在 Telegram 应用内打开。",
   "game.finish": "结果",
-  "game.fallback": "此客户端不支持小游戏，已打开普通测验。",
+  "game.fallback": "小游戏暂不可用，已打开普通测验。",
   "game.private": "小游戏在机器人的私聊中打开。"
 }
