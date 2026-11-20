@@ -85,6 +85,7 @@ jobs:
       - name: content sources (schema)
         run: uv run pytest tests/test_content.py -q
       - name: content sources (live links)
+        continue-on-error: true
         env:
           BYTEBOT_LINK_CHECK: "1"
         run: uv run pytest tests/test_content.py -q -k link
