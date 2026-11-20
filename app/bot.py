@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import logging
+import os
+from pathlib import Path
 
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
@@ -9,17 +11,47 @@ from aiogram.types import ErrorEvent
 from redis.asyncio import Redis
 
 from app.config import Settings
-from app.db.session import create_session_factory
+from app.content.repository import ContentRepository
+from app.content.seed import seed_content
+from app.db.session import SessionFactory, create_session_factory
 from app.handlers import register_handlers
 from app.middlewares.allowlist import AllowlistMiddleware
 from app.middlewares.callback_ack import CallbackAckMiddleware
 from app.middlewares.dedupe import DedupeMiddleware
 from app.middlewares.rate_limit import RateLimitMiddleware
+from app.middlewares.repo import RepoMiddleware
 from app.middlewares.user_sync import UserSyncMiddleware
 from app.runtime.queue import Queue
 from app.services.retry import is_retry_after_error, sleep_retry_after
 
 logger = logging.getLogger(__name__)
+
+DEFAULT_CONTENT_DIR = Path(__file__).resolve().parents[1] / "content"
+
+
+def content_directory() -> Path:
+    override = os.environ.get("CONTENT_DIR")
+    return Path(override) if override else DEFAULT_CONTENT_DIR
+
+
+async def initialize_content(
+    repo: ContentRepository, session_factory: SessionFactory
+) -> None:
+    path = content_directory()
+    try:
+        report = await seed_content(session_factory, path)
+    except Exception:
+        logger.warning(
+            "content seed failed for %s; using existing rows", path, exc_info=True
+        )
+    else:
+        for error in report.errors:
+            logger.warning("content seed: %s", error)
+    try:
+        await repo.load()
+    except Exception:
+        logger.exception("content load failed; refusing to start without content")
+        raise
 
 
 async def handle_error(event: ErrorEvent) -> bool:
@@ -57,6 +89,11 @@ def create_dispatcher(settings: Settings, bot: Bot, redis: Redis | None) -> Disp
         dispatcher.update.middleware(UserSyncMiddleware(session_factory))
     if session_factory is None:
         raise RuntimeError("DATABASE_URL is required for the queue")
+    repo = ContentRepository(
+        session_factory, aliases_path=content_directory() / "aliases.json"
+    )
+    dispatcher.workflow_data["repo"] = repo
+    dispatcher.update.middleware(RepoMiddleware(repo))
     dispatcher.workflow_data["queue"] = Queue(
         session_factory,
         visibility_timeout_seconds=settings.queue_visibility_timeout_seconds,
@@ -65,5 +102,10 @@ def create_dispatcher(settings: Settings, bot: Bot, redis: Redis | None) -> Disp
     dispatcher.message.middleware(RateLimitMiddleware(redis))
     dispatcher.message.middleware(AllowlistMiddleware(settings.admin_id_set))
     dispatcher.errors.register(handle_error)
+
+    async def startup_content(**_kwargs: object) -> None:
+        await initialize_content(repo, session_factory)
+
+    dispatcher.startup.register(startup_content)
     register_handlers(dispatcher, bot)
     return dispatcher
