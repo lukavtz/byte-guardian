@@ -100,5 +100,6 @@ def test_views_are_frozen_slots_dataclasses(view: object) -> None:
     assert dataclasses.is_dataclass(view)
     assert type(view).__slots__  # type: ignore[attr-defined]
     assert not hasattr(view, "__dict__")
+    field = dataclasses.fields(view)[0].name
     with pytest.raises(dataclasses.FrozenInstanceError):
-        view.slug = "other"
+        setattr(view, field, "other")
