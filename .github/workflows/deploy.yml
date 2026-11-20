@@ -50,7 +50,13 @@ jobs:
           install -m 700 -d ~/.ssh
           printf '%s\n' "$ALTARE_SSH_KEY" > ~/.ssh/altare
           chmod 600 ~/.ssh/altare
-          ssh-keyscan -p "${{ steps.preflight.outputs.port }}" -H "$ALTARE_HOST" >> ~/.ssh/known_hosts
+          for i in 1 2 3; do
+            if ssh-keyscan -p "${{ steps.preflight.outputs.port }}" -H "$ALTARE_HOST" >> ~/.ssh/known_hosts 2>/dev/null; then
+              break
+            fi
+            echo "keyscan attempt $i failed, retrying"
+            sleep 3
+          done
 
       - name: Deploy over SSH
         if: steps.preflight.outputs.ok == '1'
@@ -58,6 +64,7 @@ jobs:
           ssh -i ~/.ssh/altare \
               -p "${{ steps.preflight.outputs.port }}" \
               -o BatchMode=yes -o ConnectTimeout=15 \
+              -o StrictHostKeyChecking=accept-new \
               "${{ steps.preflight.outputs.user }}@$ALTARE_HOST" \
               'bash -s' <<'REMOTE'
           set -eu
