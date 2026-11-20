@@ -1,0 +1,232 @@
+"""Stateless navigation screens.
+
+Every screen is rebuilt from the callback data: the menu, a category page, a
+card and the language switch. Nothing is kept in FSM state, so a tap that
+arrives hours late still draws the screen it names.
+"""
+
+from __future__ import annotations
+
+import logging
+import math
+
+import asyncpg
+from aiogram import Bot, F, Router
+from aiogram.types import CallbackQuery
+from sqlalchemy import text
+from sqlalchemy.exc import ProgrammingError
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
+from app.content.repository import ContentRepository
+from app.content.types import CardView, CategoryView
+from app.services.callbacks import cb_lang, cb_menu, parse_cb
+from app.services.i18n import ENABLED_LOCALES, resolve_locale, t
+from app.services.settings import settings_get, settings_set
+from app.ui.delivery import show
+from app.ui.keyboards import PAGE_SIZE, button, markup, paired
+from app.ui.render import RichScreen, render_card, render_category, render_menu
+
+logger = logging.getLogger(__name__)
+
+router = Router(name="nav")
+
+LOCALE_KEY = "user_locale:{user_id}"
+OPT_IN_ON = "set:bc:on"
+OPT_IN_OFF = "set:bc:off"
+LANGUAGE_NAMES = {"ru": "Русский", "en": "English", "zh": "中文", "tt": "Татарча"}
+
+OPT_IN_SELECT = text("SELECT broadcasts_opt_in FROM users WHERE id = :user_id")
+
+
+def locale_key(user_id: int) -> str:
+    return LOCALE_KEY.format(user_id=user_id)
+
+
+async def get_saved_locale(
+    session_factory: async_sessionmaker[AsyncSession], user_id: int
+) -> str | None:
+    value = await settings_get(session_factory, locale_key(user_id))
+    return value if value in ENABLED_LOCALES else None
+
+
+async def save_locale(
+    session_factory: async_sessionmaker[AsyncSession], user_id: int, code: str
+) -> None:
+    await settings_set(session_factory, locale_key(user_id), resolve_locale(code))
+
+
+async def user_locale(
+    session_factory: async_sessionmaker[AsyncSession], user: object | None
+) -> str:
+    """Saved choice first, then the Telegram language, then ``ru``."""
+    saved = None
+    if user is not None:
+        saved = await get_saved_locale(session_factory, int(getattr(user, "id", 0)))
+    return saved or resolve_locale(getattr(user, "language_code", None))
+
+
+async def pin_initial_locale(
+    session_factory: async_sessionmaker[AsyncSession], user: object | None
+) -> str:
+    """Write the Telegram language once; later /start never overrides a choice."""
+    if user is None:
+        return resolve_locale(None)
+    user_id = int(getattr(user, "id", 0))
+    saved = await get_saved_locale(session_factory, user_id)
+    if saved is not None:
+        return saved
+    locale = resolve_locale(getattr(user, "language_code", None))
+    await save_locale(session_factory, user_id, locale)
+    return locale
+
+
+async def broadcast_opted_in(
+    session_factory: async_sessionmaker[AsyncSession], user_id: int
+) -> bool:
+    try:
+        async with session_factory() as session:
+            async with session.begin():
+                row = (await session.execute(OPT_IN_SELECT, {"user_id": user_id})).first()
+    except (ProgrammingError, asyncpg.UndefinedColumnError):
+        # ponytail: schema gap fallback; drop once the opt-in migration is universal.
+        logger.warning("users.broadcasts_opt_in missing; assuming opted in")
+        return True
+    return True if row is None else bool(row[0])
+
+
+def settings_screen(locale: str, opted_in: bool) -> RichScreen:
+    languages = [
+        button(LANGUAGE_NAMES[code], cb_lang(code)) for code in ENABLED_LOCALES
+    ]
+    rows: list[list] = paired(languages)
+    toggle = OPT_IN_OFF if opted_in else OPT_IN_ON
+    label = t(locale, "settings.broadcast.disable" if opted_in else "settings.broadcast.enable")
+    rows.append([button(label, toggle, "primary")])
+    status = t(locale, "settings.broadcast.on" if opted_in else "settings.broadcast.off")
+    html = (
+        f"<h1>{t(locale, 'settings.title')}</h1>"
+        f"<p>{t(locale, 'settings.language')}: "
+        f"<b>{LANGUAGE_NAMES.get(locale, LANGUAGE_NAMES['ru'])}</b></p>"
+        f"<p>{t(locale, 'settings.broadcasts')}: <b>{status}</b></p>"
+    )
+    return RichScreen(html, markup(rows))
+
+
+def _is_private(query: CallbackQuery) -> bool:
+    message = query.message
+    return message is not None and getattr(message.chat, "type", None) == "private"
+
+
+async def _redraw(query: CallbackQuery, bot: Bot, screen: RichScreen) -> None:
+    message = query.message
+    if message is None or not _is_private(query):
+        return
+    await show(bot, message.chat.id, screen, message.message_id)
+
+
+def _category(repo: ContentRepository, slug: str) -> CategoryView | None:
+    return next((item for item in repo.categories() if item.slug == slug), None)
+
+
+async def menu_screen(repo: ContentRepository, locale: str) -> RichScreen:
+    return render_menu(repo.categories(), locale)
+
+
+async def category_screen(
+    repo: ContentRepository, slug: str, page: int, locale: str
+) -> RichScreen | None:
+    category = _category(repo, slug)
+    if category is None:
+        return None
+    threats = repo.threats(slug, locale)
+    pages = max(1, math.ceil(len(threats) / PAGE_SIZE))
+    page = min(max(page, 1), pages)
+    visible = threats[(page - 1) * PAGE_SIZE : page * PAGE_SIZE]
+    return render_category(category, visible, locale, page, pages)
+
+
+def card_screen(
+    repo: ContentRepository, slug: str, page: int, locale: str
+) -> RichScreen | None:
+    card: CardView | None = repo.card(slug, locale)
+    if card is None:
+        return None
+    return render_card(card, locale, max(page, 1), repo.has_quiz(slug, locale))
+
+
+async def _fallback(query: CallbackQuery, bot: Bot, repo: ContentRepository, locale: str) -> None:
+    await _redraw(query, bot, await menu_screen(repo, locale))
+
+
+@router.callback_query(F.data == cb_menu())
+async def on_menu(
+    query: CallbackQuery,
+    bot: Bot,
+    repo: ContentRepository,
+    session_factory: async_sessionmaker[AsyncSession],
+) -> None:
+    await query.answer()
+    locale = await user_locale(session_factory, query.from_user)
+    await _redraw(query, bot, await menu_screen(repo, locale))
+
+
+@router.callback_query(F.data.startswith("b1:cat:"))
+async def on_category(
+    query: CallbackQuery,
+    bot: Bot,
+    repo: ContentRepository,
+    session_factory: async_sessionmaker[AsyncSession],
+) -> None:
+    await query.answer()
+    callback = parse_cb(query.data)
+    if callback is None or callback.action != "cat":
+        return
+    locale = await user_locale(session_factory, query.from_user)
+    screen = await category_screen(repo, callback.arg, callback.page, locale)
+    if screen is None:
+        await _fallback(query, bot, repo, locale)
+        return
+    await _redraw(query, bot, screen)
+
+
+@router.callback_query(F.data.startswith("b1:card:"))
+async def on_card(
+    query: CallbackQuery,
+    bot: Bot,
+    repo: ContentRepository,
+    session_factory: async_sessionmaker[AsyncSession],
+) -> None:
+    await query.answer()
+    callback = parse_cb(query.data)
+    if callback is None or callback.action != "card":
+        return
+    locale = await user_locale(session_factory, query.from_user)
+    screen = card_screen(repo, callback.arg, callback.page, locale)
+    if screen is None:
+        await _fallback(query, bot, repo, locale)
+        return
+    await _redraw(query, bot, screen)
+
+
+@router.callback_query(F.data.startswith("b1:lang:"))
+async def on_lang(
+    query: CallbackQuery,
+    bot: Bot,
+    session_factory: async_sessionmaker[AsyncSession],
+) -> None:
+    await query.answer()
+    callback = parse_cb(query.data)
+    if callback is None or callback.action != "lang" or callback.arg not in ENABLED_LOCALES:
+        return
+    user = query.from_user
+    if user is None:
+        return
+    await save_locale(session_factory, user.id, callback.arg)
+    locale = callback.arg
+    await _redraw(
+        query, bot, settings_screen(locale, await broadcast_opted_in(session_factory, user.id))
+    )
+
+
+def register(dp: object, _bot: Bot) -> None:
+    dp.include_router(router)  # type: ignore[attr-defined]

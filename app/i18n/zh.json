@@ -46,4 +46,13 @@
   "inline.menu.title": "打开分类",
   "inline.menu.description": "在机器人菜单中选择分区。",
   "inline.open": "打开卡片",
+  "settings.title": "设置",
+  "settings.language": "语言",
+  "settings.broadcasts": "推送",
+  "settings.broadcast.on": "已开启",
+  "settings.broadcast.off": "已关闭",
+  "settings.broadcast.disable": "关闭推送",
+  "settings.broadcast.enable": "开启推送",
+  "settings.saved": "已保存。",
+  "settings.command": "/settings - 语言与推送"
 }

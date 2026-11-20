@@ -46,4 +46,13 @@
   "inline.menu.title": "Бүлекләрне ачу",
   "inline.menu.description": "Бот менюсыннан бүлек сайлагыз.",
   "inline.open": "Карточканы ачу",
+  "settings.title": "Көйләүләр",
+  "settings.language": "Тел",
+  "settings.broadcasts": "Тапшырулар",
+  "settings.broadcast.on": "Кабык",
+  "settings.broadcast.off": "Сүндерелгән",
+  "settings.broadcast.disable": "Тапшыруларны сүндерергә",
+  "settings.broadcast.enable": "Тапшыруларны кабызырга",
+  "settings.saved": "Сакланды.",
+  "settings.command": "/settings - тел һәм тапшырулар"
 }

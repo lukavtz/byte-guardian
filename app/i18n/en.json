@@ -46,4 +46,13 @@
   "inline.menu.title": "Open categories",
   "inline.menu.description": "Pick a section in the bot menu.",
   "inline.open": "Open card",
+  "settings.title": "Settings",
+  "settings.language": "Language",
+  "settings.broadcasts": "Broadcasts",
+  "settings.broadcast.on": "On",
+  "settings.broadcast.off": "Off",
+  "settings.broadcast.disable": "Turn broadcasts off",
+  "settings.broadcast.enable": "Turn broadcasts on",
+  "settings.saved": "Saved.",
+  "settings.command": "/settings - language and broadcasts"
 }

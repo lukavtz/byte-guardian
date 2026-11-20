@@ -46,4 +46,13 @@
   "inline.menu.title": "Открыть категории",
   "inline.menu.description": "Выберите раздел в меню бота.",
   "inline.open": "Открыть карточку",
+  "settings.title": "Настройки",
+  "settings.language": "Язык",
+  "settings.broadcasts": "Рассылка",
+  "settings.broadcast.on": "Включена",
+  "settings.broadcast.off": "Выключена",
+  "settings.broadcast.disable": "Выключить рассылку",
+  "settings.broadcast.enable": "Включить рассылку",
+  "settings.saved": "Сохранено.",
+  "settings.command": "/settings - язык и рассылка"
 }
