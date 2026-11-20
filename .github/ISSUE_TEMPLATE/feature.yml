@@ -6,7 +6,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Предложения по контенту принимаются только со ссылкой на официальный российский источник (МЧС, Минздрав, Роспотребнадзор, МВД, вузовские методички). См. [CONTRIBUTING.md](../blob/main/CONTRIBUTING.md).
+        Предложения по контенту принимаются только со ссылкой на официальный российский источник (МЧС, Минздрав, Роспотребнадзор, МВД, вузовские методички). См. [CONTRIBUTING.md](https://github.com/lukavtz/byte-guardian/blob/main/CONTRIBUTING.md).
   - type: textarea
     id: problem
     attributes:
