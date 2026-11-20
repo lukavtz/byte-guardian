@@ -30,7 +30,7 @@ from app.services.callbacks import (
 )
 from app.services.i18n import t
 from app.ui.emoji import emoji
-from app.ui.keyboards import PAGE_SIZE, rich_button, rich_row
+from app.ui.keyboards import PAGE_SIZE, Style, rich_button, rich_row
 
 TITLE = 120
 SUMMARY = 900
@@ -202,7 +202,7 @@ def render_question(
     """A question; with `chosen` it shows the verdict on the same screen."""
     rows = []
     for number, option in enumerate(quiz.options[:4]):
-        style = None
+        style: Style | None = None
         if chosen is not None:
             if number == quiz.answer:
                 style = "success"

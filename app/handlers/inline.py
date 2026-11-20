@@ -10,6 +10,7 @@ from aiogram.types import (
     InlineKeyboardMarkup,
     InlineQuery,
     InlineQueryResultArticle,
+    InlineQueryResultUnion,
     InputTextMessageContent,
     User,
 )
@@ -82,9 +83,7 @@ def _menu_article(locale: str, username: str) -> InlineQueryResultArticle:
     )
 
 
-async def _username(query: InlineQuery, bot: Bot) -> str:
-    if query.bot is not None and query.bot.username:
-        return query.bot.username
+async def _username(bot: Bot) -> str:
     me = await bot.me()
     return me.username or FALLBACK_USERNAME
 
@@ -105,9 +104,9 @@ async def on_inline(
     session_factory: SessionFactory | None = None,
 ) -> None:
     locale = await _locale(session_factory, query.from_user)
-    username = await _username(query, bot)
+    username = await _username(bot)
     text = (query.query or "").strip()
-    results: list[InlineQueryResultArticle] = (
+    results: list[InlineQueryResultUnion] = (
         [_card_article(view, locale, username) for view in repo.search(text, locale, limit=RESULTS)] if text else []
     )
     switch = None

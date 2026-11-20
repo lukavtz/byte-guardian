@@ -18,9 +18,11 @@ from the caller.
 
 from __future__ import annotations
 
+from typing import TypedDict
+
 from aiogram import Bot
 from aiogram.exceptions import TelegramBadRequest
-from aiogram.types import InputRichMessage, Message
+from aiogram.types import InlineKeyboardMarkup, InputRichMessage, Message
 
 from app.ui.emoji import strip_premium
 from app.ui.keyboards import keyboard_from_rich, strip_rich_buttons
@@ -35,11 +37,17 @@ NOT_MODIFIED = "message is not modified"
 STALE = ("message to edit not found", "message to edit too old", "query is too old")
 
 
+class _Markup(TypedDict, total=False):
+    """`reply_markup`, present only for the screens without a rich form."""
+
+    reply_markup: InlineKeyboardMarkup
+
+
 async def _deliver(bot: Bot, chat_id: int, screen: RichScreen, message_id: int | None) -> Message | None:
     rich = InputRichMessage(html=screen.html)
     # A rich screen carries its buttons itself; a keyboard is passed only for
     # the screens that have no rich form.
-    markup = {"reply_markup": screen.keyboard} if screen.keyboard is not None else {}
+    markup: _Markup = {"reply_markup": screen.keyboard} if screen.keyboard is not None else {}
     if message_id is None:
         return await bot.send_rich_message(chat_id=chat_id, rich_message=rich, **markup)
     edited = await bot.edit_message_text(chat_id=chat_id, message_id=message_id, rich_message=rich, **markup)

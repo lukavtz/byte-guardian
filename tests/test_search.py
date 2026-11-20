@@ -110,8 +110,8 @@ async def _answer(query_text: str, repo: ContentRepository, session_factory: obj
     query = MagicMock()
     query.query = query_text
     query.from_user = SimpleNamespace(id=7, language_code=LOCALE)
-    query.bot = SimpleNamespace(username="byte_bot")
     bot = MagicMock()
+    bot.me = AsyncMock(return_value=SimpleNamespace(username="byte_bot"))
     bot.answer_inline_query = AsyncMock()
     await inline_handler.on_inline(query, repo, bot, session_factory)  # type: ignore[arg-type]
     bot.answer_inline_query.assert_awaited_once()

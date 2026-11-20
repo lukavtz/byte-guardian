@@ -12,6 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.config import Settings
 from app.content.repository import ContentRepository
+from app.content.types import CardView
 from app.services import llm as llm_service
 from app.services.i18n import resolve_locale, t
 from app.services.llm import (
@@ -81,7 +82,7 @@ def _question(text: str, bot_username: str | None) -> str:
     return strip_mention(value, bot_username)
 
 
-def _card_keyboard(card, bot_username: str | None, locale: str) -> InlineKeyboardMarkup | None:
+def _card_keyboard(card: CardView | None, bot_username: str | None, locale: str) -> InlineKeyboardMarkup | None:
     if card is None or not bot_username:
         return None
     url = f"https://t.me/{bot_username}?start=card_{card.slug}"
