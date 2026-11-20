@@ -318,7 +318,8 @@ async def test_show_more_draws_the_rest_of_the_hits(shown: list) -> None:
     assert "Найдено: 9" in shown[1].html
     cards = [action for action in _actions(shown[1]) if action[0] == "card"]
     assert len(cards) == 2
-    assert not [action for action in _actions(shown[1]) if action[0] == "search"]
+    assert cb_search(search_handler.digest_of("пожар"), 1) in shown[1].html
+    assert cb_search(search_handler.digest_of("пожар"), 3) not in shown[1].html
 
 
 def test_search_callback_stays_inside_telegram_limit() -> None:

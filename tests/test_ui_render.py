@@ -36,6 +36,7 @@ from app.ui.render import (
     render_question,
     render_result,
     search_screen,
+    share_text,
     share_url,
 )
 
@@ -341,6 +342,10 @@ def test_action_buttons_are_verbs_without_trailing_dots() -> None:
     }
     assert {"Тест", "Играть", "Назад", "Поделиться", "Меню"} <= labels
     assert not any(label.endswith(".") for label in labels)
+    card_labels = {
+        button["label"] for button in _buttons(render_card(_card(), LOCALE, 1, False).html)
+    }
+    assert any(label.endswith("‹ Назад") for label in card_labels)
 
     answered = render_question(_quiz(), "fire-home", 1, 3, "a3f1", LOCALE, chosen=0)
     answered_labels = {re.sub(r"^[^\w]+", "", b["label"]) for b in _buttons(answered.html)}
@@ -359,6 +364,45 @@ def test_action_buttons_are_verbs_without_trailing_dots() -> None:
 def test_category_artwork_matches_the_section(slug: str) -> None:
     screen = render_category(_category(slug=slug), [_threat()], LOCALE, 1, 1)
     assert f'<img src="{ART}/{slug}.jpg"/>' in screen.html
+
+
+# --- pager ---------------------------------------------------------------
+
+
+def _pager_buttons(html: str) -> list[tuple[str, str | None]]:
+    return [
+        (button["label"], button.get("style"))
+        for button in _buttons(html)
+        if button["label"] in {"‹", "›"} or re.fullmatch(r"\d+/\d+", button["label"])
+    ]
+
+
+def test_pager_on_the_first_page_offers_forward_only() -> None:
+    screen = render_category(_category(), [_threat()], LOCALE, 1, 3)
+
+    assert _pager_buttons(screen.html) == [("1/3", None), ("›", "success")]
+
+
+def test_pager_in_the_middle_walks_both_ways() -> None:
+    screen = render_category(_category(), [_threat()], LOCALE, 2, 3)
+
+    assert _pager_buttons(screen.html) == [
+        ("‹", "danger"),
+        ("2/3", None),
+        ("›", "success"),
+    ]
+
+
+def test_pager_on_the_last_page_goes_back_only() -> None:
+    screen = render_category(_category(), [_threat()], LOCALE, 3, 3)
+
+    assert _pager_buttons(screen.html) == [("‹", "danger"), ("3/3", None)]
+
+
+def test_single_page_has_no_pager() -> None:
+    screen = render_category(_category(), [_threat()], LOCALE, 1, 1)
+
+    assert _pager_buttons(screen.html) == []
 
 
 def test_menu_opens_with_its_banner() -> None:
@@ -526,10 +570,11 @@ def test_category_lists_threats_with_severity_dots_and_pages() -> None:
     assert [len(row) for row in _rows(screen.html)][:PAGE_SIZE] == [1] * PAGE_SIZE
 
 
-def test_category_never_exceeds_eight_buttons() -> None:
+def test_category_never_exceeds_nine_buttons() -> None:
     threats = [_threat(slug=f"t{i}") for i in range(20)]
     screen = render_category(_category(), threats, LOCALE, page=2, pages=4)
-    assert len(_buttons(screen.html)) <= 8
+    # Five cards, the three-cell pager and the menu.
+    assert len(_buttons(screen.html)) <= 9
 
 
 # --- card ----------------------------------------------------------------
@@ -747,14 +792,25 @@ def test_screens_are_clean_utf8_without_bom() -> None:
 # --- share ---------------------------------------------------------------
 
 
-def test_share_url_encodes_the_deep_link_and_the_reason() -> None:
+def test_share_url_encodes_the_deep_link_and_a_human_message() -> None:
     url = share_url("byte_bot", _card())
     query = parse_qs(urlparse(url).query)
 
     assert url.startswith("https://t.me/share/url?")
     assert query["url"] == ["https://t.me/byte_bot?start=card_fire-home"]
-    assert query["text"][0].startswith("Пожар в квартире — Счёт идёт на минуты.")
-    assert " " not in url and "—" not in url
+    assert query["text"] == ["Пожар в квартире\nЗвоните 101\nБайт · ТИСБИ"]
+    assert "%20" in url and "+" not in url
+    assert "—" not in url and "…" not in query["text"][0]
+
+
+def test_share_text_trims_a_long_action_without_cutting_a_word() -> None:
+    card = dataclasses.replace(_card(), during=(), summary="слово " * 60)
+    lines = share_text(card).splitlines()
+
+    assert lines[0] == "Пожар в квартире"
+    assert lines[-1] == "Байт · ТИСБИ"
+    assert lines[1].endswith("…") and len(lines[1]) <= 181
+    assert lines[1][:-1].rstrip().endswith("слово")
 
 
 def test_share_without_a_username_still_shares_the_text() -> None:
@@ -781,7 +837,7 @@ def _many(count: int) -> list[ThreatView]:
     return [_threat(slug=f"t{i}") for i in range(count)]
 
 
-def test_search_page_one_shows_seven_and_a_more_button() -> None:
+def test_search_page_one_offers_forward_only() -> None:
     screen = search_screen(
         "пожар", _many(9), LOCALE, page=1, total=9, digest="0123abcd"
     )
@@ -789,18 +845,23 @@ def test_search_page_one_shows_seven_and_a_more_button() -> None:
 
     assert "Найдено: 9" in screen.html
     assert len([cb for cb in parsed if cb.action == "card"]) == 7
-    more = [cb for cb in parsed if cb.action == "search"]
-    assert [(cb.arg, cb.page) for cb in more] == [("0123abcd", 2)]
+    labels = [button["label"] for button in _buttons(screen.html)]
+    assert "‹" not in labels and "›" in labels and "1/2" in labels
+    pages = [(cb.arg, cb.page) for cb in parsed if cb.action == "search"]
+    assert pages == [("0123abcd", 1), ("0123abcd", 2)]
 
 
-def test_search_last_page_has_no_more_button_and_keeps_the_total() -> None:
+def test_search_last_page_goes_back_only_and_keeps_the_total() -> None:
     screen = search_screen(
         "пожар", _many(9), LOCALE, page=2, total=9, digest="0123abcd"
     )
 
     assert "Найдено: 9" in screen.html
     assert len([cb for cb in _parsed(screen.html) if cb.action == "card"]) == 2
-    assert not [cb for cb in _parsed(screen.html) if cb.action == "search"]
+    pages = [(cb.arg, cb.page) for cb in _parsed(screen.html) if cb.action == "search"]
+    assert pages == [("0123abcd", 1), ("0123abcd", 2)]
+    labels = [button["label"] for button in _buttons(screen.html)]
+    assert "‹" in labels and "›" not in labels and "2/2" in labels
 
 
 def test_search_without_a_digest_never_offers_paging() -> None:

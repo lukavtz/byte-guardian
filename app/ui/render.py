@@ -14,9 +14,10 @@ from __future__ import annotations
 
 import math
 import secrets
+from collections.abc import Callable
 from dataclasses import dataclass
 from html import escape
-from urllib.parse import urlencode
+from urllib.parse import quote, urlencode
 
 from aiogram.types import InlineKeyboardMarkup
 
@@ -213,6 +214,22 @@ def render_not_found(locale: str) -> RichScreen:
     return RichScreen(html + rows)
 
 
+def _pager(locale: str, page: int, pages: int, link: Callable[[int], str]) -> str:
+    """`‹ 2/5 ›`: the arrows are coloured by direction, the place stays neutral.
+
+    A missing arrow is left out entirely, so page one shows only `›` and the
+    last page only `‹`. The place is a button too, because a rich row has no
+    plain text cell; tapping it redraws the same page and changes nothing.
+    """
+    buttons = []
+    if page > 1:
+        buttons.append(rich_button(t(locale, "button.prev"), data=link(page - 1), style="danger"))
+    buttons.append(rich_button(f"{page}/{pages}", data=link(page)))
+    if page < pages:
+        buttons.append(rich_button(t(locale, "button.next"), data=link(page + 1), style="success"))
+    return rich_row(*buttons)
+
+
 def render_category(
     category: CategoryView, threats: list[ThreatView], locale: str, page: int, pages: int
 ) -> RichScreen:
@@ -220,13 +237,8 @@ def render_category(
         rich_row(rich_button(f"{_dots(item.severity)} {item.title}", data=cb_card(item.slug, page)))
         for item in threats[:PAGE_SIZE]
     ]
-    nav = []
-    if page > 1:
-        nav.append(rich_button(t(locale, "button.prev"), data=cb_cat(category.slug, page - 1)))
-    if page < pages:
-        nav.append(rich_button(t(locale, "button.next"), data=cb_cat(category.slug, page + 1)))
-    if nav:
-        rows.append(rich_row(*nav))
+    if pages > 1:
+        rows.append(_pager(locale, page, pages, lambda number: cb_cat(category.slug, number)))
     rows.append(
         rich_row(
             rich_button(
@@ -289,24 +301,36 @@ def _card_html(card: CardView, locale: str, shown: list[int], summary: str | Non
     )
 
 
-def _one_line(value: str, limit: int = 140) -> str:
+SHARE_LIMIT = 180
+
+
+def _short(value: str, limit: int = SHARE_LIMIT) -> str:
+    """One line, cut at a word boundary; «…» only when something was cut."""
     text = " ".join(value.split())
-    return text if len(text) <= limit else text[: limit - 1].rstrip() + "…"
+    if len(text) <= limit:
+        return text
+    cut = text[:limit].rsplit(" ", 1)[0].rstrip(" ,;:—") or text[:limit]
+    return cut + "…"
+
+
+def share_text(card: CardView) -> str:
+    """Title, the first thing to do, brand: a message a person can forward."""
+    action = _short(card.during[0] if card.during else card.summary)
+    return "\n".join((card.title, action, t(card.locale, "brand.footer")))
 
 
 def share_url(username: str | None, card: CardView) -> str:
-    """`t.me/share/url` with the deep link and a one-line reason to open it.
+    """`t.me/share/url` with the deep link and a human message.
 
-    Both values are URL-encoded; a URL button has no 64-byte callback ceiling.
-    Without a resolved username the card is still shareable, only the deep
-    link is dropped rather than pointing at the wrong bot.
+    ``quote_via=quote`` keeps a space as ``%20``; the default writes ``+``,
+    which Telegram shows literally in the share sheet. Without a resolved
+    username the card is still shareable, only the deep link is dropped rather
+    than pointing at the wrong bot.
     """
-    why = _one_line(card.summary)
-    text = f"{card.title} — {why}" if why else card.title
-    params = {"text": text}
+    params = {"text": share_text(card)}
     if username:
         params = {"url": f"https://t.me/{username}?start=card_{card.slug}", **params}
-    return SHARE + urlencode(params)
+    return SHARE + urlencode(params, quote_via=quote)
 
 
 def render_card(
@@ -515,15 +539,9 @@ def search_screen(
             )
             for item in visible
         ]
-        if digest and page < pages:
+        if digest and pages > 1:
             rows.append(
-                rich_row(
-                    rich_button(
-                        t(locale, "button.more"),
-                        data=cb_search(digest, page + 1),
-                        icon=("arrow", "🔽"),
-                    )
-                )
+                _pager(locale, page, pages, lambda number: cb_search(digest, number))
             )
     else:
         # No match: the eight sections are the useful next tap, in the message,
