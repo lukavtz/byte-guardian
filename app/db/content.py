@@ -12,6 +12,7 @@ from sqlalchemy import (
     Integer,
     PrimaryKeyConstraint,
     Text,
+    UniqueConstraint,
     Uuid,
 )
 from sqlalchemy import text as sa_text
@@ -101,6 +102,14 @@ class QuizQuestion(Base):
 
 class QuizAnswer(Base):
     __tablename__ = "quiz_answer"
+    __table_args__ = (
+        UniqueConstraint(
+            "threat_slug",
+            "question_id",
+            "session_seed",
+            name="uq_quiz_answer_session",
+        ),
+    )
 
     id: Mapped[str] = mapped_column(
         Uuid(as_uuid=False),

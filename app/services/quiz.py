@@ -23,6 +23,7 @@ _OWNER_SQL = text(
     WHERE threat_slug = :threat_slug
       AND question_id = :question_id
       AND session_seed = :session_seed
+    ORDER BY created_at, id
     LIMIT 1
     """
 )
@@ -33,7 +34,7 @@ _INSERT_SQL = text(
       (telegram_id, threat_slug, question_id, session_seed, chosen, correct)
     VALUES
       (:telegram_id, :threat_slug, :question_id, :session_seed, :chosen, :correct)
-    ON CONFLICT (telegram_id, threat_slug, question_id, session_seed) DO NOTHING
+    ON CONFLICT (threat_slug, question_id, session_seed) DO NOTHING
     RETURNING id
     """
 )
@@ -82,7 +83,7 @@ async def record_answer(
     chosen: int,
     correct: bool,
 ) -> bool:
-    """Insert one answer; a repeated click returns ``False`` and writes nothing."""
+    """Insert one answer; ``False`` means the session question is already taken."""
     params = {
         "telegram_id": tg_id,
         "threat_slug": slug,

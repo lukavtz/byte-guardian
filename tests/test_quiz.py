@@ -73,7 +73,6 @@ class FakeDB:
 
     def _key(self, params: dict[str, Any]) -> tuple[Any, ...]:
         return (
-            params["telegram_id"],
             params["threat_slug"],
             params["question_id"],
             params["session_seed"],
@@ -229,6 +228,23 @@ async def test_owner_is_reported() -> None:
     assert await owner_of(factory, SLUG, "q2", SEED) is None
 
 
+def test_quiz_answer_has_one_row_per_session_question() -> None:
+    from sqlalchemy import UniqueConstraint
+
+    from app.db.content import QuizAnswer
+
+    unique = {
+        constraint.name: tuple(column.name for column in constraint.columns)
+        for constraint in QuizAnswer.__table__.constraints
+        if isinstance(constraint, UniqueConstraint)
+    }
+    assert unique["uq_quiz_answer_session"] == (
+        "threat_slug",
+        "question_id",
+        "session_seed",
+    )
+
+
 # --- handler --------------------------------------------------------------
 
 
@@ -286,7 +302,8 @@ async def test_repeat_click_does_not_write_twice() -> None:
 
     db = FakeDB()
     bot = FakeBot()
-    quiz = pick_questions(_quizzes(), SEED)[0]
+    questions = pick_questions(_quizzes(), SEED)
+    quiz = questions[0]
     data = cb_quiz(SLUG, quiz.question_id, quiz.answer, SEED)
 
     for _ in range(2):
@@ -298,6 +315,9 @@ async def test_repeat_click_does_not_write_twice() -> None:
         )
 
     assert len(db.rows) == 1
+    html = _screen_html(bot.calls[-1])
+    assert questions[1].prompt in html
+    assert "Вопрос 2/3" in html
 
 
 @pytest.mark.asyncio
@@ -330,6 +350,37 @@ async def test_foreign_click_shows_alert_and_writes_nothing() -> None:
     alerts = _answers(bot)
     assert alerts and alerts[0]["show_alert"] is True
     assert len(db.rows) == 1
+
+
+@pytest.mark.asyncio
+async def test_concurrent_winner_blocks_the_loser() -> None:
+    from app.handlers import quiz as quiz_handler
+
+    class RacingDB(FakeDB):
+        """Another user lands the same session row first; our insert loses."""
+
+        def execute(self, statement, params: dict[str, Any]) -> _Result:
+            sql = " ".join(str(statement).split())
+            if sql.startswith("INSERT INTO quiz_answer"):
+                self.rows.append({**params, "telegram_id": OTHER_ID})
+                return _Result([])
+            return super().execute(statement, params)
+
+    db = RacingDB()
+    bot = FakeBot()
+    quiz = pick_questions(_quizzes(), SEED)[0]
+
+    await quiz_handler.quiz_callback(
+        callback=_callback(cb_quiz(SLUG, quiz.question_id, quiz.answer, SEED), bot),
+        bot=bot,
+        repo=FakeRepo(_quizzes()),
+        session_factory=db.factory(),
+    )
+
+    alerts = _answers(bot)
+    assert alerts and alerts[0]["show_alert"] is True
+    assert [row["telegram_id"] for row in db.rows] == [OTHER_ID]
+    assert not [name for name, _ in bot.calls if name == "send_rich_message"]
 
 
 @pytest.mark.asyncio

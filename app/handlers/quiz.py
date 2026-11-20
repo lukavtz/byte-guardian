@@ -77,11 +77,6 @@ async def quiz_callback(
         if chosen >= len(quiz.options):
             await _alert(callback, locale)
             return
-        owner = await owner_of(session_factory, slug, quiz.question_id, seed)
-        if owner is not None and owner != callback.from_user.id:
-            await _alert(callback, locale)
-            return
-        await callback.answer()
         inserted = await record_answer(
             session_factory,
             callback.from_user.id,
@@ -92,15 +87,15 @@ async def quiz_callback(
             chosen == quiz.answer,
         )
         if not inserted:
-            screen = render_question(
-                quiz, slug, index + 1, len(questions), seed, locale
-            )
-            await show(bot, message.chat.id, screen, message.message_id)
-            return
+            owner = await owner_of(session_factory, slug, quiz.question_id, seed)
+            if owner is not None and owner != callback.from_user.id:
+                await _alert(callback, locale)
+                return
         next_index = index + 1
     else:
         next_index = index if qid == START else index + 1
-        await callback.answer()
+
+    await callback.answer()
 
     if next_index < len(questions):
         screen = render_question(
