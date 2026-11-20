@@ -12,9 +12,13 @@
   <img alt="Redis 7" src="https://img.shields.io/badge/Redis-7-DC382D?logo=redis&logoColor=white&style=flat-square">
   <img alt="Ubuntu 24.04" src="https://img.shields.io/badge/Ubuntu-24.04-E95420?logo=ubuntu&logoColor=white&style=flat-square">
   <img alt="478 тестов проходят" src="https://img.shields.io/badge/tests-478%20passed-2FE0C8?style=flat-square">
+  <a href="https://github.com/lukavtz/byte-guardian/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/lukavtz/byte-guardian/actions/workflows/ci.yml/badge.svg?branch=main&style=flat-square"></a>
+  <a href="https://github.com/lukavtz/byte-guardian/actions/workflows/deploy.yml"><img alt="Deploy" src="https://github.com/lukavtz/byte-guardian/actions/workflows/deploy.yml/badge.svg?branch=main&style=flat-square"></a>
 </p>
 
 <p align="center">Живой бот — <a href="https://t.me/ByteTisbi_bot">@ByteTisbi_bot</a>. Прод — Altare, Ubuntu 24.04, polling.</p>
+
+<p align="center"><sub>CI: lint, types, tests, content sources, image build; CD: auto-deploy on main.</sub></p>
 
 <p align="center"><b>Фирменный стиль ТИСБИ.</b> Официальный синий <code>#0477D2</code>, акцент <code>#FD8749</code>, чернила <code>#444B54</code> и льдистый фон <code>#F4F8FF</code>; маскот — Байт в худи ТИСБИ. Система целиком — <a href="docs/BRAND.md">docs/BRAND.md</a>.</p>
 

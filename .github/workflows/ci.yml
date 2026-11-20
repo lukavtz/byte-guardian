@@ -1,17 +1,107 @@
 name: ci
+
 on:
   push:
+    branches: [main]
   pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: "3.14"
+
 jobs:
-  test:
+  lint:
+    name: lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
         with:
-          python-version: "3.14"
+          python-version: ${{ env.PYTHON_VERSION }}
+          enable-cache: true
       - run: uv lock --check
       - run: uv sync --frozen
       - run: uv run ruff check .
+
+  types:
+    name: types
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          enable-cache: true
+      - run: uv sync --frozen
       - run: uv run mypy app
-      - run: uv run pytest -q
+
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          enable-cache: true
+      - run: uv sync --frozen
+      - name: pytest + coverage
+        run: >
+          uv run --with pytest-cov pytest -q
+          --cov=app --cov-report=term-missing --cov-report=xml
+          --junitxml=junit.xml
+      - name: Upload JUnit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit
+          path: junit.xml
+          if-no-files-found: error
+      - name: Upload coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage.xml
+          if-no-files-found: warn
+
+  content:
+    name: content
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          enable-cache: true
+      - run: uv sync --frozen
+      - name: content sources (schema)
+        run: uv run pytest tests/test_content.py -q
+      - name: content sources (live links)
+        env:
+          BYTEBOT_LINK_CHECK: "1"
+        run: uv run pytest tests/test_content.py -q -k link
+
+  image:
+    name: image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          load: true
+          tags: bytebot:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Entrypoint is executable
+        run: docker run --rm --entrypoint sh bytebot:ci -c 'test -x /usr/local/bin/docker-entrypoint.sh'

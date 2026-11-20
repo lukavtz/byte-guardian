@@ -393,3 +393,52 @@ Redis терять не страшно: там dedupe `update_id` на 24 час
 Прод работает на polling. Webhook нужен, только если появится домен и reverse
 proxy: `BOT_MODE=webhook`, `WEBHOOK_URL=https://<домен>`, регистрация —
 раздел 4, TLS — на прокси, дальше `localhost:8080/webhook`.
+
+## 9. CI/CD
+
+`.github/workflows/ci.yml` — на каждый push и PR в `main`, concurrency
+отменяет устаревший прогон. Джобы:
+
+| Джоба | Что проверяет |
+|---|---|
+| `lint` | `uv lock --check`, `uv sync --frozen`, `ruff check .` |
+| `types` | `mypy app` |
+| `test` | `pytest` под Python 3.14 + coverage XML + JUnit XML (артефакты) |
+| `content` | схема `content/*.json` и живые ссылки источников (сеть) |
+| `image` | `docker buildx build` без push, проверка entrypoint |
+
+`test` — обязательный чек в branch protection; имя не меняется.
+
+`.github/workflows/deploy.yml` — `workflow_run` после успешного `ci` на
+`main` (только push): SSH на прод, `git pull --ff-only`, `uv sync` если
+изменился `uv.lock`, `alembic upgrade head`, `supervisorctl restart
+bytebot-bot bytebot-worker`, затем `/healthz` и `/readyz` — деплой падает,
+если не 200. Без секретов джоба пропускается с notice, форки не ломаются.
+
+Секреты репозитория (значения не коммитим и не печатаем):
+
+```bash
+gh secret set ALTARE_HOST --body "<host>"     # se-kna01.altare.global — хост без порта
+gh secret set ALTARE_PORT --body "<port>"     # 25699
+gh secret set ALTARE_SSH_KEY < ~/.ssh/altare  # приватный ключ деплоя
+# опционально: пользователь SSH, по умолчанию root
+gh secret set ALTARE_USER --body "<user>"
+```
+
+Ключ деплоя — отдельная пара, без пароля (`ssh-keygen -t ed25519 -C deploy
+-f ~/.ssh/altare -N ''`), публичная часть в `~/.ssh/authorized_keys` на
+проде. Скрипт деплоя вызывает `sudo supervisorctl` и читает `.env` из
+`/opt/bytebot`, то есть пользователю нужно право `sudo` на
+`supervisorctl` без пароля:
+
+```sudoers
+<user> ALL=(root) NOPASSWD: /usr/bin/supervisorctl
+```
+
+Проверить прогон:
+
+```bash
+gh run list --workflow ci --limit 5
+gh run watch
+gh run view --log-failed
+```

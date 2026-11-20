@@ -1,0 +1,84 @@
+name: deploy
+
+on:
+  workflow_run:
+    workflows: [ci]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-main
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: deploy
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production
+    env:
+      ALTARE_HOST: ${{ secrets.ALTARE_HOST }}
+      ALTARE_PORT: ${{ secrets.ALTARE_PORT }}
+      ALTARE_USER: ${{ secrets.ALTARE_USER }}
+      ALTARE_SSH_KEY: ${{ secrets.ALTARE_SSH_KEY }}
+    steps:
+      - name: Preflight
+        id: preflight
+        run: |
+          missing=""
+          if [ -z "$ALTARE_HOST" ]; then missing="$missing ALTARE_HOST"; fi
+          if [ -z "$ALTARE_SSH_KEY" ]; then missing="$missing ALTARE_SSH_KEY"; fi
+          if [ -n "$missing" ]; then
+            echo "::notice::deploy skipped: missing secrets:$missing (see docs/RUN.md §CI/CD)"
+            echo "ok=0" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=1" >> "$GITHUB_OUTPUT"
+          fi
+          echo "port=${ALTARE_PORT:-22}" >> "$GITHUB_OUTPUT"
+          echo "user=${ALTARE_USER:-root}" >> "$GITHUB_OUTPUT"
+
+      - name: Install SSH key
+        if: steps.preflight.outputs.ok == '1'
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$ALTARE_SSH_KEY" > ~/.ssh/altare
+          chmod 600 ~/.ssh/altare
+          ssh-keyscan -p "${{ steps.preflight.outputs.port }}" -H "$ALTARE_HOST" >> ~/.ssh/known_hosts
+
+      - name: Deploy over SSH
+        if: steps.preflight.outputs.ok == '1'
+        run: |
+          ssh -i ~/.ssh/altare \
+              -p "${{ steps.preflight.outputs.port }}" \
+              -o BatchMode=yes -o ConnectTimeout=15 \
+              "${{ steps.preflight.outputs.user }}@$ALTARE_HOST" \
+              'bash -s' <<'REMOTE'
+          set -eu
+          cd /opt/bytebot
+          before=$(git rev-parse HEAD)
+          git pull --ff-only
+          if ! git diff --quiet "$before" HEAD -- uv.lock; then
+            echo "uv.lock changed, syncing"
+            uv sync --frozen --no-dev
+          fi
+          set -a; . /opt/bytebot/.env; set +a
+          uv run alembic upgrade head
+          sudo supervisorctl restart bytebot-bot bytebot-worker
+          for i in $(seq 1 30); do
+            if curl -fsS -o /dev/null localhost:8080/healthz \
+               && curl -fsS -o /dev/null localhost:8080/readyz; then
+              echo "health: ok"; exit 0
+            fi
+            sleep 2
+          done
+          echo "health check failed after 60s" >&2
+          sudo tail -n 50 /var/log/bytebot-bot.log >&2 || true
+          exit 1
+          REMOTE
