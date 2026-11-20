@@ -15,6 +15,15 @@ depends_on = None
 
 
 def upgrade() -> None:
+    op.add_column(
+        "users",
+        sa.Column(
+            "broadcasts_opt_in",
+            sa.Boolean(),
+            nullable=False,
+            server_default="true",
+        ),
+    )
     op.create_table(
         "category",
         sa.Column("slug", sa.Text(), primary_key=True),
@@ -136,3 +145,4 @@ def downgrade() -> None:
     op.drop_index("ix_threat_category_slug", table_name="threat")
     op.drop_table("threat")
     op.drop_table("category")
+    op.drop_column("users", "broadcasts_opt_in")

@@ -257,11 +257,21 @@ async def seed_content(
         "quizzes": [],
     }
     for doc in docs:
+        scratch: dict[str, list[dict[str, Any]]] = {
+            "categories": [],
+            "threats": [],
+            "texts": [],
+            "quizzes": [],
+        }
         try:
-            threats, quizzes = _extract(doc, rows)
+            threats, quizzes = _extract(doc, scratch)
         except (TypeError, ValueError) as exc:
-            errors.append(f"{doc.get('category', {}).get('slug', '?')}: {exc}")
+            category = doc.get("category")
+            slug = category.get("slug", "?") if isinstance(category, dict) else "?"
+            errors.append(f"{slug}: {exc}")
             continue
+        for key, extra in scratch.items():
+            rows[key].extend(extra)
         report.files += 1
         report.threats += threats
         report.quizzes += quizzes

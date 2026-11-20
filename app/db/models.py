@@ -30,6 +30,9 @@ class User(Base):
     display_name: Mapped[str] = mapped_column(
         Text, nullable=False, server_default=""
     )
+    broadcasts_opt_in: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, server_default="true"
+    )
     created_at: Mapped[dt.datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=sa_text("now()")
     )

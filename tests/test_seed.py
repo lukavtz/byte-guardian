@@ -204,3 +204,33 @@ def test_category_upsert_updates_metadata_without_touching_enabled() -> None:
 
     assert "ON CONFLICT (slug) DO UPDATE SET sort = excluded.sort" in sql
     assert "enabled" not in sql.split("DO UPDATE", maxsplit=1)[1]
+
+async def test_rejected_document_commits_no_partial_rows(tmp_path: Path) -> None:
+    db = FakeDB()
+    doc = _doc()
+    doc["threats"].append({"slug": "fire-bad", "severity": 0, "texts": {}})
+    _write(tmp_path, "fire.json", doc)
+    factory = lambda: FakeSession(db)  # noqa: E731
+
+    report = await seed_content(factory, tmp_path)
+
+    assert report.files == 0
+    assert report.errors
+    assert {name: db.count(name) for name in db.tables} == {
+        "category": 0,
+        "threat": 0,
+        "threat_text": 0,
+        "quiz_question": 0,
+    }
+
+
+async def test_non_object_category_is_reported_without_crashing(tmp_path: Path) -> None:
+    db = FakeDB()
+    _write(tmp_path, "bad.json", {"version": 1, "category": ["fire"], "threats": []})
+    factory = lambda: FakeSession(db)  # noqa: E731
+
+    report = await seed_content(factory, tmp_path)
+
+    assert report.files == 0
+    assert any("expected object" in error for error in report.errors)
+    assert db.count("category") == 0
