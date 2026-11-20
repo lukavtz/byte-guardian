@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 
 from app.services import llm as service
-from app.services.prompt import SYSTEM_PROMPT
+from app.services.prompt import EMERGENCY_DIRECTIVE, SYSTEM_PROMPT
 from app.skills import loader
 
 NAMES = [
@@ -244,13 +244,16 @@ def test_build_messages_injects_selected_skills_after_the_prompt() -> None:
 
     assert system.startswith(SYSTEM_PROMPT)
     assert '<skill name="triage">' in system
-    assert len(system) - len(SYSTEM_PROMPT) <= loader.BUDGET_CHARS
+    injected = system[len(SYSTEM_PROMPT) :]
+    assert injected.endswith(EMERGENCY_DIRECTIVE)
+    assert len(injected) - len(EMERGENCY_DIRECTIVE) <= loader.BUDGET_CHARS
 
 
 @pytest.mark.parametrize("question", ["привет", "спасибо", "как дела?"])
-def test_build_messages_skips_skills_for_smalltalk(question: str) -> None:
+def test_build_messages_always_injects_skills_for_smalltalk(question: str) -> None:
     messages = service.build_messages(question, "ru", [])
-    assert messages[0]["content"] == SYSTEM_PROMPT
+    assert messages[0]["content"].startswith(SYSTEM_PROMPT)
+    assert '<skill name="formatting">' in messages[0]["content"]
 
 
 # --- golden eval -----------------------------------------------------------

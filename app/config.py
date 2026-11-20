@@ -68,6 +68,10 @@ class Settings(BaseSettings):
     # Telegram closed widgets (sendWidget) for general bots, so the card shows
     # only «Тест» unless the gate reopens and this is switched on.
     widgets_enabled: bool = False
+    chat_memory_enabled: bool = True
+    chat_memory_group_enabled: bool = False
+    chat_memory_turns: int = Field(default=6, ge=2, le=12)
+    llm_stream_enabled: bool = True
 
     @field_validator("bot_token")
     @classmethod

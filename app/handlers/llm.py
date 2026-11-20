@@ -19,7 +19,8 @@ from app.config import Settings
 from app.content.repository import ContentRepository
 from app.content.types import CardView
 from app.services import llm as llm_service
-from app.services.callbacks import cb_cat, cb_chat, cb_chat_exit, cb_menu
+from app.services.callbacks import cb_chat_exit, cb_menu
+from app.services.conversation import ConversationStore
 from app.services.i18n import resolve_locale, t
 from app.services.llm import (
     RateLimiter,
@@ -33,6 +34,7 @@ from app.services.settings import chat_mode_on
 from app.services.user_locale import get_locale
 from app.services.web_search import WebResult, format_web_context, search_web
 from app.ui.delivery import show
+from app.ui.draft import DraftSink, StatusEditSink
 from app.ui.emoji import custom_id
 from app.ui.keyboards import button
 from app.ui.render import search_screen
@@ -42,6 +44,7 @@ logger = logging.getLogger(__name__)
 BOT_USERNAME: str | None = None
 
 TYPING_INTERVAL = 4.0
+FIRST_TOKEN_TIMEOUT = 8.0
 WEB_TIMEOUT = 6.0
 WEB_LIMIT = 3
 STRONG_CARDS = 2
@@ -74,46 +77,8 @@ FALLBACK = {
     "tt": "ИИ хәзер эшләми — эзләү нәтиҗәләре.",
 }
 
-# Chit-chat never reaches the model: a warm line and one way forward beat a
-# corpus search that only ever reports «карточек нет».
-SMALLTALK: dict[str, dict[str, str]] = {
-    "ru": {
-        "greeting": "Привет! Я Байт, свой в ТИСБИ. Что случилось — пожар, травма или что-то другое?",
-        "thanks": "Пожалуйста. Если что-то ещё — я рядом, спрашивай.",
-        "smalltalk": "Да всё нормально, на посту. А у тебя что — учёба, работа или что-то случилось?",
-        "insult": "Спокойно, без обид. Скажи, что случилось, — помогу по делу.",
-    },
-    "en": {
-        "greeting": "Hey, I'm Byte — the TISBI one. What's up: fire, an injury, or something else?",
-        "thanks": "Any time. If something else comes up, I'm here.",
-        "smalltalk": "All good on my shift. What about you — studies, work, or something happened?",
-        "insult": "Easy, no offence taken. Tell me what happened and I'll help for real.",
-    },
-    "zh": {
-        "greeting": "你好，我是 TISBI 的 Byte。怎么了：火灾、受伤，还是别的事？",
-        "thanks": "不客气。还有问题就问我。",
-        "smalltalk": "我这儿一切正常。你那边呢：学习、工作，还是出了什么事？",
-        "insult": "别急，我不介意。告诉我发生了什么，我来帮上忙。",
-    },
-    "tt": {
-        "greeting": "Исәнме! Мин — Байт, ТИСБИдә үзебезнең кеше. Ни булды: янгын, җәрәхәт әллә башка нәрсә?",
-        "thanks": "Рәхмәт әйтүгә кирәкми. Тагын сорау булса — языгыз.",
-        "smalltalk": "Минем якта барысы да тәртиптә. Ә синең: уку, эш әллә берәр нәрсә булды?",
-        "insult": "Тыныч, үпкәләмим. Ни булганын әйт — эш буенча ярдәм итәм.",
-    },
-}
-VAGUE = {
-    "ru": "Уточни чуть-чуть, чтобы я не гадал: что у тебя сейчас?",
-    "en": "Give me a little more so I don't guess: what's going on right now?",
-    "zh": "再说清楚一点，我好帮你：你现在遇到什么？",
-    "tt": "Бераз ачыкла әле: хәзер ни булды?",
-}
-LABELS = {
-    "ru": {"sections": "Разделы", "ask_more": "Спросить ещё"},
-    "en": {"sections": "Sections", "ask_more": "Ask again"},
-    "zh": {"sections": "栏目", "ask_more": "再问一句"},
-    "tt": {"sections": "Бүлекләр", "ask_more": "Тагын сорау"},
-}
+# One process, one scratchpad per (chat, user). Group memory is opt-in.
+HISTORY = ConversationStore()
 
 router = Router(name="llm")
 
@@ -172,63 +137,6 @@ def _chat_keyboard(locale: str) -> InlineKeyboardMarkup:
             ]
         ]
     )
-
-
-def _intent_keyboard(locale: str) -> InlineKeyboardMarkup:
-    """A warm answer still offers the next step; «Спросить ещё» leads."""
-    return InlineKeyboardMarkup(
-        inline_keyboard=[
-            [
-                button(
-                    LABELS[locale]["sections"],
-                    cb_menu(),
-                    icon_custom_emoji_id=custom_id("catalog"),
-                ),
-                button(
-                    LABELS[locale]["ask_more"],
-                    cb_chat(),
-                    style="primary",
-                    icon_custom_emoji_id=custom_id("support"),
-                ),
-            ],
-            [
-                button(
-                    t(locale, "button.menu"),
-                    cb_menu(),
-                    icon_custom_emoji_id=custom_id("menu"),
-                )
-            ],
-        ]
-    )
-
-
-def _category_keyboard(
-    repository: ContentRepository | None, locale: str
-) -> InlineKeyboardMarkup:
-    """Three concrete sections answer «с чем именно?» better than a sentence."""
-    rows: list[list[InlineKeyboardButton]] = []
-    if repository is not None:
-        for category in repository.categories()[:3]:
-            rows.append(
-                [
-                    button(
-                        f"{category.emoji} {category.title}",
-                        cb_cat(category.slug),
-                        icon_custom_emoji_id=custom_id(category.slug),
-                    )
-                ]
-            )
-    rows.append(
-        [
-            button(
-                LABELS[locale]["ask_more"],
-                cb_chat(),
-                style="primary",
-                icon_custom_emoji_id=custom_id("support"),
-            )
-        ]
-    )
-    return InlineKeyboardMarkup(inline_keyboard=rows)
 
 
 def _with_sources(
@@ -334,10 +242,6 @@ async def respond(
     if not question:
         await _send(message, USAGE[locale], group=group, markup=_chat_keyboard(locale) if chat else None)
         return
-    intent = llm_service.detect_smalltalk(question)
-    if intent is not None:
-        await _send(message, SMALLTALK[locale][intent], group=group, markup=_intent_keyboard(locale))
-        return
     user = message.from_user
     if not LIMITER.allow(
         user_id=user.id if user else 0,
@@ -346,37 +250,70 @@ async def respond(
     ):
         await _send(message, RATE[locale], group=group, markup=_chat_keyboard(locale) if chat else None)
         return
+    user_id = user.id if user else 0
+    remember = bool(getattr(settings, "chat_memory_enabled", True)) and (
+        not group or bool(getattr(settings, "chat_memory_group_enabled", False))
+    )
+    history = (
+        HISTORY.recent(chat_id=message.chat.id, user_id=user_id, group=group)
+        if remember
+        else ()
+    )
     cards = context_cards(repository, question, locale)
-    if llm_service.is_vague(question, cards, indexed=repository is not None):
-        await _send(
-            message,
-            VAGUE[locale],
-            group=group,
-            markup=_category_keyboard(repository, locale),
-        )
-        return
     web, web_results = await _web_context(question, cards)
     client = llm_service.client_for(settings)
     if client is None:
         await _fallback(message, question, bot=bot, repository=repository, locale=locale, group=group)
         return
-    messages = build_messages(question, locale, cards, web or None)
-    await _typing_ping(bot, message.chat.id)
-    typing = asyncio.create_task(_keep_typing(bot, message.chat.id))
-    failed = False
-    try:
-        async with client:
-            raw = await llm_service.answer(client, messages, settings.llm_model)
-    except llm_service.LlmUnavailable:
-        failed = True
-    finally:
-        typing.cancel()
-        with suppress(asyncio.CancelledError):
-            await typing
-    if failed:
-        await _fallback(message, question, bot=bot, repository=repository, locale=locale, group=group)
-        return
-    text = strip_html(llm_service.strip_intro(raw))
+    messages = build_messages(question, locale, cards, web or None, history)
+    raw = ""
+    streamed = False
+    sink: DraftSink | StatusEditSink | None = None
+    if bool(getattr(settings, "llm_stream_enabled", True)):
+        sink = (
+            StatusEditSink(bot, message.chat.id)
+            if group
+            else DraftSink(bot, message.chat.id, int(getattr(message, "message_id", 0) or 1))
+        )
+        await _typing_ping(bot, message.chat.id)
+        chunks: list[str] = []
+        try:
+            async with client:
+                iterator = llm_service.stream_answer(client, messages, settings.llm_model)
+                first = await asyncio.wait_for(iterator.__anext__(), FIRST_TOKEN_TIMEOUT)
+                chunks.append(first)
+                await sink.push(first)
+                async for chunk in iterator:
+                    chunks.append(chunk)
+                    await sink.push("".join(chunks))
+            streamed = bool(chunks)
+        except (TimeoutError, llm_service.LlmUnavailable, StopAsyncIteration):
+            streamed = False
+        finally:
+            await sink.close()
+        if streamed:
+            raw = "".join(chunks)
+    if not streamed:
+        client = llm_service.client_for(settings)
+        if client is None:
+            await _fallback(message, question, bot=bot, repository=repository, locale=locale, group=group)
+            return
+        await _typing_ping(bot, message.chat.id)
+        typing = asyncio.create_task(_keep_typing(bot, message.chat.id))
+        failed = False
+        try:
+            async with client:
+                raw = await llm_service.answer(client, messages, settings.llm_model)
+        except llm_service.LlmUnavailable:
+            failed = True
+        finally:
+            typing.cancel()
+            with suppress(asyncio.CancelledError):
+                await typing
+        if failed:
+            await _fallback(message, question, bot=bot, repository=repository, locale=locale, group=group)
+            return
+    text = strip_html(llm_service.strip_answer_urls(llm_service.strip_intro(raw)))
     if not text:
         await _fallback(message, question, bot=bot, repository=repository, locale=locale, group=group)
         return
@@ -386,7 +323,18 @@ async def respond(
         else _card_keyboard(cards[0] if cards else None, bot_username or BOT_USERNAME, locale)
     )
     markup = _with_sources(markup, _cited_sources(raw, web_results))
-    await _send(message, text, group=group, markup=markup)
+    if streamed and sink is not None:
+        await sink.finish(text, markup)
+    else:
+        await _send(message, text, group=group, markup=markup)
+    if remember:
+        clean = re.sub(r"<[^>]+>", "", text)
+        HISTORY.append(
+            chat_id=message.chat.id, user_id=user_id, group=group, role="user", text=question
+        )
+        HISTORY.append(
+            chat_id=message.chat.id, user_id=user_id, group=group, role="assistant", text=clean
+        )
 
 
 @router.message(Command("ask"))
