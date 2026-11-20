@@ -105,14 +105,14 @@ async def test_empty_result_offers_eight_category_hints(shown: list) -> None:
     assert {arg for _, arg in actions} == set(SLUGS)
 
 
-async def _answer(query_text: str, repo: ContentRepository) -> dict:
+async def _answer(query_text: str, repo: ContentRepository, session_factory: object | None = None) -> dict:
     query = MagicMock()
     query.query = query_text
-    query.from_user = SimpleNamespace(language_code=LOCALE)
+    query.from_user = SimpleNamespace(id=7, language_code=LOCALE)
     query.bot = SimpleNamespace(username="byte_bot")
     bot = MagicMock()
     bot.answer_inline_query = AsyncMock()
-    await inline_handler.on_inline(query, repo, bot)
+    await inline_handler.on_inline(query, repo, bot, session_factory)  # type: ignore[arg-type]
     bot.answer_inline_query.assert_awaited_once()
     return bot.answer_inline_query.await_args.kwargs
 
@@ -121,7 +121,7 @@ async def test_inline_result_has_deep_link_and_html_limits() -> None:
     kwargs = await _answer("пожар", await _repo())
 
     assert kwargs["cache_time"] == 30
-    assert kwargs["is_personal"] is False
+    assert kwargs["is_personal"] is True
     results = kwargs["results"]
     assert len(results) == 1
     article = results[0]
@@ -133,13 +133,35 @@ async def test_inline_result_has_deep_link_and_html_limits() -> None:
     assert article.reply_markup.inline_keyboard[0][0].url == "https://t.me/byte_bot?start=card_fire-home"
 
 
-async def test_inline_escapes_content() -> None:
+async def test_inline_titles_are_plain_text_but_the_body_is_escaped() -> None:
     kwargs = await _answer("пожар", await _repo({"fire-home": "<script>Пожар</script>"}))
 
     article = kwargs["results"][0]
-    assert "<script>" not in article.title
+    assert article.title == "<script>Пожар</script>"
+    assert len(article.description) <= 200
     assert "<script>" not in article.input_message_content.message_text
     assert "&lt;script&gt;" in article.input_message_content.message_text
+
+
+async def test_search_uses_the_saved_locale(shown: list, monkeypatch: pytest.MonkeyPatch) -> None:
+    async def saved_locale(session_factory: object, tg_id: int, code: str | None) -> str:
+        assert tg_id == 7
+        return "en"
+
+    monkeypatch.setattr(search_handler, "get_locale", saved_locale)
+    await search_handler.on_text(_message("пожар"), await _repo(), None, object())  # type: ignore[arg-type]
+
+    assert "Search" in shown[0].html
+
+
+async def test_inline_uses_the_saved_locale(monkeypatch: pytest.MonkeyPatch) -> None:
+    async def saved_locale(session_factory: object, tg_id: int, code: str | None) -> str:
+        return "en"
+
+    monkeypatch.setattr(inline_handler, "get_locale", saved_locale)
+    kwargs = await _answer("", await _repo(), object())
+
+    assert kwargs["switch_pm_text"] == "Open categories"
 
 
 async def test_inline_empty_query_always_answers_with_menu() -> None:

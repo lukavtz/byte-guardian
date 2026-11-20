@@ -11,20 +11,26 @@ from aiogram.types import (
     InlineQuery,
     InlineQueryResultArticle,
     InputTextMessageContent,
+    User,
 )
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.content.repository import ContentRepository
 from app.content.types import ThreatView
 from app.services.i18n import resolve_locale, t
+from app.services.user_locale import get_locale
 
 router = Router(name="inline")
 
 TITLE = 120
+LIST_TITLE = 100
+LIST_DESCRIPTION = 200
 SUMMARY = 300
 RESULTS = 10
 CACHE_TIME = 30
 HTML_LIMIT = 4096
 FALLBACK_USERNAME = "bot"
+SessionFactory = async_sessionmaker[AsyncSession]
 
 
 def _esc(value: object, quote: bool = False) -> str:
@@ -56,8 +62,8 @@ def _card_article(view: ThreatView, locale: str, username: str) -> InlineQueryRe
     assert len(html) <= HTML_LIMIT
     return InlineQueryResultArticle(
         id=view.slug,
-        title=_esc(_clip(view.title, TITLE)),
-        description=_esc(_clip(view.summary, SUMMARY)),
+        title=_clip(view.title, LIST_TITLE),
+        description=_clip(view.summary, LIST_DESCRIPTION),
         input_message_content=InputTextMessageContent(message_text=html, parse_mode="HTML"),
         reply_markup=_button(t(locale, "inline.open"), link),
     )
@@ -69,8 +75,8 @@ def _menu_article(locale: str, username: str) -> InlineQueryResultArticle:
     html = f'<a href="{_esc(link, quote=True)}">{_esc(label)}</a>\n{_esc(t(locale, "inline.menu.description"))}'
     return InlineQueryResultArticle(
         id="menu",
-        title=_esc(label),
-        description=_esc(t(locale, "inline.menu.description")),
+        title=_clip(label, LIST_TITLE),
+        description=_clip(t(locale, "inline.menu.description"), LIST_DESCRIPTION),
         input_message_content=InputTextMessageContent(message_text=html, parse_mode="HTML"),
         reply_markup=_button(label, link),
     )
@@ -83,9 +89,22 @@ async def _username(query: InlineQuery, bot: Bot) -> str:
     return me.username or FALLBACK_USERNAME
 
 
+async def _locale(session_factory: SessionFactory | None, user: User | None) -> str:
+    code = user.language_code if user is not None else None
+    tg_id = user.id if user is not None else 0
+    if session_factory is None:
+        return resolve_locale(code)
+    return await get_locale(session_factory, tg_id, code)
+
+
 @router.inline_query()
-async def on_inline(query: InlineQuery, repo: ContentRepository, bot: Bot) -> None:
-    locale = resolve_locale(query.from_user.language_code if query.from_user else None)
+async def on_inline(
+    query: InlineQuery,
+    repo: ContentRepository,
+    bot: Bot,
+    session_factory: SessionFactory | None = None,
+) -> None:
+    locale = await _locale(session_factory, query.from_user)
     username = await _username(query, bot)
     text = (query.query or "").strip()
     results: list[InlineQueryResultArticle] = (
@@ -99,7 +118,8 @@ async def on_inline(query: InlineQuery, repo: ContentRepository, bot: Bot) -> No
         query.id,
         results=results,
         cache_time=CACHE_TIME,
-        is_personal=False,
+        # Personal because the payload is localized from the user's saved language.
+        is_personal=True,
         switch_pm_text=switch,
         switch_pm_parameter="menu" if switch else None,
     )
