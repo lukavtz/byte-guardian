@@ -5,7 +5,8 @@
     "emoji": "⚙️",
     "sort": 3,
     "title": {
-      "ru": "Техногенные аварии"
+      "ru": "Техногенные аварии",
+      "en": "Man-made accidents"
     }
   },
   "threats": [
@@ -51,6 +52,45 @@
             "104"
           ],
           "source": "ГУ МЧС России по Краснодарскому краю · https://23.mchs.gov.ru/deyatelnost/press-centr/novosti/5784714"
+        },
+        "en": {
+          "title": "Household gas leak",
+          "summary": "A gas leak forms an explosive mixture with air. If you smell gas, do not turn on lights or appliances. Shut off the valve, go outside, and call 104 or 112.",
+          "signs": [
+            "Gas smell in the apartment, stairwell, or near the stove",
+            "Hissing or whistling at pipe, valve, or stove connections",
+            "Yellow burner flame or soot on dishes",
+            "Dizziness, weakness, nausea, and ringing in the ears"
+          ],
+          "before": [
+            "Check the draft in the chimney and vent duct before turning on the water heater",
+            "Do not leave a lit stove unattended",
+            "Open the window while the stove is on",
+            "Replace the stove's flexible hose on schedule per its manual"
+          ],
+          "during": [
+            "Shut off the gas valve in front of the stove or at the inlet",
+            "Open windows and doors to create a draft",
+            "Do not turn lights, appliances, or the doorbell on or off",
+            "Leave the building by the stairs and call 104 or 112"
+          ],
+          "after": [
+            "Meet the gas service specialists and point out the leak location",
+            "Do not enter the room until a specialist allows it",
+            "Ask the specialist to check the stove and water heater after repairs",
+            "Do not use gas until the fault is fixed"
+          ],
+          "forbidden": [
+            "Lighting matches, smoking, or using a lighter",
+            "Turning on lights or appliances, ringing the doorbell",
+            "Searching for the leak with an open flame",
+            "Repairing the gas pipe yourself"
+          ],
+          "source": "EMERCOM Main Directorate for Krasnodar Krai · https://23.mchs.gov.ru/deyatelnost/press-centr/novosti/5784714",
+          "contacts": [
+            "112",
+            "104"
+          ]
         }
       },
       "quiz": {
@@ -90,6 +130,44 @@
             ],
             "answer": 0,
             "explanation": "Аварийная газовая служба принимает вызовы по 104, единый номер экстренных служб: 112."
+          }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "You smell gas in your apartment. What do you do first?",
+            "options": [
+              "Shut off the gas valve and open the windows",
+              "Turn on the light to check for the leak",
+              "Call neighbors on the intercom",
+              "Light a match near the stove"
+            ],
+            "answer": 0,
+            "explanation": "First shut off the gas and ventilate the room. A spark from a switch can cause an explosion."
+          },
+          {
+            "id": "q2",
+            "prompt": "Can you use electrical appliances when you smell gas?",
+            "options": [
+              "No, a spark when switching on can cause an explosion",
+              "Yes, if the appliance works properly",
+              "Only the refrigerator",
+              "Yes, if you open a window"
+            ],
+            "answer": 0,
+            "explanation": "During a leak, do not use lights or appliances. A spark in a switch or outlet is dangerous."
+          },
+          {
+            "id": "q3",
+            "prompt": "Who do you call in a gas leak?",
+            "options": [
+              "104 or 112",
+              "101",
+              "102",
+              "103"
+            ],
+            "answer": 0,
+            "explanation": "The emergency gas service takes calls at 104. The unified emergency number is 112."
           }
         ]
       }
@@ -136,6 +214,45 @@
             "103"
           ],
           "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/udar-elektrotokom-v-bytovyh-usloviyah_8"
+        },
+        "en": {
+          "title": "Electric shock",
+          "summary": "Faulty wiring, overloaded outlets and damaged appliances lead to fire and electric shock. Do not touch exposed wires and do not repair a live panel.",
+          "signs": [
+            "Sparks and smell of burnt insulation at an outlet or panel",
+            "Plug, outlet or wire heats up during use",
+            "Breaker trips repeatedly after being reset",
+            "Exposed wire, cracks in insulation, humming panel"
+          ],
+          "before": [
+            "Do not overload extension cords and power strips with high-power appliances",
+            "Install a residual current device in your apartment",
+            "Call an electrician to repair the panel and wiring",
+            "Replace wires with cracks and damaged insulation"
+          ],
+          "during": [
+            "Cut power with the breaker if the panel is dry and accessible",
+            "In case of fire, call 101 or 112 and evacuate people",
+            "Move the wire away from the victim with a dry object",
+            "Call 103 for an ambulance and start first aid"
+          ],
+          "after": [
+            "Do not switch the breaker back on until an electrician inspects it",
+            "Replace the damaged section of wiring and the outlet",
+            "Dry the room after firefighting",
+            "See a doctor even if you feel fine"
+          ],
+          "forbidden": [
+            "Extinguish live wiring with water",
+            "Grab the victim with your hands before the power is off",
+            "Repair the panel and outlets yourself",
+            "Reset a tripped breaker without finding the cause"
+          ],
+          "source": "EMERCOM of Russia · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/udar-elektrotokom-v-bytovyh-usloviyah_8",
+          "contacts": [
+            "112",
+            "103"
+          ]
         }
       },
       "quiz": {
@@ -175,6 +292,44 @@
             ],
             "answer": 0,
             "explanation": "Повторное отключение указывает на неисправность или перегрузку. Причину ищет электрик."
+          }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "A victim is lying on an exposed wire. What should you do first?",
+            "options": [
+              "Cut the power or push the wire away with a dry object",
+              "Grab the victim with your hands and pull them away",
+              "Pour water on the wire",
+              "Wait for the ambulance and do nothing"
+            ],
+            "answer": 0,
+            "explanation": "Touching the victim before the power is off is dangerous. Remove the wire with a dry wooden stick or cut the power."
+          },
+          {
+            "id": "q2",
+            "prompt": "An outlet has caught fire. What should you use to extinguish it?",
+            "options": [
+              "A carbon dioxide extinguisher after cutting the power",
+              "A bucket of water",
+              "A wet cloth",
+              "A foam extinguisher while it is live"
+            ],
+            "answer": 0,
+            "explanation": "Electrical equipment is extinguished with a carbon dioxide extinguisher. Water and foam conduct electricity."
+          },
+          {
+            "id": "q3",
+            "prompt": "The breaker in the panel has tripped again. What should you do?",
+            "options": [
+              "Call an electrician and do not switch it on until the cause is found",
+              "Switch it on again and leave",
+              "Replace the breaker with a more powerful one",
+              "Tape over the breaker"
+            ],
+            "answer": 0,
+            "explanation": "Repeated tripping indicates a fault or overload. An electrician should find the cause."
           }
         ]
       }
@@ -221,6 +376,45 @@
             "Диспетчер лифта"
           ],
           "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/bezopasnost-v-lifte_6"
+        },
+        "en": {
+          "title": "Trapped in an elevator",
+          "summary": "Elevators often stop between floors. Press the dispatcher call button, give your address and elevator number, and wait for help. Do not try to get out on your own.",
+          "signs": [
+            "The car has stopped and does not respond to floor buttons",
+            "The doors will not open or are half open",
+            "You hear jerks, squeaking, or unusual noise",
+            "The car is above or below the floor level"
+          ],
+          "before": [
+            "Check that the dispatcher call button works",
+            "Do not overload the car beyond its limit",
+            "Do not use the elevator if you smell burning or smoke",
+            "Explain to children not to touch the buttons or doors for no reason"
+          ],
+          "during": [
+            "Press the dispatcher call button and stay in contact",
+            "Give your address, the elevator number, and the floor where it stopped",
+            "Stay in the car and attract attention by knocking",
+            "If you smell smoke, call 112 and follow instructions"
+          ],
+          "after": [
+            "Leave only after a specialist has opened the doors",
+            "Report the malfunction to the dispatcher after you are freed",
+            "Do not use the elevator until it is repaired",
+            "If you feel unwell, call an ambulance at 103"
+          ],
+          "forbidden": [
+            "Opening the doors by hand and trying to exit between floors",
+            "Climbing out through the hatch or climbing down the cable",
+            "Jumping in the car to make it move",
+            "Lighting a fire in the car"
+          ],
+          "source": "EMERCOM of Russia · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/bezopasnost-v-lifte_6",
+          "contacts": [
+            "112",
+            "Elevator dispatcher"
+          ]
         }
       },
       "quiz": {
@@ -260,6 +454,44 @@
             ],
             "answer": 0,
             "explanation": "Перепад высоты и движение кабины опасны. Ждите специалиста внутри."
+          }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "The elevator is stuck between floors. What should you do?",
+            "options": [
+              "Press the dispatcher call button and wait for help",
+              "Open the doors by hand and get out",
+              "Climb out through the hatch onto the roof of the car",
+              "Jump to make the elevator move"
+            ],
+            "answer": 0,
+            "explanation": "The dispatcher will send specialists. Getting out on your own is dangerous."
+          },
+          {
+            "id": "q2",
+            "prompt": "Is it safe to try to exit an elevator between floors?",
+            "options": [
+              "No, it is life-threatening",
+              "Yes, if the floor is close",
+              "Yes, if you have a flashlight",
+              "Yes, if the elevator is new"
+            ],
+            "answer": 0,
+            "explanation": "The car can suddenly start moving. Exiting between floors risks falling into the shaft."
+          },
+          {
+            "id": "q3",
+            "prompt": "The doors opened, but the car is above the floor level. What should you do?",
+            "options": [
+              "Stay in the car and call the dispatcher again",
+              "Jump onto the floor",
+              "Climb down the cable",
+              "Step out while holding the threshold"
+            ],
+            "answer": 0,
+            "explanation": "The height difference and car movement are dangerous. Wait for a specialist inside."
           }
         ]
       }
@@ -305,6 +537,44 @@
             "112"
           ],
           "source": "ГУ МЧС России по Республике Тыва · https://17.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pravila-povedeniya-pri-razlichnyh-chs/chs-tehnogennogo-haraktera/pravila-povedeniya-pri-obrushenii-zdaniya"
+        },
+        "en": {
+          "title": "Building and structural collapse",
+          "summary": "A wall, floor slab, or balcony can collapse without warning. If you see cracks, dust, or hear rumbling, leave the building by the stairs, do not use the elevator, and call 112.",
+          "signs": [
+            "Wide cracks in walls, ceilings, and load-bearing beams",
+            "Plaster falling, doors and windows out of alignment",
+            "Rumbling, dust, and sagging floors indoors",
+            "Tilted walls, a sagging balcony or canopy"
+          ],
+          "before": [
+            "Do not demolish load-bearing walls or remodel without an approved design",
+            "Report cracks in your building to the management company",
+            "Do not overload your balcony with heavy items",
+            "Keep documents, a flashlight, and a first aid kit within easy reach"
+          ],
+          "during": [
+            "Leave the building by the stairs, do not use the elevator",
+            "Move away from walls, balconies, and glass storefronts",
+            "If you cannot get out, take shelter in a load-bearing wall opening or under a sturdy table",
+            "Cover your head with your hands and protect your breathing with cloth"
+          ],
+          "after": [
+            "Call 112 and do not enter the building until rescuers permit it",
+            "Tell rescuers about anyone trapped under the rubble",
+            "Help people nearby get out if there is no risk",
+            "Follow rescuers' instructions and do not cause a crush"
+          ],
+          "forbidden": [
+            "Using the elevator when there are cracks or a collapse",
+            "Lighting matches because of a possible gas leak",
+            "Returning to the building for belongings or documents",
+            "Standing near walls, balconies, and power lines"
+          ],
+          "source": "EMERCOM Main Directorate for the Republic of Tyva · https://17.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pravila-povedeniya-pri-razlichnyh-chs/chs-tehnogennogo-haraktera/pravila-povedeniya-pri-obrushenii-zdaniya",
+          "contacts": [
+            "112"
+          ]
         }
       },
       "quiz": {
@@ -344,6 +614,44 @@
             ],
             "answer": 0,
             "explanation": "Повторное обрушение возможно. В здание не входят до разрешения спасателей."
+          }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "A wide crack has appeared in a wall and you hear cracking sounds. What should you do?",
+            "options": [
+              "Leave the building by the stairs and call 112",
+              "Stay and photograph the crack",
+              "Cover the crack with plaster",
+              "Take the elevator down to get your things"
+            ],
+            "answer": 0,
+            "explanation": "Cracking sounds and a growing crack warn of collapse. Leave quickly and call rescuers."
+          },
+          {
+            "id": "q2",
+            "prompt": "A collapse has started and you did not get out. Where should you take shelter?",
+            "options": [
+              "In a load-bearing wall opening or under a sturdy table",
+              "Near a window",
+              "In the elevator",
+              "On the balcony"
+            ],
+            "answer": 0,
+            "explanation": "A load-bearing wall opening and sturdy furniture protect you from debris. Windows, balconies, and the elevator are dangerous during a collapse."
+          },
+          {
+            "id": "q3",
+            "prompt": "A neighbor asks you to go back inside for documents. What do you say?",
+            "options": [
+              "Do not enter until rescuers allow it",
+              "Go in quickly and carefully",
+              "Enter only on the ground floor",
+              "Enter if there is no smoke"
+            ],
+            "answer": 0,
+            "explanation": "A second collapse is possible. Do not enter the building until rescuers permit it."
           }
         ]
       }
@@ -390,6 +698,45 @@
             "103"
           ],
           "source": "ГУ МЧС России по Республике Тыва · https://17.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pravila-povedeniya-pri-razlichnyh-chs/chs-tehnogennogo-haraktera/pravila-povedeniya-pri-transportnyh-avariyah"
+        },
+        "en": {
+          "title": "Transport accident",
+          "summary": "If a bus, trolleybus, or train crashes, leave the vehicle quickly and without panic. Do not jump while it is moving. Help children and older people. Call 112.",
+          "signs": [
+            "A sharp impact, braking, or overturning of the vehicle",
+            "Smoke, burning smell, and sparks inside the cabin",
+            "Doors jammed, cracked windows",
+            "A fallen wire or loss of contact with the power line"
+          ],
+          "before": [
+            "Hold the handrail while the vehicle is moving",
+            "Remember where the emergency exits are",
+            "Do not stand in the door area or at the edge of the platform",
+            "Do not distract the driver while the vehicle is moving"
+          ],
+          "during": [
+            "Leave the cabin through the doors or an emergency exit",
+            "Break the glass with the emergency hammer if the doors are jammed",
+            "Move a safe distance away from the vehicle",
+            "If a trolleybus wire breaks, do not approach the vehicle"
+          ],
+          "after": [
+            "Call 112 and state the location of the accident",
+            "Help the injured until the ambulance arrives",
+            "Do not smoke or light fires near the vehicle",
+            "Tell rescuers about anyone still inside the cabin"
+          ],
+          "forbidden": [
+            "Jumping out of moving transport",
+            "Touching fallen wires and live parts",
+            "Returning to the cabin for your belongings",
+            "Smoking and using open flames near the accident site"
+          ],
+          "source": "EMERCOM Main Directorate for the Republic of Tyva · https://17.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pravila-povedeniya-pri-razlichnyh-chs/chs-tehnogennogo-haraktera/pravila-povedeniya-pri-transportnyh-avariyah",
+          "contacts": [
+            "112",
+            "103"
+          ]
         }
       },
       "quiz": {
@@ -429,6 +776,44 @@
             ],
             "answer": 0,
             "explanation": "Машина может загореться или взорваться. Сначала безопасное расстояние и вызов 112."
+          }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "A bus has crashed and the doors are jammed. What should you do?",
+            "options": [
+              "Break the glass with the emergency hammer and leave the cabin",
+              "Stay in the cabin until the police arrive",
+              "Kick the door open from outside",
+              "Jump out of the window while the bus is moving"
+            ],
+            "answer": 0,
+            "explanation": "The emergency hammer and window are a backup exit. Jumping out while the bus is moving is dangerous."
+          },
+          {
+            "id": "q2",
+            "prompt": "A trolleybus wire has broken. How dangerous is it to approach?",
+            "options": [
+              "Dangerous; move away from the wire in short steps",
+              "You can approach and touch the wire",
+              "You can approach if the wire is dry",
+              "It is dangerous only in the rain"
+            ],
+            "answer": 0,
+            "explanation": "The wire may be live. Current spreads through the ground, so move away in short steps or small jumps."
+          },
+          {
+            "id": "q3",
+            "prompt": "What is the first action after leaving the crashed vehicle?",
+            "options": [
+              "Move away from the vehicle and call 112",
+              "Go back for your bag",
+              "Film close to the vehicle",
+              "Pour water on the fuel"
+            ],
+            "answer": 0,
+            "explanation": "The vehicle may catch fire or explode. First keep a safe distance and call 112."
           }
         ]
       }
@@ -475,6 +860,45 @@
             "103"
           ],
           "source": "ГУ МЧС России по Республике Марий Эл · https://12.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/bezopasnost-v-tehnogennoy-srede-v-gorode/pravila-bezopasnosti-pri-himicheskoy-avarii"
+        },
+        "en": {
+          "title": "Chemical cloud from a plant",
+          "summary": "When chemicals are released at a plant, the dangerous cloud moves downwind. If you hear a siren, turn on the radio and close windows and doors. If you cannot leave, seal the room.",
+          "signs": [
+            "\"Attention everyone\" signal: siren and intermittent horns",
+            "Sharp chemical smell, throat irritation, tears",
+            "Smoke or fog of unusual color over the plant",
+            "Report of the accident on radio, TV, or from services"
+          ],
+          "before": [
+            "Find out whether a chemically hazardous facility is nearby",
+            "Memorize the \"Attention everyone\" signal and the procedure",
+            "Keep a gauze mask and a supply of water at home",
+            "Plan how to leave the zone perpendicular to the wind"
+          ],
+          "during": [
+            "Turn on the radio or TV and listen to EMERCOM reports",
+            "Close windows and doors, switch off appliances and gas",
+            "Leave the zone perpendicular to the wind, protecting your breathing with cloth",
+            "If you cannot leave, seal the gaps and do not go down to the basement"
+          ],
+          "after": [
+            "Enter a building only after services have checked the air",
+            "Shower and change clothes after contact with the substance",
+            "Do not drink tap water until the official statement",
+            "See a doctor if you have a cough, stinging eyes, or nausea"
+          ],
+          "forbidden": [
+            "Going outside without breathing protection when the signal sounds",
+            "Going down to the basement during a chlorine release",
+            "Eating or drinking outdoors during a release",
+            "Using tap water before it is checked"
+          ],
+          "source": "EMERCOM Main Directorate for the Mari El Republic · https://12.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/bezopasnost-v-tehnogennoy-srede-v-gorode/pravila-bezopasnosti-pri-himicheskoy-avarii",
+          "contacts": [
+            "112",
+            "103"
+          ]
         }
       },
       "quiz": {
@@ -514,6 +938,44 @@
             ],
             "answer": 0,
             "explanation": "Вода может быть заражена. Кипячение не удаляет все химические вещества."
+          }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "A chlorine leak is reported near the plant. You are at home and cannot leave the zone. What should you do?",
+            "options": [
+              "Close windows and doors, seal the gaps, listen to EMERCOM",
+              "Open all windows to air the room out",
+              "Go to the balcony and watch",
+              "Go down to the basement"
+            ],
+            "answer": 0,
+            "explanation": "If you cannot leave, shelter in a sealed room. Chlorine is heavier than air, so the basement is dangerous."
+          },
+          {
+            "id": "q2",
+            "prompt": "You are outside and the cloud is moving toward you. Where should you go?",
+            "options": [
+              "Perpendicular to the wind, away from the cloud",
+              "Downwind, to get away faster",
+              "Into the basement of the nearest building",
+              "Toward the plant, where help is"
+            ],
+            "answer": 0,
+            "explanation": "The cloud moves downwind. Leave perpendicular to the wind direction."
+          },
+          {
+            "id": "q3",
+            "prompt": "After a chemical release, can you drink tap water?",
+            "options": [
+              "No, until services check the water",
+              "Yes, if the water looks clear",
+              "Yes, if you boil it once",
+              "Yes, if you add baking soda"
+            ],
+            "answer": 0,
+            "explanation": "The water may be contaminated. Boiling does not remove all chemicals."
           }
         ]
       }
@@ -560,6 +1022,45 @@
             "Диспетчер управляющей компании"
           ],
           "source": "ГУ МЧС России по Республике Бурятия · https://03.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/chs-tehnogennogo-haraktera/avarii-na-kommunalnyh-sistemah-zhizneobespecheniya"
+        },
+        "en": {
+          "title": "Pipe burst",
+          "summary": "A pipe burst can flood a basement, yard or apartment and wash away soil. Shut off the water, stay out of the flooded area, and report it to the dispatch service.",
+          "signs": [
+            "Water gushing from the ground, a wall, or a manhole",
+            "Sunken asphalt and washed-out soil",
+            "Flooding of a basement, stairwell, or apartment",
+            "Sound of water in a wall or under the floor"
+          ],
+          "before": [
+            "Learn where the main water shutoff valve is",
+            "Find out where water is shut off for your building or house",
+            "Check that shutoff valves and pipes are in good condition",
+            "Write down the emergency phone number of the management company"
+          ],
+          "during": [
+            "Shut off the water supply to your apartment or house",
+            "Cut the power if water is reaching the wiring",
+            "Leave the flooded area and call the dispatcher or 112",
+            "Stay away from the hole and the water flow because of collapse risk"
+          ],
+          "after": [
+            "Ask the services whether the water is safe to drink after repairs",
+            "Dry the room and unplug wet appliances",
+            "Report the damage and losses to the management company",
+            "Call a plumber to fix the fault"
+          ],
+          "forbidden": [
+            "Entering a flooded basement",
+            "Touching wires or electrical appliances in water",
+            "Walking over the hole or undermined asphalt",
+            "Repairing a pipe under pressure yourself"
+          ],
+          "source": "EMERCOM Main Directorate for the Republic of Buryatia · https://03.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/chs-tehnogennogo-haraktera/avarii-na-kommunalnyh-sistemah-zhizneobespecheniya",
+          "contacts": [
+            "112",
+            "Building management dispatcher"
+          ]
         }
       },
       "quiz": {
@@ -599,6 +1100,44 @@
             ],
             "answer": 0,
             "explanation": "Вода скрывает провалы и повреждённую проводку. В подвал не входят."
+          }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "A pipe has burst in the yard and water is gushing out. What should you do?",
+            "options": [
+              "Stay away, call the dispatch service and 112",
+              "Go and touch the water with your hand",
+              "Jump over the flow",
+              "Open the nearby manhole"
+            ],
+            "answer": 0,
+            "explanation": "Washed-out soil can collapse. Specialists will cordon off the area."
+          },
+          {
+            "id": "q2",
+            "prompt": "Water is flooding your apartment. What is the first action?",
+            "options": [
+              "Shut off the water supply and cut the power",
+              "Mop up the water with rags",
+              "Open all the taps",
+              "Leave and not come back"
+            ],
+            "answer": 0,
+            "explanation": "Shutting off the supply stops the flow. Cutting the power protects you from electric shock."
+          },
+          {
+            "id": "q3",
+            "prompt": "Is it safe to walk through a flooded basement?",
+            "options": [
+              "No, there may be current and holes there",
+              "Yes, if the water is warm",
+              "Yes, if you wear boots",
+              "Yes, if the lights are on"
+            ],
+            "answer": 0,
+            "explanation": "Water hides holes and damaged wiring. Do not enter the basement."
           }
         ]
       }
@@ -645,6 +1184,45 @@
             "112"
           ],
           "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pozhar-v-obshchestvennom-meste-ofise_6"
+        },
+        "en": {
+          "title": "Fire at a facility",
+          "summary": "A fire at a factory or shopping mall quickly fills rooms with smoke. Leave the building following evacuation signs, do not use the elevator, call 101 or 112.",
+          "signs": [
+            "Smell of burning and smoke in a corridor or hall",
+            "Fire alarm activated",
+            "Shouting and a crush at the exit",
+            "Hot doors and walls, sparks from the switchboard"
+          ],
+          "before": [
+            "Remember the nearest evacuation exits",
+            "Do not block passages and staircases",
+            "Take part in evacuation drills",
+            "Check where fire extinguishers are located"
+          ],
+          "during": [
+            "Go to the nearest evacuation exit",
+            "Breathe through a damp cloth, bend low in smoke",
+            "Do not use the elevator and do not open hot doors",
+            "Help children and the elderly, call 101 or 112"
+          ],
+          "after": [
+            "Move a safe distance away from the building",
+            "Call firefighters and report the fire location and floor",
+            "Do not return to the building for belongings",
+            "Tell rescuers about people inside"
+          ],
+          "forbidden": [
+            "Using the elevator during a fire",
+            "Saving belongings and equipment instead of leaving",
+            "Opening a door with fire behind it",
+            "Extinguishing live electrical equipment with water"
+          ],
+          "source": "EMERCOM of Russia · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pozhar-v-obshchestvennom-meste-ofise_6",
+          "contacts": [
+            "101",
+            "112"
+          ]
         }
       },
       "quiz": {
@@ -684,6 +1262,44 @@
             ],
             "answer": 0,
             "explanation": "Электроустановки тушат углекислотным огнетушителем после отключения тока. Вода под напряжением смертельно опасна."
+          }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "A fire alarm goes off in a shopping mall and smoke appears. What should you do?",
+            "options": [
+              "Go to the nearest evacuation exit",
+              "Take the elevator down",
+              "Hide in a fitting room",
+              "Wait for an announcement over the loudspeaker"
+            ],
+            "answer": 0,
+            "explanation": "In a fire, evacuate immediately. The elevator may be shut off, and smoke will fill the hall."
+          },
+          {
+            "id": "q2",
+            "prompt": "Smoke fills the corridor. How should you move?",
+            "options": [
+              "Bent low, breathing through a damp cloth",
+              "Standing upright, holding your breath",
+              "Running through the smoke",
+              "Crawling to the elevator"
+            ],
+            "answer": 0,
+            "explanation": "There is less smoke near the floor. A damp cloth traps some smoke and soot."
+          },
+          {
+            "id": "q3",
+            "prompt": "An electrical switchboard is on fire at a factory. What should you extinguish it with?",
+            "options": [
+              "A carbon dioxide extinguisher after de-energizing it",
+              "Water from a fire hose",
+              "A foam extinguisher",
+              "Sand from a flower pot"
+            ],
+            "answer": 0,
+            "explanation": "Electrical installations are extinguished with a carbon dioxide extinguisher after the current is switched off. Water on live equipment is deadly."
           }
         ]
       }

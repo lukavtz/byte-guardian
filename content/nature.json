@@ -5,7 +5,8 @@
     "emoji": "🌪️",
     "sort": 4,
     "title": {
-      "ru": "Природные ЧС"
+      "ru": "Природные ЧС",
+      "en": "Natural emergencies"
     }
   },
   "threats": [
@@ -48,6 +49,42 @@
             "112"
           ],
           "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/deystviya-pri-groze_6"
+        },
+        "en": {
+          "title": "Thunderstorm and lightning",
+          "summary": "Lightning most often strikes tall objects, water, and metal. During a thunderstorm, shelter in a building or inside a car. In the open, crouch down but do not lie on the ground.",
+          "signs": [
+            "Dark cumulus clouds and a sharp increase in wind",
+            "Distant flashes and rumbles of thunder",
+            "Sudden heavy rain and a drop in temperature"
+          ],
+          "before": [
+            "Close windows, doors, and the chimney. Do not light the stove",
+            "Remove loose items from the balcony",
+            "Charge your phone and follow EMERCOM warnings"
+          ],
+          "during": [
+            "Inside, move away from windows, wiring, and antennas",
+            "Outdoors, shelter in a building or inside a car",
+            "In a forest, choose low-growing terrain far from tall trees",
+            "In an open field, crouch in a hollow and wrap your arms around your legs",
+            "Move away from water and metal objects"
+          ],
+          "after": [
+            "Wait until the storm moves away: thunder is heard after the flash",
+            "Check that your loved ones are safe and help anyone injured",
+            "Report damage and fires by calling 112"
+          ],
+          "forbidden": [
+            "Shelter under a lone tree or on high ground",
+            "Stay in the water or on the shore",
+            "Hold an umbrella, fishing rod, or other metal object",
+            "Use a corded phone"
+          ],
+          "source": "EMERCOM of Russia · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/deystviya-pri-groze_6",
+          "contacts": [
+            "112"
+          ]
         }
       },
       "quiz": {
@@ -86,7 +123,45 @@
               "Слушать предупреждения МЧС"
             ],
             "answer": 2,
-            "explanation": "Проводной телефон связан с внешними проводами, а окно\u00a0— с улицей, где возможен удар."
+            "explanation": "Проводной телефон связан с внешними проводами, а окно — с улицей, где возможен удар."
+          }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "Where is it safer to wait out a thunderstorm in open terrain?",
+            "options": [
+              "Inside a car",
+              "Under a lone tree",
+              "On top of a hill",
+              "In the water near the shore"
+            ],
+            "answer": 0,
+            "explanation": "The metal body of a car protects you from a direct lightning strike."
+          },
+          {
+            "id": "q2",
+            "prompt": "What should you do if a thunderstorm catches you in a field?",
+            "options": [
+              "Lie flat on the ground",
+              "Crouch in a hollow with your arms around your legs",
+              "Run to a lone tree",
+              "Keep working with metal tools"
+            ],
+            "answer": 1,
+            "explanation": "A low position in a hollow reduces your height, but you must not lie down: the current spreads along the ground."
+          },
+          {
+            "id": "q3",
+            "prompt": "What must you not do at home during a thunderstorm?",
+            "options": [
+              "Close windows",
+              "Turn off electrical appliances",
+              "Stand near a window or use a corded phone",
+              "Listen to EMERCOM warnings"
+            ],
+            "answer": 2,
+            "explanation": "A corded phone is connected to external wires, and a window faces the street where a strike may occur."
           }
         ]
       }
@@ -130,6 +205,42 @@
             "112"
           ],
           "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/uragannyy-veter_2 · ГУ МЧС России по Калужской области · https://40.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki/chrezvychaynye-situacii-prirodnogo-haraktera/pravila-povedeniya-pri-bure-smerche-uragane"
+        },
+        "en": {
+          "title": "Hurricane and strong wind",
+          "summary": "A hurricane fells trees, tears off roofs and breaks power lines. At a storm warning, move to a sturdy building, stay away from windows and do not go outside.",
+          "signs": [
+            "Rising wind and a sharp drop in pressure",
+            "Heavy rain, storm surge or snow mixed with dust",
+            "Whistling wind and trees swaying strongly"
+          ],
+          "before": [
+            "Close the windows and remove unsecured items from the balcony and yard",
+            "Stock up on water, food and a flashlight for 2–3 days",
+            "Move from light structures to a sturdy building or shelter"
+          ],
+          "during": [
+            "Stay in a sturdy building, away from windows",
+            "Go down to a basement or cellar",
+            "Outdoors, stay away from billboards, trees and wires",
+            "Do not enter damaged buildings: a new gust could collapse them"
+          ],
+          "after": [
+            "Go outside only after an announcement that the wind has subsided",
+            "Avoid downed wires and unstable structures",
+            "Check the gas and wiring before turning on appliances",
+            "Report injured people by calling 112"
+          ],
+          "forbidden": [
+            "Standing near windows or going out on the balcony",
+            "Taking cover behind billboards, trees or fences",
+            "Entering dilapidated or damaged buildings",
+            "Touching downed wires and pipes"
+          ],
+          "source": "EMERCOM of Russia · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/uragannyy-veter_2 · EMERCOM Main Directorate for Kaluga Oblast · https://40.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki/chrezvychaynye-situacii-prirodnogo-haraktera/pravila-povedeniya-pri-bure-smerche-uragane",
+          "contacts": [
+            "112"
+          ]
         }
       },
       "quiz": {
@@ -169,6 +280,44 @@
             ],
             "answer": 1,
             "explanation": "Порывы могут повторяться, а на улице остаются оборванные провода и шаткие конструкции."
+          }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "Where should you take shelter during a hurricane in a city?",
+            "options": [
+              "In a basement or interior corridor of a building",
+              "On the balcony of a top floor",
+              "Behind a billboard",
+              "In a car under a tree"
+            ],
+            "answer": 0,
+            "explanation": "Basements and interior rooms protect you from flying debris and glass."
+          },
+          {
+            "id": "q2",
+            "prompt": "Which action is dangerous during a hurricane?",
+            "options": [
+              "Closing windows and doors",
+              "Moving away from windows",
+              "Taking cover behind a billboard",
+              "Preparing a flashlight"
+            ],
+            "answer": 2,
+            "explanation": "A billboard or tree can fall in a gust, and debris flies in all directions."
+          },
+          {
+            "id": "q3",
+            "prompt": "When can you go outside after a hurricane?",
+            "options": [
+              "Right after the first gusts",
+              "After an official announcement that the wind has subsided",
+              "When the rain stops",
+              "As soon as the sun comes out"
+            ],
+            "answer": 1,
+            "explanation": "Gusts may recur, and downed wires and unstable structures remain outdoors."
           }
         ]
       }
@@ -214,6 +363,44 @@
             "112"
           ],
           "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/navodneniya-i-vesennie-pavodki_7"
+        },
+        "en": {
+          "title": "Flood and freshet",
+          "summary": "A flood comes fast: water covers roads and washes away soil. If flooding threatens, turn off gas and electricity, move to higher ground, and wait for rescuers.",
+          "signs": [
+            "Heavy rain and a rapid rise in river water",
+            "Sound of water and low-lying areas flooding",
+            "EMERCOM warning of a flood"
+          ],
+          "before": [
+            "Put documents, money, and medications in a waterproof bag",
+            "Find out where to go during evacuation",
+            "Turn off gas and electricity, put out the stove",
+            "Move valuables to upper floors or the attic"
+          ],
+          "during": [
+            "Go to upper floors, the attic, or the roof",
+            "Do not wade through water and do not drive through flooded roads",
+            "Signal for help with light and your voice",
+            "Follow rescuers' instructions"
+          ],
+          "after": [
+            "Return home only after rescuers give permission",
+            "Do not drink water without testing and do not eat flood-soaked food",
+            "Open windows and doors wide; do not light a fire before airing out",
+            "Do not turn on lights or appliances until the wiring is checked",
+            "Report flooding by calling 101 or 112"
+          ],
+          "forbidden": [
+            "Walking or driving across a flooded road",
+            "Drinking water from open sources",
+            "Turning on electrical appliances in a wet house",
+            "Lighting a fire before airing out the house"
+          ],
+          "source": "EMERCOM of Russia · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/navodneniya-i-vesennie-pavodki_7",
+          "contacts": [
+            "112"
+          ]
         }
       },
       "quiz": {
@@ -254,6 +441,44 @@
             "answer": 1,
             "explanation": "После воды возможны утечка газа и повреждение проводки, поэтому сначала проверка."
           }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "Where should you go if a flood strikes your home suddenly?",
+            "options": [
+              "To the basement",
+              "To the upper floors or the roof",
+              "To the garage",
+              "To the neighbor's attic through the water"
+            ],
+            "answer": 1,
+            "explanation": "Upper levels stay above water longest and are easier to evacuate from."
+          },
+          {
+            "id": "q2",
+            "prompt": "What must you not do during a flood?",
+            "options": [
+              "Signal for help",
+              "Follow rescuers' instructions",
+              "Walk across a flooded road",
+              "Move belongings to upper floors"
+            ],
+            "answer": 2,
+            "explanation": "Water hides pits and strong currents. Even knee-deep water can knock you down."
+          },
+          {
+            "id": "q3",
+            "prompt": "What should you do right after returning to a flooded house?",
+            "options": [
+              "Turn on all electrical appliances",
+              "Check the house for damage and gas leaks",
+              "Drink water from the well",
+              "Close all windows and skip airing out"
+            ],
+            "answer": 1,
+            "explanation": "After a flood there may be gas leaks and damaged wiring, so check first."
+          }
         ]
       }
     },
@@ -263,7 +488,7 @@
       "texts": {
         "ru": {
           "title": "Тонкий лёд и ледостав",
-          "summary": "Выход на тонкий лёд смертельно опасен. Безопасная толщина для одного человека\u00a0— не менее 7 см, но без нужды на лёд лучше не выходить. Если провалились, ползите в ту сторону, откуда пришли.",
+          "summary": "Выход на тонкий лёд смертельно опасен. Безопасная толщина для одного человека — не менее 7 см, но без нужды на лёд лучше не выходить. Если провалились, ползите в ту сторону, откуда пришли.",
           "signs": [
             "Тёмные пятна, трещины и вода на льду",
             "Лёд прогибается и трещит под ногами",
@@ -295,6 +520,41 @@
             "112"
           ],
           "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pravila-povedeniya-na-ldu-i-vyezd-na-perepravu_7"
+        },
+        "en": {
+          "title": "Thin ice and ice cover",
+          "summary": "Walking on thin ice is deadly. Safe thickness for one person is at least 7 cm, but stay off the ice unless necessary. If you fall through, crawl back the way you came.",
+          "signs": [
+            "Dark patches, cracks and water on the ice",
+            "Ice bends and cracks underfoot",
+            "Holes and open water near the shore"
+          ],
+          "before": [
+            "Follow a well-used path or an official ice crossing",
+            "Do not go on the ice alone or in the dark",
+            "Take a rope and a charged phone"
+          ],
+          "during": [
+            "Lie flat on the ice, spread your arms and crawl to shore",
+            "Move back the way you came: the ice there already held your weight",
+            "Call for help and make no sudden movements",
+            "Once out, roll away from the hole and crawl to solid ground"
+          ],
+          "after": [
+            "Remove wet clothing and shelter from the wind",
+            "Call an ambulance and warm the person",
+            "Do not leave the person alone until help arrives"
+          ],
+          "forbidden": [
+            "Testing the ice by kicking it",
+            "Gathering in a group on one spot of ice",
+            "Going on the ice during a thaw or at night",
+            "Running toward a person who fell through"
+          ],
+          "source": "EMERCOM of Russia · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pravila-povedeniya-na-ldu-i-vyezd-na-perepravu_7",
+          "contacts": [
+            "112"
+          ]
         }
       },
       "quiz": {
@@ -334,6 +594,44 @@
             ],
             "answer": 1,
             "explanation": "Помощник приближается ползком и подаёт средство спасения, не нагружая лёд."
+          }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "What ice thickness is considered safe for one person?",
+            "options": [
+              "About 2 cm",
+              "About 4 cm",
+              "About 7 cm",
+              "About 15 cm"
+            ],
+            "answer": 2,
+            "explanation": "For one person, EMERCOM considers a thickness of at least 7 cm safe."
+          },
+          {
+            "id": "q2",
+            "prompt": "What should you do if you fall through the ice?",
+            "options": [
+              "Dive and swim under the ice",
+              "Spread your arms wide and crawl to shore",
+              "Stand up and run to shore",
+              "Take off your clothes in the water"
+            ],
+            "answer": 1,
+            "explanation": "Outspread arms keep you at the surface, and crawling puts less pressure on the ice edge."
+          },
+          {
+            "id": "q3",
+            "prompt": "How do you properly help a person who fell through?",
+            "options": [
+              "Run to them across the ice",
+              "Crawl up and hand them a rope or a long pole",
+              "Stand next to them on the ice edge",
+              "Throw them your phone"
+            ],
+            "answer": 1,
+            "explanation": "The rescuer approaches by crawling and offers a rescue tool without loading the ice."
           }
         ]
       }
@@ -377,6 +675,42 @@
             "112"
           ],
           "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/deystviya-pri-silnoy-zhare-zasuhe_3"
+        },
+        "en": {
+          "title": "Extreme heat",
+          "summary": "Heat strains the heart and can cause heat stroke. Drink water, stay in the shade more often, and avoid alcohol.",
+          "signs": [
+            "Temperature above 30 degrees and stuffiness",
+            "Red skin, dry mouth, and intense thirst",
+            "Weakness, dizziness, nausea"
+          ],
+          "before": [
+            "Stock up on water and fill all containers",
+            "Shade the windows and prepare a fan or air conditioner",
+            "Prepare light cotton clothing and a hat"
+          ],
+          "during": [
+            "Drink water often and in small amounts",
+            "Wear light clothing and a hat",
+            "Move slowly and stay in the shade more often",
+            "If you feel weak, move to shade or a cool room",
+            "In case of heat stroke, douse yourself with water and slowly drink plenty of water"
+          ],
+          "after": [
+            "Keep drinking water and avoid exertion",
+            "Check on the elderly and children",
+            "If someone loses consciousness, call an ambulance and start resuscitation"
+          ],
+          "forbidden": [
+            "Drinking beer and other alcoholic beverages",
+            "Working in the sun without a hat",
+            "Ignoring thirst and dry mouth",
+            "Immersing in cold water after overheating"
+          ],
+          "source": "EMERCOM of Russia · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/deystviya-pri-silnoy-zhare-zasuhe_3",
+          "contacts": [
+            "112"
+          ]
         }
       },
       "quiz": {
@@ -416,6 +750,44 @@
             ],
             "answer": 1,
             "explanation": "МЧС советует сразу уйти в тень или под душ и медленно выпить много воды."
+          }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "How should you drink water in extreme heat?",
+            "options": [
+              "Small amounts, but often",
+              "Rarely and in large portions",
+              "Only when very thirsty",
+              "Replace water with beer"
+            ],
+            "answer": 0,
+            "explanation": "Drink often and in small amounts. Alcohol in the heat only makes things worse."
+          },
+          {
+            "id": "q2",
+            "prompt": "What should you not do in hot weather?",
+            "options": [
+              "Wear a hat",
+              "Stay in the shade more often",
+              "Drink beer and other alcoholic beverages",
+              "Drink water"
+            ],
+            "answer": 2,
+            "explanation": "Alcohol increases dehydration and puts extra strain on the heart."
+          },
+          {
+            "id": "q3",
+            "prompt": "What should you do in case of heat stroke?",
+            "options": [
+              "Bundle up warmly",
+              "Move to shade, douse yourself with water, and drink water",
+              "Keep working",
+              "Drink hot tea"
+            ],
+            "answer": 1,
+            "explanation": "EMERCOM advises moving to shade or a shower at once and slowly drinking plenty of water."
           }
         ]
       }
@@ -459,6 +831,42 @@
             "112"
           ],
           "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pervaya-pomoshch-pri-obmorozhenii_0"
+        },
+        "en": {
+          "title": "Frost and hypothermia",
+          "summary": "Hypothermia and frostbite develop unnoticed. In severe cold, keep moving, wear dry clothes, and never rub skin that has turned white.",
+          "signs": [
+            "Shivering, drowsiness, and loss of sensation",
+            "Whitening and numbness of fingers, nose, ears",
+            "Slurred speech and confusion"
+          ],
+          "before": [
+            "Dress in dry layers and wear gloves",
+            "Check the forecast and cold warnings",
+            "Take a thermos, a phone, and spare mittens"
+          ],
+          "during": [
+            "Keep moving, but avoid exhaustion and sweating",
+            "Protect your face and hands from the wind",
+            "Bring a frozen person into a warm room",
+            "Remove wet clothing and give warm drinks if the person is conscious",
+            "Apply a dry dressing to the frostbitten area"
+          ],
+          "after": [
+            "Do not rub or massage the affected areas",
+            "Do not apply oil or cream to them",
+            "Call an ambulance if sensation is lost"
+          ],
+          "forbidden": [
+            "Rubbing skin with snow or alcohol",
+            "Placing frostbitten limbs in hot water",
+            "Applying oil or cream to frostbite",
+            "Leaving a frozen person alone"
+          ],
+          "source": "EMERCOM of Russia · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pervaya-pomoshch-pri-obmorozhenii_0",
+          "contacts": [
+            "112"
+          ]
         }
       },
       "quiz": {
@@ -498,6 +906,44 @@
             ],
             "answer": 1,
             "explanation": "Побеление и онемение означают нарушение кровотока в тканях."
+          }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "What must you never rub a frostbitten area with?",
+            "options": [
+              "A dry soft cloth",
+              "Snow or alcohol",
+              "Warm water",
+              "Clean hands"
+            ],
+            "answer": 1,
+            "explanation": "EMERCOM forbids rubbing or massaging affected areas. It makes tissue damage worse."
+          },
+          {
+            "id": "q2",
+            "prompt": "How should you warm a person with hypothermia?",
+            "options": [
+              "Put them in a hot bath",
+              "Give them alcohol",
+              "Warm them gradually in a warm room and give warm drinks",
+              "Rub them with snow"
+            ],
+            "answer": 2,
+            "explanation": "Sudden heat and alcohol are dangerous for the heart. Warm the person gradually."
+          },
+          {
+            "id": "q3",
+            "prompt": "Which sign indicates frostbite?",
+            "options": [
+              "Redness and warm skin",
+              "Whitening and loss of sensation",
+              "Sweating",
+              "Rapid breathing"
+            ],
+            "answer": 1,
+            "explanation": "Whitening and numbness mean blood flow to the tissue is impaired."
           }
         ]
       }
@@ -542,6 +988,43 @@
             "112"
           ],
           "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/zemletryasenie_3"
+        },
+        "en": {
+          "title": "Earthquake",
+          "summary": "An earthquake lasts seconds, but collapses are dangerous. Indoors, take cover under a sturdy table by a load-bearing wall. Outdoors, move away from buildings and wires.",
+          "signs": [
+            "Floor trembling and swaying light fixtures",
+            "Rumbling, cracking walls and falling objects",
+            "Seismologists' warning of possible tremors"
+          ],
+          "before": [
+            "Secure cabinets and shelves, remove heavy items from upper shelves",
+            "Remember where the load-bearing walls and exits are in your home",
+            "Prepare a first aid kit, flashlight, water and documents"
+          ],
+          "during": [
+            "Indoors, take cover under a table or bed, or stand in a doorway or the corner of load-bearing walls",
+            "Stay away from windows: glass shatters",
+            "Outdoors, move away from buildings, poles and power lines",
+            "In a car, stop away from bridges and buildings",
+            "Do not use the elevator"
+          ],
+          "after": [
+            "Leave by the stairs to an open area, without running",
+            "Check yourself and others, help the injured",
+            "Do not light a flame: a gas leak is possible",
+            "Be ready for aftershocks"
+          ],
+          "forbidden": [
+            "Use the elevator or matches",
+            "Stand near windows or on the balcony",
+            "Approach broken wires or unstable walls",
+            "Return to the building for belongings"
+          ],
+          "source": "EMERCOM of Russia · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/zemletryasenie_3",
+          "contacts": [
+            "112"
+          ]
         }
       },
       "quiz": {
@@ -582,6 +1065,44 @@
             "answer": 2,
             "explanation": "Лифт может застрять или обрушиться при повторных толчках."
           }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "Where should you take cover in an apartment during an earthquake?",
+            "options": [
+              "On the balcony",
+              "Under a sturdy table by an inner wall",
+              "Near a window",
+              "In the elevator"
+            ],
+            "answer": 1,
+            "explanation": "An inner wall and a sturdy table protect you from falling objects and glass."
+          },
+          {
+            "id": "q2",
+            "prompt": "What should you do outdoors during tremors?",
+            "options": [
+              "Move close to a building wall",
+              "Hide under a tree by a building",
+              "Move away from buildings, poles and wires",
+              "Run into the entrance"
+            ],
+            "answer": 2,
+            "explanation": "An open area protects you from collapsing facades, glass and wires."
+          },
+          {
+            "id": "q3",
+            "prompt": "How must you not leave the building after an earthquake?",
+            "options": [
+              "By the stairs",
+              "At a brisk pace",
+              "By the elevator",
+              "Hugging the wall"
+            ],
+            "answer": 2,
+            "explanation": "The elevator can get stuck or collapse during aftershocks."
+          }
         ]
       }
     },
@@ -591,7 +1112,7 @@
       "texts": {
         "ru": {
           "title": "Лесной пожар",
-          "summary": "Лесной пожар идёт быстрее человека. Уходите перпендикулярно огню\u00a0— к дороге, поляне или воде. Если уйти не удаётся, войдите в водоём или накройтесь мокрой одеждой.",
+          "summary": "Лесной пожар идёт быстрее человека. Уходите перпендикулярно огню — к дороге, поляне или воде. Если уйти не удаётся, войдите в водоём или накройтесь мокрой одеждой.",
           "signs": [
             "Запах гари и дым над лесом",
             "Дымка, удушье и летящие искры",
@@ -603,7 +1124,7 @@
             "Подготовьте документы, воду и влажную повязку"
           ],
           "during": [
-            "Выходите перпендикулярно движению огня\u00a0— к дороге, просеке или водоёму",
+            "Выходите перпендикулярно движению огня — к дороге, просеке или водоёму",
             "Дышите у земли через мокрую ткань",
             "Если уйти не удаётся, войдите в водоём или накройтесь мокрой одеждой",
             "Сообщите о пожаре в противопожарную службу по номеру 101 или 112"
@@ -623,6 +1144,41 @@
             "112"
           ],
           "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/prirodnye-pozhary_6"
+        },
+        "en": {
+          "title": "Wildfire",
+          "summary": "A wildfire moves faster than a person. Move perpendicular to the fire, toward a road, clearing, or water. If you cannot escape, get into a body of water or cover yourself with wet clothing.",
+          "signs": [
+            "Smell of burning and smoke over the forest",
+            "Haze, choking air, and flying sparks",
+            "Crackling and flashes of fire in the distance"
+          ],
+          "before": [
+            "Do not build a fire in young conifer stands or under tree crowns",
+            "Clear dry grass and flammable materials away from your home",
+            "Prepare documents, water, and a wet cloth"
+          ],
+          "during": [
+            "Move perpendicular to the direction of the fire, toward a road, firebreak, or body of water",
+            "Breathe close to the ground through a wet cloth",
+            "If you cannot escape, get into a body of water or cover yourself with wet clothing",
+            "Report the fire to the fire service by calling 101 or 112"
+          ],
+          "after": [
+            "Leave the fire area only by a safe route",
+            "Check for burns and see a doctor",
+            "Do not return to burned forest until permitted"
+          ],
+          "forbidden": [
+            "Throwing away burning matches and cigarette butts",
+            "Building fires in young conifer stands or under tree crowns",
+            "Burning grass and trash near the forest",
+            "Leaving a fire unattended"
+          ],
+          "source": "EMERCOM of Russia · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/prirodnye-pozhary_6",
+          "contacts": [
+            "112"
+          ]
         }
       },
       "quiz": {
@@ -637,7 +1193,7 @@
               "В глубь леса"
             ],
             "answer": 1,
-            "explanation": "МЧС советует выходить перпендикулярно направлению движения огня\u00a0— так путь короче."
+            "explanation": "МЧС советует выходить перпендикулярно направлению движения огня — так путь короче."
           },
           {
             "id": "q2",
@@ -662,6 +1218,44 @@
             ],
             "answer": 2,
             "explanation": "Палы и сжигание мусора при ветре быстро переходят в лесной пожар."
+          }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "In which direction should you move away from a wildfire?",
+            "options": [
+              "Downwind",
+              "Perpendicular to the direction of the fire",
+              "Uphill",
+              "Deeper into the forest"
+            ],
+            "answer": 1,
+            "explanation": "EMERCOM advises moving perpendicular to the direction of the fire, as this gives the shortest path out."
+          },
+          {
+            "id": "q2",
+            "prompt": "What should you do if fire surrounds you?",
+            "options": [
+              "Run through the wall of fire",
+              "Get into a body of water or cover yourself with wet clothing",
+              "Hide in a car",
+              "Climb a tree"
+            ],
+            "answer": 1,
+            "explanation": "Water and wet cloth protect against heat and smoke when escape is no longer possible."
+          },
+          {
+            "id": "q3",
+            "prompt": "Which action is forbidden during fire-hazard season?",
+            "options": [
+              "Reporting a fire by calling 112",
+              "Clearing dry grass near your home",
+              "Burning grass and trash in windy weather",
+              "Covering your mouth with a wet cloth"
+            ],
+            "answer": 2,
+            "explanation": "Grass fires and trash burning in wind can quickly spread into a wildfire."
           }
         ]
       }

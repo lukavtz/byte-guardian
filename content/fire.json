@@ -5,7 +5,8 @@
     "emoji": "🔥",
     "sort": 1,
     "title": {
-      "ru": "Пожар"
+      "ru": "Пожар",
+      "en": "Fire"
     }
   },
   "threats": [
@@ -51,6 +52,45 @@
             "112"
           ],
           "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pozhar-v-kvartire_4 · ГУ МЧС России по Тульской области · https://71.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pozharnaya-bezopasnost/kak-vesti-sebya-pri-pozhare-v-mnogokvartirnom-dome"
+        },
+        "en": {
+          "title": "Apartment fire",
+          "summary": "Open flames and smoke in an apartment: minutes count. Call 101 or 112, get people out, and close the doors behind you.",
+          "signs": [
+            "Smell of burnt wiring or smoke",
+            "Smoke from under a door, an outlet, or a vent",
+            "Crackling, clicking, and sparks in a wall",
+            "A door or handle hot to the touch"
+          ],
+          "before": [
+            "Keep a fire extinguisher and check its expiration date",
+            "Do not leave the stove, iron, or chargers switched on unattended",
+            "Install a smoke detector and replace its battery",
+            "Learn two exit routes from your apartment with your family"
+          ],
+          "during": [
+            "Call 101 or 112 and give the address, floor, and what is burning",
+            "Get people out and do not use the elevator",
+            "In heavy smoke, crawl along the wall toward the exit",
+            "Close the door of the burning room and seal gaps with wet cloth"
+          ],
+          "after": [
+            "Go outside and do not return until firefighters allow it",
+            "Count your loved ones and tell firefighters about anyone left inside",
+            "Get medical help even if no burns are visible",
+            "Do not enter the apartment until an inspector has examined it"
+          ],
+          "forbidden": [
+            "Do not pour water on electrical appliances that are switched on",
+            "Do not open windows: incoming air will feed the fire",
+            "Do not hide in closets or under the bed",
+            "Do not go back for belongings or documents"
+          ],
+          "source": "EMERCOM of Russia · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pozhar-v-kvartire_4 · EMERCOM Main Directorate for Tula Oblast · https://71.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pozharnaya-bezopasnost/kak-vesti-sebya-pri-pozhare-v-mnogokvartirnom-dome",
+          "contacts": [
+            "101",
+            "112"
+          ]
         }
       },
       "quiz": {
@@ -90,6 +130,44 @@
             ],
             "answer": 2,
             "explanation": "Горячая дверь означает огонь за ней. Щели закрывают мокрой тканью, о помощи сигналят из окна."
+          }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "What should you do first when a fire starts in an apartment?",
+            "options": [
+              "Call 101 or 112 and get people out",
+              "Open the windows to ventilate",
+              "Gather documents and belongings",
+              "Pour water on the fire no matter the source"
+            ],
+            "answer": 0,
+            "explanation": "Call and evacuate first: every minute the fire grows larger."
+          },
+          {
+            "id": "q2",
+            "prompt": "How should you move through a smoke-filled room?",
+            "options": [
+              "Upright, holding your breath",
+              "Crouched near the floor, moving in short stretches toward the exit",
+              "Running straight through the smoke to the exit",
+              "Crawling along the elevator shaft"
+            ],
+            "answer": 1,
+            "explanation": "Smoke and hot air rise, so breathing is easier near the floor. Wet cloth blocks some smoke but does not protect against carbon monoxide."
+          },
+          {
+            "id": "q3",
+            "prompt": "The door to a burning room is hot. What should you do?",
+            "options": [
+              "Open it and see what is burning",
+              "Douse the door with water and break it down",
+              "Do not open it, seal the gaps, and move to the window",
+              "Wait for the fire to go out on its own"
+            ],
+            "answer": 2,
+            "explanation": "A hot door means fire is behind it. Seal the gaps with wet cloth and signal for help from the window."
           }
         ]
       }
@@ -136,6 +214,45 @@
             "112"
           ],
           "source": "МЧС России · https://31.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/rekomendacii-pri-gorenii-v-sosednih-pomeshcheniyah"
+        },
+        "en": {
+          "title": "Fire in the stairwell",
+          "summary": "Smoke in the stairwell is often more dangerous than fire. Check the situation behind your door and decide: go down the stairs or stay in your apartment and wait for firefighters.",
+          "signs": [
+            "Smoke in the entrance hall or on the stair landing",
+            "Smell of burning in the apartment through the ventilation",
+            "Neighbors shouting and knocking",
+            "Fire alarm activated"
+          ],
+          "before": [
+            "Find out where the smoke-free staircases and roof exits are",
+            "Do not block stairwells and exits",
+            "Check that your front door closes tightly",
+            "Agree with neighbors on who will help the elderly"
+          ],
+          "during": [
+            "Call 101 or 112 and give the entrance number and floor",
+            "If there is smoke in the stairwell, stay in your apartment and seal gaps with wet cloth",
+            "Go down the stairs while crouching, without the elevator",
+            "Signal from the window with bright cloth or a flashlight"
+          ],
+          "after": [
+            "Wait for firefighters to allow entry into the building",
+            "Tell firefighters about people still inside",
+            "Check whether your neighbors were harmed",
+            "Do not enter the stairwell until it has been aired out and inspected"
+          ],
+          "forbidden": [
+            "Do not use the elevator during a fire",
+            "Do not open the door if it or the handle is hot",
+            "Do not enter smoke where you cannot see beyond 10 meters",
+            "Do not open the windows wide if the apartment is already filled with smoke"
+          ],
+          "source": "EMERCOM of Russia · https://31.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/rekomendacii-pri-gorenii-v-sosednih-pomeshcheniyah",
+          "contacts": [
+            "101",
+            "112"
+          ]
         }
       },
       "quiz": {
@@ -175,6 +292,44 @@
             ],
             "answer": 1,
             "explanation": "Единый номер пожарных и спасателей — 101, единый номер экстренных служб — 112."
+          }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "Can you use the elevator during a fire?",
+            "options": [
+              "Yes, if it is working",
+              "Yes, if you are in a hurry",
+              "No, the elevator can lose power and fill with smoke",
+              "Only on the upper floors"
+            ],
+            "answer": 2,
+            "explanation": "During a fire the elevator is cut off from power, and the car can become a trap. Go down only by the stairs."
+          },
+          {
+            "id": "q2",
+            "prompt": "The stairwell is full of smoke and you cannot get out. What should you do?",
+            "options": [
+              "Stay in your apartment, seal gaps with wet cloth, and signal from the window",
+              "Wait on the balcony with the door open",
+              "Go down to the basement",
+              "Open the front door to air the apartment out"
+            ],
+            "answer": 0,
+            "explanation": "A tightly closed apartment holds back the smoke. Signal from the window without opening it wide so firefighters can find you."
+          },
+          {
+            "id": "q3",
+            "prompt": "Who do you call in a fire?",
+            "options": [
+              "Only the building management company",
+              "101 or 112",
+              "103",
+              "The clinic"
+            ],
+            "answer": 1,
+            "explanation": "The unified number for firefighters and rescuers is 101, and the unified emergency number is 112."
           }
         ]
       }
@@ -220,6 +375,44 @@
             "112"
           ],
           "source": "МЧС России · https://57.mchs.gov.ru/deyatelnost/deyatelnost/ugarnyy-gaz-kak-izbezhat-otravleniya-pravila-bezopasnosti"
+        },
+        "en": {
+          "title": "Smoke and carbon monoxide",
+          "summary": "Carbon monoxide has no color or smell. Headache, nausea, and drowsiness in a smoky room are a signal to get into fresh air and call 103 or 112.",
+          "signs": [
+            "Headache in the forehead area, pulsing in the temples",
+            "Nausea, vomiting, dizziness",
+            "Ringing in the ears, weakness, unsteady walking",
+            "Worsening vision and reduced hearing"
+          ],
+          "before": [
+            "Check the draft in the stove and ventilation, clean the chimney",
+            "Do not close the stove damper until the coals have burned out",
+            "Do not heat your apartment with a gas stove",
+            "Do not leave an engine running in a garage or inside a car"
+          ],
+          "during": [
+            "Carry the person into fresh air and loosen their clothing",
+            "Call 103 or 112",
+            "Lay the person on their side if they are unconscious",
+            "Open the windows if the person is still inside"
+          ],
+          "after": [
+            "Let medical workers examine everyone who was in the room",
+            "Watch the person until their condition returns to normal",
+            "Check the draft and ventilation with a technician",
+            "Do not return to the room until it has been aired out and checked"
+          ],
+          "forbidden": [
+            "Do not stay in the room, even if you feel better",
+            "Do not leave an unconscious person alone",
+            "Do not go back inside until the ventilation has been checked"
+          ],
+          "source": "EMERCOM of Russia · https://57.mchs.gov.ru/deyatelnost/deyatelnost/ugarnyy-gaz-kak-izbezhat-otravleniya-pravila-bezopasnosti",
+          "contacts": [
+            "103",
+            "112"
+          ]
         }
       },
       "quiz": {
@@ -259,6 +452,44 @@
             ],
             "answer": 1,
             "explanation": "На боку человек не задохнётся при рвоте. Дальше нужна помощь медиков."
+          }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "Why is carbon monoxide dangerous?",
+            "options": [
+              "It has a sharp smell and wakes you at night",
+              "It has no color or smell and binds hemoglobin",
+              "It explodes in the light",
+              "It is always visible as white smoke"
+            ],
+            "answer": 1,
+            "explanation": "Carbon monoxide is undetectable and blocks oxygen transport in the blood. A person can lose consciousness without warning."
+          },
+          {
+            "id": "q2",
+            "prompt": "First step in carbon monoxide poisoning",
+            "options": [
+              "Give a painkiller",
+              "Move the person to fresh air and call 103",
+              "Put them to bed and give tea",
+              "Open a window and stay inside"
+            ],
+            "answer": 1,
+            "explanation": "Fresh air stops the intake of the gas. Medical help is then needed."
+          },
+          {
+            "id": "q3",
+            "prompt": "The person is unconscious but breathing. What should you do?",
+            "options": [
+              "Leave them alone and open the windows",
+              "Move them to fresh air, lay them on their side, and call 103",
+              "Give them water",
+              "Sit them up and give them tea"
+            ],
+            "answer": 1,
+            "explanation": "On their side, the person will not suffocate if they vomit. Medical help is then needed."
           }
         ]
       }
@@ -305,6 +536,45 @@
             "112"
           ],
           "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pozhar-v-kvartire_4"
+        },
+        "en": {
+          "title": "Wiring and appliances",
+          "summary": "If a socket sparks or a wire burns, cut the power first, then fight the fire. Do not use water or foam on live equipment.",
+          "signs": [
+            "Smell of melting insulation",
+            "Socket or plug is hot and discolored",
+            "Sparks and crackling in the panel",
+            "Lights flicker when an appliance turns on"
+          ],
+          "before": [
+            "Do not overload a single socket with power strips",
+            "Replace damaged wires and plugs",
+            "Switch off appliances at night and before leaving",
+            "Leave panel installation to an electrician"
+          ],
+          "during": [
+            "Cut power to the apartment at the breaker, if you can reach it",
+            "Fight small fires with a powder extinguisher",
+            "Cover the disconnected appliance with a thick cloth",
+            "Call 101 or 112 and get people out"
+          ],
+          "after": [
+            "Do not switch the breaker back on until an electrician inspects it",
+            "Check the wiring in the whole apartment",
+            "Dry and air out the room",
+            "Report the damage to the management company"
+          ],
+          "forbidden": [
+            "Do not pour water on appliances that are on",
+            "Do not touch a wire with bare hands",
+            "Do not switch the breaker back on while it sparks",
+            "Do not cover a live appliance with cloth"
+          ],
+          "source": "EMERCOM of Russia · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pozhar-v-kvartire_4",
+          "contacts": [
+            "101",
+            "112"
+          ]
         }
       },
       "quiz": {
@@ -344,6 +614,44 @@
             ],
             "answer": 2,
             "explanation": "Потемнение и запах означают перегрев контактов. Дальше может вспыхнуть изоляция."
+          }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "How do you put out a live electrical appliance?",
+            "options": [
+              "A bucket of water",
+              "Foam",
+              "A powder extinguisher",
+              "A wet rag"
+            ],
+            "answer": 2,
+            "explanation": "A powder extinguisher is suitable for equipment under voltage. Water and foam conduct current."
+          },
+          {
+            "id": "q2",
+            "prompt": "What should you do before fighting burning wiring?",
+            "options": [
+              "Open the windows",
+              "Cut the power at the breaker",
+              "Pour water on the panel",
+              "Call the neighbors and wait"
+            ],
+            "answer": 1,
+            "explanation": "Removing the voltage removes the risk of electric shock and stops the wire heating up."
+          },
+          {
+            "id": "q3",
+            "prompt": "A socket has darkened and smells like burnt plastic. What do you do?",
+            "options": [
+              "Keep using it",
+              "Seal it with tape",
+              "Disconnect it and call an electrician",
+              "Pour water on it"
+            ],
+            "answer": 2,
+            "explanation": "Darkening and smell mean the contacts are overheating. The insulation may catch fire next."
           }
         ]
       }
@@ -390,6 +698,45 @@
             "112"
           ],
           "source": "МЧС России · https://02.mchs.gov.ru/deyatelnost/press-centr/novosti/4150633"
+        },
+        "en": {
+          "title": "Kitchen fire",
+          "summary": "Never use water on burning oil. Turn off the heat, cover the pan with a metal lid, and keep your face and hands away from the steam.",
+          "signs": [
+            "Smoke and a smell of burnt oil",
+            "Flames over a pan or pot",
+            "Crackling and flare-ups while cooking",
+            "Smoke from the oven or microwave"
+          ],
+          "before": [
+            "Do not leave cooking unattended",
+            "Keep a lid and a fire extinguisher within reach",
+            "Make sure pot handles do not stick out over the stove",
+            "Clean grease off the stove"
+          ],
+          "during": [
+            "Turn off the heat if you can reach it safely",
+            "Cover the pan with a metal lid or a baking sheet",
+            "Do not move the burning pan",
+            "If the fire grows, call 101 or 112 and leave"
+          ],
+          "after": [
+            "Do not lift the lid until the oil has cooled",
+            "Ventilate the kitchen",
+            "Check whether your hands or face are hurt",
+            "Inspect the hood and the stove before the next use"
+          ],
+          "forbidden": [
+            "Do not pour water on burning oil",
+            "Do not carry a burning pan through the room",
+            "Do not cover the fire with a towel: the fabric soaks up oil and catches fire",
+            "Do not use a glass or ceramic lid"
+          ],
+          "source": "EMERCOM of Russia · https://02.mchs.gov.ru/deyatelnost/press-centr/novosti/4150633",
+          "contacts": [
+            "101",
+            "112"
+          ]
         }
       },
       "quiz": {
@@ -429,6 +776,44 @@
             ],
             "answer": 1,
             "explanation": "Небольшой очаг можно накрыть, но растущий пожар требует спасателей. Дым быстро заполняет квартиру."
+          }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "Oil is burning in a pan. What must you not do?",
+            "options": [
+              "Cover it with a lid",
+              "Turn off the heat",
+              "Pour water on it",
+              "Use a fire extinguisher"
+            ],
+            "answer": 2,
+            "explanation": "Water instantly boils in the oil and throws up a burning fountain. You need to cut off the oxygen."
+          },
+          {
+            "id": "q2",
+            "prompt": "What should you cover a burning pan with?",
+            "options": [
+              "A wet rag",
+              "A metal lid or a baking sheet",
+              "A plastic cutting board",
+              "A paper towel"
+            ],
+            "answer": 1,
+            "explanation": "A metal lid cuts off the oxygen. Glass and ceramic can shatter, and fabric soaks up oil and catches fire."
+          },
+          {
+            "id": "q3",
+            "prompt": "When should you call 101 during a kitchen fire?",
+            "options": [
+              "Never, I can handle it myself",
+              "If the flames do not go out or the smoke is heavy",
+              "Only after cleaning up",
+              "If the neighbors ask"
+            ],
+            "answer": 1,
+            "explanation": "A small fire can be covered, but a growing fire needs firefighters. Smoke fills an apartment quickly."
           }
         ]
       }
@@ -474,6 +859,44 @@
             "112"
           ],
           "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/prirodnye-pozhary_6"
+        },
+        "en": {
+          "title": "Forest and steppe fire",
+          "summary": "Leave a forest fire zone perpendicular to the direction of the fire, toward a road, a wide clearing, or water.",
+          "signs": [
+            "Smell of burning and haze on the horizon",
+            "Restless birds and animals",
+            "Crackling and glow in the thicket",
+            "Flying sparks and ash"
+          ],
+          "before": [
+            "Do not light a campfire in windy weather and never leave it unattended",
+            "Take your trash and glass with you",
+            "Keep your phone charged on a hike",
+            "Do not burn dry grass or set reeds on fire"
+          ],
+          "during": [
+            "Call 101 or 112 and report your coordinates or landmarks",
+            "Move perpendicular to the direction of the fire",
+            "Cover your face with a wet cloth and breathe close to the ground",
+            "Head for a road, a wide clearing, or water"
+          ],
+          "after": [
+            "Reach a safe distance and count your group",
+            "Report the location and size of the fire to the forestry service or firefighters",
+            "See a doctor for burns or smoke inhalation",
+            "Do not return to the forest until officially allowed"
+          ],
+          "forbidden": [
+            "Do not throw cigarette butts or burning matches in the forest",
+            "Do not stay in dense forest, go out to open ground",
+            "Do not light a fire near dry grass or peat"
+          ],
+          "source": "EMERCOM of Russia · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/prirodnye-pozhary_6",
+          "contacts": [
+            "101",
+            "112"
+          ]
         }
       },
       "quiz": {
@@ -513,6 +936,44 @@
             ],
             "answer": 1,
             "explanation": "Единый вызов сразу передаёт информацию пожарным и спасателям."
+          }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "How should you move away from a forest fire?",
+            "options": [
+              "With the wind",
+              "Perpendicular to the direction of the fire",
+              "Uphill",
+              "Into dense forest"
+            ],
+            "answer": 1,
+            "explanation": "Crossing the fire line takes you out of the danger zone faster."
+          },
+          {
+            "id": "q2",
+            "prompt": "Where should you wait out a nearby fire?",
+            "options": [
+              "In a ravine",
+              "In a wide clearing or by water",
+              "Under a tall tree",
+              "In a tent"
+            ],
+            "answer": 1,
+            "explanation": "Open ground and a body of water keep the fire from approaching. Dense forest means more smoke and fire."
+          },
+          {
+            "id": "q3",
+            "prompt": "Who should you report a forest fire to?",
+            "options": [
+              "The forestry service the next day",
+              "101 or 112",
+              "A school",
+              "A shop"
+            ],
+            "answer": 1,
+            "explanation": "A single call passes the information straight to firefighters and rescuers."
           }
         ]
       }
@@ -559,6 +1020,45 @@
             "112"
           ],
           "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pozhar-v-avtomobile_7"
+        },
+        "en": {
+          "title": "Car fire",
+          "summary": "If you smell gasoline or see smoke from under the hood, stop, shut off the engine, move people to a safe distance, and call 101 or 112.",
+          "signs": [
+            "Smell of gasoline in the cabin",
+            "Smoke from under the hood or from the dashboard",
+            "Burning wiring near the instruments",
+            "Clicks and sparks in the engine compartment"
+          ],
+          "before": [
+            "Check the condition of wiring and fuel hoses",
+            "Keep a working fire extinguisher in the cabin",
+            "Do not store fuel canisters in the car",
+            "Inspect the car after an accident"
+          ],
+          "during": [
+            "Stop, shut off the engine, move people away",
+            "Step back 10–15 meters and call 101 or 112",
+            "For a small fire, prop the hood open slightly with a stick and aim the extinguisher at the base of the fire",
+            "Warn other drivers and clear the lane"
+          ],
+          "after": [
+            "Do not open the hood fully if the fire is strong",
+            "Step back and stay out of the firefighters' way",
+            "Report people or cargo in the car",
+            "Do not start the car until it has been inspected"
+          ],
+          "forbidden": [
+            "Do not pour water on burning fuel",
+            "Do not enter a burning car for documents",
+            "Do not open the fuel tank cap during a fire",
+            "Do not stay near cylinders and canisters"
+          ],
+          "source": "EMERCOM of Russia · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pozhar-v-avtomobile_7",
+          "contacts": [
+            "101",
+            "112"
+          ]
         }
       },
       "quiz": {
@@ -598,6 +1098,44 @@
             ],
             "answer": 2,
             "explanation": "Порошок и углекислота перекрывают доступ кислорода к топливу. Вода растекается и разносит пламя."
+          }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "What should you do if there is smoke from under the hood?",
+            "options": [
+              "Open the hood fully",
+              "Stop, shut off the engine, and move away",
+              "Keep driving to a service station",
+              "Wait in place without calling anyone"
+            ],
+            "answer": 1,
+            "explanation": "Stopping and evacuating removes the risk to people. A fully open hood feeds air to the fire."
+          },
+          {
+            "id": "q2",
+            "prompt": "How do you put out a small fire under the hood?",
+            "options": [
+              "Prop the hood open slightly with a stick and aim the extinguisher at the fire",
+              "With water from a bottle",
+              "Cover the whole hood with cloth",
+              "Do not extinguish it"
+            ],
+            "answer": 0,
+            "explanation": "A slightly open hood lets in less air than one opened fully. Aim the stream at the base of the flames."
+          },
+          {
+            "id": "q3",
+            "prompt": "Fuel has caught fire. What do you use to put it out?",
+            "options": [
+              "Water",
+              "Sand from a children's sandbox",
+              "A powder or carbon dioxide fire extinguisher",
+              "Snow"
+            ],
+            "answer": 2,
+            "explanation": "Powder and carbon dioxide cut off oxygen to the fuel. Water spreads and carries the flames."
           }
         ]
       }

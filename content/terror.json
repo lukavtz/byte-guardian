@@ -4,7 +4,10 @@
     "slug": "terror",
     "emoji": "🛡️",
     "sort": 2,
-    "title": {"ru": "Терроризм и захват"}
+    "title": {
+      "ru": "Терроризм и захват",
+      "en": "Terrorism and hostage taking"
+    }
   },
   "threats": [
     {
@@ -13,7 +16,7 @@
       "texts": {
         "ru": {
           "title": "Захват заложников",
-          "summary": "Преступники удерживают людей и выдвигают требования. Главная задача\u00A0— сохранить жизнь: не провоцировать нападающих, выполнять их указания и ждать освобождения.",
+          "summary": "Преступники удерживают людей и выдвигают требования. Главная задача — сохранить жизнь: не провоцировать нападающих, выполнять их указания и ждать освобождения.",
           "signs": [
             "Резкие крики, звуки ударов и выстрелов в здании или на улице",
             "Вооружённые люди в масках перекрывают входы и выходы",
@@ -46,8 +49,52 @@
             "Бежать к выходу во время штурма или навстречу спецназу",
             "Снимать происходящее на видео и публиковать в соцсетях"
           ],
-          "contacts": ["112", "102"],
+          "contacts": [
+            "112",
+            "102"
+          ],
           "source": "МЧС России · https://78.mchs.gov.ru/deyatelnost/propaganda/propaganda-sredi-naseleniya/polezno-znat/pravila-povedeniya-pri-terroristicheskom-akte"
+        },
+        "en": {
+          "title": "Hostage taking",
+          "summary": "Criminals hold people captive and make demands. Your main task is to stay alive: do not provoke the attackers, follow their instructions, and wait to be freed.",
+          "signs": [
+            "Sudden screams, sounds of hitting and gunfire in a building or on the street",
+            "Armed masked people blocking entrances and exits",
+            "People being forced into one room and told not to move",
+            "You are made to stay silent and ask permission for every action"
+          ],
+          "before": [
+            "Know the emergency exits and evacuation procedures in places you visit",
+            "Keep your phone charged",
+            "Tell your family where you are if the situation becomes alarming",
+            "Do not try to detain armed people yourself"
+          ],
+          "during": [
+            "Follow the attackers' demands, do not argue and do not look them in the eye",
+            "Do not make sudden movements and do not take out your phone without permission",
+            "Ask permission before standing up, sitting down, or going to the toilet",
+            "Memorize the attackers' appearance, but do not write it down in plain view",
+            "During the assault, lie face down, cover your head with your hands, and do not run"
+          ],
+          "after": [
+            "After release, follow the commands of law enforcement officers",
+            "Do not pick up weapons or items left by the attackers",
+            "Tell officers where injured and trapped people are",
+            "Seek medical and psychological help",
+            "Answer investigators' questions, but do not discuss details with outsiders"
+          ],
+          "forbidden": [
+            "Getting into arguments and provoking the attackers",
+            "Making calls if the call could be noticed",
+            "Running to an exit during the assault or toward special forces",
+            "Filming what is happening and posting it on social media"
+          ],
+          "source": "EMERCOM of Russia · https://78.mchs.gov.ru/deyatelnost/propaganda/propaganda-sredi-naseleniya/polezno-znat/pravila-povedeniya-pri-terroristicheskom-akte",
+          "contacts": [
+            "112",
+            "102"
+          ]
         }
       },
       "quiz": {
@@ -87,6 +134,44 @@
             ],
             "answer": 2,
             "explanation": "Оставленные предметы могут быть опасны и важны для следствия. Их трогают только специалисты."
+          }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "What should you do first if you are taken hostage?",
+            "options": [
+              "Follow the attackers' demands and avoid drawing attention",
+              "Try to disarm the attacker",
+              "Scream and call for help",
+              "Film what is happening on your phone"
+            ],
+            "answer": 0,
+            "explanation": "Calm compliance reduces the risk of aggression. Resist only if there is a clear and immediate threat to your life."
+          },
+          {
+            "id": "q2",
+            "prompt": "How should you behave when an assault begins?",
+            "options": [
+              "Run to the doors and call for help",
+              "Lie face down, cover your head with your hands, and stay still",
+              "Hide behind an attacker",
+              "Stand up and raise your hands so you are noticed"
+            ],
+            "answer": 1,
+            "explanation": "Law enforcement officers may mistake a running person for a criminal. A person lying down does not look like a threat."
+          },
+          {
+            "id": "q3",
+            "prompt": "What must you not do after being released?",
+            "options": [
+              "Tell officers where injured people are",
+              "Follow officers' commands",
+              "Pick up weapons left by the attackers",
+              "Seek medical help"
+            ],
+            "answer": 2,
+            "explanation": "Leftover items may be dangerous and are important for the investigation. Only specialists handle them."
           }
         ]
       }
@@ -128,8 +213,50 @@
             "Пинать лежащие на улице предметы",
             "Распространять слухи и сеять панику"
           ],
-          "contacts": ["112", "102"],
+          "contacts": [
+            "112",
+            "102"
+          ],
           "source": "МЧС России · https://29.mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pamyatka-deystviy-pri-obnaruzhenii-podozritelnogo-predmeta"
+        },
+        "en": {
+          "title": "Suspicious item",
+          "summary": "An unattended bag, box, or package may be an explosive device. Do not approach or touch it. Report it by calling 112.",
+          "signs": [
+            "Unattended bag, backpack, or box in a crowded place",
+            "Wires, an antenna, tape, or electrical tape sticking out of the item",
+            "A ticking sound or clicks coming from a bag",
+            "An item placed where nothing is usually left"
+          ],
+          "before": [
+            "Pay attention to items left unattended in transport and at stations",
+            "Do not accept packages or bags from strangers",
+            "Note where the nearest building exits are"
+          ],
+          "during": [
+            "Do not approach or touch the item",
+            "Move people away from it",
+            "Do not use a mobile phone or radio near the item",
+            "Call 112: report the location, time of discovery, and description of the item",
+            "Wait for responders at a distance and keep people away from the area"
+          ],
+          "after": [
+            "Do not return to the area until responders give permission",
+            "Follow the instructions of police and EMERCOM",
+            "After evacuation, stay at the assembly point",
+            "Tell responders everything you noticed"
+          ],
+          "forbidden": [
+            "Opening, tampering with, or moving the item",
+            "Looking inside a package or box",
+            "Kicking items lying on the street",
+            "Spreading rumors and causing panic"
+          ],
+          "source": "EMERCOM of Russia · https://29.mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pamyatka-deystviy-pri-obnaruzhenii-podozritelnogo-predmeta",
+          "contacts": [
+            "112",
+            "102"
+          ]
         }
       },
       "quiz": {
@@ -170,6 +297,44 @@
             "answer": 1,
             "explanation": "Точные координаты и описание помогают быстро найти предмет и оградить людей. Догадки и слухи только мешают."
           }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "You find an unattended bag in a metro car. What should you do?",
+            "options": [
+              "Open it and check the contents",
+              "Take the bag to the driver or security",
+              "Do not touch it, move away, and call 112",
+              "Step on the bag to check it"
+            ],
+            "answer": 2,
+            "explanation": "Any interference may trigger an explosion. Move away and call specialists."
+          },
+          {
+            "id": "q2",
+            "prompt": "Why should you not use a mobile phone near a suspicious item?",
+            "options": [
+              "A radio signal could act as a detonator",
+              "The phone may lose network",
+              "It interferes with cameras",
+              "It is only banned on planes"
+            ],
+            "answer": 0,
+            "explanation": "Guidelines advise against radio communication near the item: the detonator may respond to a signal."
+          },
+          {
+            "id": "q3",
+            "prompt": "What should you report to 112 about a suspicious item?",
+            "options": [
+              "Only your name",
+              "The location, time of discovery, and description of the item",
+              "Your guesses about who left it",
+              "Nothing, just calling is enough"
+            ],
+            "answer": 1,
+            "explanation": "Exact location and description help find the item quickly and keep people away. Guesses and rumors only get in the way."
+          }
         ]
       }
     },
@@ -200,7 +365,7 @@
           ],
           "after": [
             "Не обсуждайте звонок с посторонними и не публикуйте подробности",
-            "Передайте сотрудникам заметки, а запись разговора\u00A0— если она есть",
+            "Передайте сотрудникам заметки, а запись разговора — если она есть",
             "Дождитесь проверки здания специалистами",
             "Возвращайтесь в здание только после разрешения"
           ],
@@ -210,8 +375,50 @@
             "Распространять слухи о звонке",
             "Самостоятельно искать звонящего"
           ],
-          "contacts": ["112", "102"],
+          "contacts": [
+            "112",
+            "102"
+          ],
           "source": "МЧС России · https://10.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki-po-antiterroru/terrorizm-ugroza-obshchestvu-chto-delat-pri-ugroze-terrora"
+        },
+        "en": {
+          "title": "Telephone bomb threat",
+          "summary": "An anonymous call threatening an explosion requires calm and accurate details. Do not interrupt the conversation, write down the information, and immediately report it by calling 112.",
+          "signs": [
+            "A call from an unknown number threatening an explosion",
+            "An unfamiliar voice reading a prepared text",
+            "Background noises: traffic, voices, music",
+            "The caller demands money or states a specific time"
+          ],
+          "before": [
+            "Do not ignore threatening calls, even if they sound like a joke",
+            "Keep a pen and paper at hand",
+            "Know the number 112 and the building evacuation procedure"
+          ],
+          "during": [
+            "Do not interrupt the caller and do not threaten back",
+            "Write down the exact time of the call and the number if it is displayed",
+            "Note the voice, speech pace, and manner of speaking",
+            "Memorize background noises and details the caller mentioned",
+            "Immediately after the call, dial 112 and follow the instructions"
+          ],
+          "after": [
+            "Do not discuss the call with outsiders and do not share details",
+            "Give your notes to the staff, and any call recording if one exists",
+            "Wait while specialists inspect the building",
+            "Return to the building only after permission is given"
+          ],
+          "forbidden": [
+            "Shouting and threatening back",
+            "Hanging up before the conversation ends",
+            "Spreading rumors about the call",
+            "Trying to find the caller yourself"
+          ],
+          "source": "EMERCOM of Russia · https://10.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki-po-antiterroru/terrorizm-ugroza-obshchestvu-chto-delat-pri-ugroze-terrora",
+          "contacts": [
+            "112",
+            "102"
+          ]
         }
       },
       "quiz": {
@@ -251,6 +458,44 @@
             ],
             "answer": 2,
             "explanation": "Публикация деталей мешает проверке и создаёт панику. Информацию передают только сотрудникам."
+          }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "You receive a call threatening an explosion. What should you do during the conversation?",
+            "options": [
+              "Hang up immediately",
+              "Shout and demand they stop joking",
+              "Write down details: time, voice, noises",
+              "Call the number back and identify yourself"
+            ],
+            "answer": 2,
+            "explanation": "Details of the conversation help find the caller. Do not interrupt or provoke the caller."
+          },
+          {
+            "id": "q2",
+            "prompt": "When should you report the call to the police?",
+            "options": [
+              "Immediately after the call by dialing 112",
+              "Only if the threat is confirmed",
+              "After a day, once things calm down",
+              "Only if the caller identifies themselves"
+            ],
+            "answer": 0,
+            "explanation": "The check begins immediately; time matters. Any threat is treated as real until checked."
+          },
+          {
+            "id": "q3",
+            "prompt": "What must you not do after a threat call?",
+            "options": [
+              "Give your notes to the staff",
+              "Wait for the building inspection",
+              "Post details on social media",
+              "Follow police instructions"
+            ],
+            "answer": 2,
+            "explanation": "Publishing details hinders the check and causes panic. Information is passed only to the staff."
           }
         ]
       }
@@ -292,8 +537,50 @@
             "Бежать навстречу сотрудникам или от них",
             "Приближаться к месту стрельбы из любопытства"
           ],
-          "contacts": ["112", "102"],
+          "contacts": [
+            "112",
+            "102"
+          ],
           "source": "МЧС России · https://10.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki-po-antiterroru/terrorizm-ugroza-obshchestvu-chto-delat-pri-ugroze-terrora"
+        },
+        "en": {
+          "title": "Shooting in a building",
+          "summary": "In a shooting, seconds matter. Get off the line of fire, lie down behind cover, do not look out, and call for help when it is safe.",
+          "signs": [
+            "Claps that sound like gunshots and shouting in the building",
+            "People running in one direction or hiding",
+            "Staff and security ordering everyone to leave the premises",
+            "Sounds of doors being forced and furniture falling"
+          ],
+          "before": [
+            "Learn where the emergency exits and shelters are",
+            "Keep your phone charged"
+          ],
+          "during": [
+            "If the exit is clear, leave while crouching, without standing up to full height",
+            "If you cannot leave, lie on the floor behind cover: a wall, a column, furniture",
+            "Stay away from windows and do not look out",
+            "Call 112 when it is safe and describe your location",
+            "When police arrive, do not run toward them and keep your hands visible"
+          ],
+          "after": [
+            "Leave cover only when staff order you to",
+            "Do not touch weapons and do not pick up objects",
+            "Tell staff where the injured and those in hiding are",
+            "Give first aid if it is safe",
+            "Seek psychological support"
+          ],
+          "forbidden": [
+            "Run toward the gunfire and film what is happening",
+            "Go into the corridor to see what is going on",
+            "Run toward or away from responding officers",
+            "Approach the scene of the shooting out of curiosity"
+          ],
+          "source": "EMERCOM of Russia · https://10.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki-po-antiterroru/terrorizm-ugroza-obshchestvu-chto-delat-pri-ugroze-terrora",
+          "contacts": [
+            "112",
+            "102"
+          ]
         }
       },
       "quiz": {
@@ -334,6 +621,44 @@
             "answer": 1,
             "explanation": "Тихий звонок не выдаёт укрытие. Видео и громкие разговоры привлекают внимание нападавшего."
           }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "You hear gunshots in a nearby room. What do you do first?",
+            "options": [
+              "Go into the corridor and see what is happening",
+              "Lie down behind cover away from windows",
+              "Call friends and discuss the situation",
+              "Open the door to help others"
+            ],
+            "answer": 1,
+            "explanation": "Cover behind a wall or furniture protects you from stray bullets. Do not go into the corridor."
+          },
+          {
+            "id": "q2",
+            "prompt": "What should you do when police officers arrive?",
+            "options": [
+              "Run toward them",
+              "Keep hiding and stay put",
+              "Keep your hands visible and follow their commands",
+              "Film their actions on your phone"
+            ],
+            "answer": 2,
+            "explanation": "Officers must see that you are unarmed. Sudden movements may be taken as a threat."
+          },
+          {
+            "id": "q3",
+            "prompt": "How do you report a shooting while in cover?",
+            "options": [
+              "Shout loudly into the phone",
+              "Quietly call 112 and describe your location",
+              "Turn on speakerphone",
+              "Send a video to a group chat"
+            ],
+            "answer": 1,
+            "explanation": "A quiet call does not reveal your hiding place. Video and loud talking attract the attacker's attention."
+          }
         ]
       }
     },
@@ -373,8 +698,47 @@
             "Подходить к упавшему беспилотнику",
             "Трогать обломки и неизвестные предметы"
           ],
-          "contacts": ["112"],
+          "contacts": [
+            "112"
+          ],
           "source": "МЧС России · https://27.mchs.gov.ru/rekomendacii-naseleniyu/chto-delat-pri-atake-bespilotnyh-letatelnyh-apparatov"
+        },
+        "en": {
+          "title": "Drone attack",
+          "summary": "If a drone appears, do not gather in crowds and do not try to bring it down. Go to a solid building or basement and call 112 once the drone has left.",
+          "signs": [
+            "Loud hum like a lawnmower or moped",
+            "Drone hovering over a crowd or building",
+            "Claps and flashes heard away from the building",
+            "People filming the object in the sky on their phones"
+          ],
+          "before": [
+            "Know where the nearest basement, parking garage, or solid building is",
+            "Do not post coordinates or photos of sites on social media",
+            "Keep your phone charged"
+          ],
+          "during": [
+            "Do not approach the drone and do not try to bring it down",
+            "Go to a basement, parking garage, or room with solid walls and no windows",
+            "Stay away from windows and glass structures",
+            "Do not use your phone while the drone is nearby",
+            "When the drone has left, call 112 with the time, place, and direction of flight"
+          ],
+          "after": [
+            "Do not approach debris and do not touch it",
+            "Wait for staff permission before going outside",
+            "Report damage and injuries",
+            "Do not post exact crash locations"
+          ],
+          "forbidden": [
+            "Knocking the drone down with sticks or stones",
+            "Approaching a downed drone",
+            "Touching debris or unknown objects"
+          ],
+          "source": "EMERCOM of Russia · https://27.mchs.gov.ru/rekomendacii-naseleniyu/chto-delat-pri-atake-bespilotnyh-letatelnyh-apparatov",
+          "contacts": [
+            "112"
+          ]
         }
       },
       "quiz": {
@@ -415,6 +779,44 @@
             "answer": 2,
             "explanation": "Обломки могут быть взрывоопасны или ядовиты. Их изучают только специалисты."
           }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "A drone is hovering over a building. What should you do?",
+            "options": [
+              "Bring it down with whatever is at hand",
+              "Gather in a group and watch",
+              "Go to shelter, then call 112",
+              "Record a video and post it online"
+            ],
+            "answer": 2,
+            "explanation": "Shelter lowers the risk if there is a strike. Your phone is needed only once the drone has left."
+          },
+          {
+            "id": "q2",
+            "prompt": "Where is it safer to wait out a drone attack?",
+            "options": [
+              "On a top-floor balcony",
+              "By a window with a view of the sky",
+              "In a basement or windowless room",
+              "On an open parking lot"
+            ],
+            "answer": 2,
+            "explanation": "A basement and a windowless room protect you from shrapnel and the blast wave. Windows and open areas are dangerous."
+          },
+          {
+            "id": "q3",
+            "prompt": "What should you do with drone debris?",
+            "options": [
+              "Clear it off the road",
+              "Photograph and take it apart",
+              "Leave it untouched and tell staff",
+              "Take it as a souvenir"
+            ],
+            "answer": 2,
+            "explanation": "Debris may be explosive or toxic. Only specialists examine it."
+          }
         ]
       }
     },
@@ -440,7 +842,7 @@
           "during": [
             "Прекратите общение, но сохраните переписку",
             "Не переводите деньги и не отправляйте документы, фото и геолокацию",
-            "Не выполняйте поручения: передача вещей, съёмка, поджог\u00A0— это преступление",
+            "Не выполняйте поручения: передача вещей, съёмка, поджог — это преступление",
             "Расскажите родителям, преподавателю или психологу",
             "Сообщите в полицию по 102 или 112"
           ],
@@ -456,8 +858,51 @@
             "Удалять переписку до обращения в полицию",
             "Вовлекать друзей в сомнительные схемы"
           ],
-          "contacts": ["112", "102"],
+          "contacts": [
+            "112",
+            "102"
+          ],
           "source": "Национальный антитеррористический комитет · https://nac.gov.ru/list/view/019f2389-b98a-7f5d-aaf4-303b30a34eed/view/019fae32-7c25-7dec-bc99-f1e8435a1d96"
+        },
+        "en": {
+          "title": "Recruitment into a terrorist organization",
+          "summary": "Recruiters work online: on social media, in messengers, and on dating sites. Fake names, requests for your location, and promises of easy money are warning signs.",
+          "signs": [
+            "A stranger in a messenger introduces themselves as someone else",
+            "They ask you to send your location or address",
+            "They promise money, gifts, or tickets",
+            "They claim to be law enforcement and demand cooperation",
+            "They threaten you with a criminal case if you refuse"
+          ],
+          "before": [
+            "Do not publish your address, school, or daily routine in public view",
+            "Do not believe promises of easy money",
+            "Discuss suspicious messages with your family"
+          ],
+          "during": [
+            "Stop the conversation, but keep the messages",
+            "Do not send money, documents, photos, or your location",
+            "Do not follow their instructions: passing items, filming, or arson are crimes",
+            "Tell your parents, a teacher, or a psychologist",
+            "Report to the police at 102 or 112"
+          ],
+          "after": [
+            "Keep links, nicknames, and screenshots",
+            "Hand the materials to the police",
+            "Do not make new contact with the recruiter",
+            "Seek psychological support"
+          ],
+          "forbidden": [
+            "Arguing with the recruiter and trying to prove your point",
+            "Sending money or card details",
+            "Deleting the messages before contacting the police",
+            "Involving friends in dubious schemes"
+          ],
+          "source": "National Anti-Terrorism Committee · https://nac.gov.ru/list/view/019f2389-b98a-7f5d-aaf4-303b30a34eed/view/019fae32-7c25-7dec-bc99-f1e8435a1d96",
+          "contacts": [
+            "112",
+            "102"
+          ]
         }
       },
       "quiz": {
@@ -496,7 +941,45 @@
               "Помощь с домашним заданием"
             ],
             "answer": 0,
-            "explanation": "Подмена личности и просьбы о данных\u00A0— приём, который описали ФСБ и НАК."
+            "explanation": "Подмена личности и просьбы о данных — приём, который описали ФСБ и НАК."
+          }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "A stranger in a messenger offers money for the location of a building. What should you do?",
+            "options": [
+              "Agree if the amount is large",
+              "Refuse, do not send the data, and tell adults",
+              "Ask for an advance payment",
+              "Bring a friend along"
+            ],
+            "answer": 1,
+            "explanation": "They collect data for sabotage and attacks. Never send facility coordinates to strangers."
+          },
+          {
+            "id": "q2",
+            "prompt": "What should you do with messages from a recruiter?",
+            "options": [
+              "Delete them to avoid trouble",
+              "Keep them and hand them to the police",
+              "Forward them to friends to discuss",
+              "Post them on social media"
+            ],
+            "answer": 1,
+            "explanation": "The messages help identify the recruiter. Deleting them destroys evidence."
+          },
+          {
+            "id": "q3",
+            "prompt": "Which sign indicates recruitment?",
+            "options": [
+              "A stranger pretends to be someone else and asks for your location",
+              "Advice to read a book",
+              "An invitation to a sports club",
+              "Help with homework"
+            ],
+            "answer": 0,
+            "explanation": "Impersonation and requests for data are tactics described by the FSB and the National Anti-Terrorism Committee."
           }
         ]
       }
@@ -538,8 +1021,48 @@
             "Снимать панику на видео и мешать проходу",
             "Разжигать слухи и панику"
           ],
-          "contacts": ["112"],
+          "contacts": [
+            "112"
+          ],
           "source": "МЧС России · https://78.mchs.gov.ru/deyatelnost/propaganda/propaganda-sredi-naseleniya/polezno-znat/pravila-povedeniya-pri-terroristicheskom-akte"
+        },
+        "en": {
+          "title": "Evacuation during a terrorist threat",
+          "summary": "Evacuate quickly and without panic: take documents and your phone if they are at hand, and go to the nearest exit. Do not use the elevator.",
+          "signs": [
+            "Fire alarm or public address system activated",
+            "Staff demand that you leave the building immediately",
+            "People are moving en masse to the exits",
+            "Police, EMERCOM and ambulance crews are on site"
+          ],
+          "before": [
+            "Remember the locations of the emergency exits and the assembly point",
+            "Do not block passages and doors with your belongings",
+            "Take part in evacuation drills"
+          ],
+          "during": [
+            "Take documents and your phone if they are at hand and head to the exit",
+            "Do not use the elevator, go down the stairs",
+            "Do not run or push people ahead of you",
+            "Help those who have difficulty moving",
+            "After leaving, move away from the building and stay at the assembly point"
+          ],
+          "after": [
+            "Do not return to the building until staff allow it",
+            "Report anyone who remains inside",
+            "Follow the commands of the police and EMERCOM",
+            "Do not spread rumors about the reason for the evacuation"
+          ],
+          "forbidden": [
+            "Returning to the building for your belongings",
+            "Using the elevator during evacuation",
+            "Filming the panic and blocking the way",
+            "Spreading rumors and panic"
+          ],
+          "source": "EMERCOM of Russia · https://78.mchs.gov.ru/deyatelnost/propaganda/propaganda-sredi-naseleniya/polezno-znat/pravila-povedeniya-pri-terroristicheskom-akte",
+          "contacts": [
+            "112"
+          ]
         }
       },
       "quiz": {
@@ -554,7 +1077,7 @@
               "Ничего, но вернуться потом за сумкой"
             ],
             "answer": 1,
-            "explanation": "Сборы задерживают выход и создают давку. Главное\u00A0— быстро покинуть опасное место."
+            "explanation": "Сборы задерживают выход и создают давку. Главное — быстро покинуть опасное место."
           },
           {
             "id": "q2",
@@ -566,7 +1089,7 @@
               "Только вместе с охраной"
             ],
             "answer": 2,
-            "explanation": "Лифт может отключиться или застрять. Лестница\u00A0— основной путь эвакуации."
+            "explanation": "Лифт может отключиться или застрять. Лестница — основной путь эвакуации."
           },
           {
             "id": "q3",
@@ -579,6 +1102,44 @@
             ],
             "answer": 1,
             "explanation": "Точка сбора удалена от возможной опасности и позволяет провести перекличку. У здания оставаться опасно."
+          }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "Evacuation of the building has begun. What should you take with you?",
+            "options": [
+              "Everything from your locker",
+              "Only documents and your phone, if they are at hand",
+              "Your laptop and charger",
+              "Nothing, then come back for your bag later"
+            ],
+            "answer": 1,
+            "explanation": "Gathering your things delays the exit and causes crushing. The priority is to leave the dangerous area quickly."
+          },
+          {
+            "id": "q2",
+            "prompt": "Can you use the elevator during an evacuation?",
+            "options": [
+              "Yes, if it is free",
+              "Yes, if the floor is high",
+              "No, you must use the stairs",
+              "Only together with security"
+            ],
+            "answer": 2,
+            "explanation": "The elevator may shut down or get stuck. The stairs are the main evacuation route."
+          },
+          {
+            "id": "q3",
+            "prompt": "Where should you go after leaving the building?",
+            "options": [
+              "To your car by the entrance",
+              "To the assembly point away from the building",
+              "Back to the doors to wait for friends",
+              "To a spot with a better view of what is happening"
+            ],
+            "answer": 1,
+            "explanation": "The assembly point is away from possible danger and allows a head count. Staying near the building is unsafe."
           }
         ]
       }

@@ -5,7 +5,8 @@
     "emoji": "☣️",
     "sort": 6,
     "title": {
-      "ru": "Химическая опасность"
+      "ru": "Химическая опасность",
+      "en": "Chemical hazard"
     }
   },
   "threats": [
@@ -51,6 +52,45 @@
             "112"
           ],
           "source": "ГУ МЧС России по Псковской области · https://60.mchs.gov.ru/deyatelnost/poleznaya-informaciya/dopolnitelnye-stranicy/staticheskie-stranicy/kompleksnaya-sistema-ekstrennogo-opoveshcheniya-naseleniya/prakticheskie-meropriyatiya/pamyatka-po-deystviyam-v-usloviyah-vozmozhnogo-himicheskogo-zarazheniya"
+        },
+        "en": {
+          "title": "Chlorine leak",
+          "summary": "Chlorine is twice as heavy as air: it stays low and seeps into basements and first floors. Move upward and perpendicular to the wind, at least 1.5 km from the accident site.",
+          "signs": [
+            "Sharp irritating smell, similar to bleach",
+            "Greenish-white fog near the ground",
+            "Stinging eyes, tearing, tickling throat",
+            "Coughing, trouble breathing, chest pain"
+          ],
+          "before": [
+            "Find out where the nearest shelters and exit routes are",
+            "Keep a gauze mask and drinking water at home",
+            "Close windows tightly when an accident is announced",
+            "Listen to EMERCOM reports on the radio and in the app"
+          ],
+          "during": [
+            "Do not go into basements or lower floors",
+            "Breathe through a cloth dampened with water",
+            "Move upward and travel perpendicular to the wind",
+            "Outdoors, stay on high ground",
+            "If you cannot leave, close windows, doors, and vents"
+          ],
+          "after": [
+            "Once out of the zone, remove outer clothing and shower",
+            "Rinse your eyes and mouth with water",
+            "See a doctor even with mild symptoms",
+            "Do not return home until rescuers give permission"
+          ],
+          "forbidden": [
+            "Do not shelter in a basement or cellar",
+            "Do not drink or eat in the contamination zone",
+            "Do not turn on ventilation: it will pull in outside air",
+            "Do not try to locate the leak yourself"
+          ],
+          "source": "EMERCOM Main Directorate for Pskov Oblast · https://60.mchs.gov.ru/deyatelnost/poleznaya-informaciya/dopolnitelnye-stranicy/staticheskie-stranicy/kompleksnaya-sistema-ekstrennogo-opoveshcheniya-naseleniya/prakticheskie-meropriyatiya/pamyatka-po-deystviyam-v-usloviyah-vozmozhnogo-himicheskogo-zarazheniya",
+          "contacts": [
+            "112"
+          ]
         }
       },
       "quiz": {
@@ -90,6 +130,44 @@
             ],
             "answer": 2,
             "explanation": "МЧС рекомендует ватно-марлевую повязку, смоченную водой или 2–5% раствором пищевой соды."
+          }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "Where does chlorine gather after a leak?",
+            "options": [
+              "In basements and on lower floors",
+              "On the building's roof",
+              "Only outdoors",
+              "In apartments on upper floors"
+            ],
+            "answer": 0,
+            "explanation": "Chlorine is twice as heavy as air, so it stays low: in basements, tunnels, and on first floors."
+          },
+          {
+            "id": "q2",
+            "prompt": "How should you leave a building during a chlorine leak?",
+            "options": [
+              "Through the basement and the yard",
+              "Upward and perpendicular to the wind",
+              "Downwind, to leave the area faster",
+              "Stay in a first-floor apartment"
+            ],
+            "answer": 1,
+            "explanation": "Move higher and travel across the wind to high ground no closer than 1.5 km from the accident."
+          },
+          {
+            "id": "q3",
+            "prompt": "What should you dampen a cloth with to protect your breathing from chlorine?",
+            "options": [
+              "Vegetable oil",
+              "Vinegar",
+              "Water",
+              "Alcohol"
+            ],
+            "answer": 2,
+            "explanation": "EMERCOM recommends a gauze mask dampened with water or a 2–5% baking soda solution."
           }
         ]
       }
@@ -135,6 +213,44 @@
             "112"
           ],
           "source": "ГУ МЧС России по Калужской области · https://40.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki/chrezvychaynye-situacii-tehnogennogo-haraktera/deystviya-v-usloviyah-vozmozhnogo-himicheskogo-zarazheniya"
+        },
+        "en": {
+          "title": "Ammonia leak",
+          "summary": "Ammonia is 1.6 times lighter than air and rises, so upper floors and the roof are dangerous. Go down and move perpendicular to the wind. If you cannot leave, shelter on the lower floors.",
+          "signs": [
+            "Sharp smell of ammonia solution",
+            "Watery, stinging and burning eyes",
+            "Scratchy throat, dry cough",
+            "Difficulty breathing, headache"
+          ],
+          "before": [
+            "Check the evacuation procedure with the building management company",
+            "Prepare a cloth mask and a supply of water",
+            "Close windows and vents when the alarm sounds",
+            "Keep documents and medications ready"
+          ],
+          "during": [
+            "Go down to the lower floors and leave the building",
+            "Breathe through a cloth dampened with water",
+            "Move perpendicular to the wind",
+            "Do not touch spilled liquid and do not step in it"
+          ],
+          "after": [
+            "Rinse your eyes and skin with water for at least 15 minutes",
+            "Remove contaminated clothing and take a shower",
+            "Seek medical help if you have a cough or eye stinging",
+            "Return only when rescuers give permission"
+          ],
+          "forbidden": [
+            "Do not hide on upper floors or the roof",
+            "Do not leave the gas and electrical appliances on",
+            "Do not drink water from open sources until rescuers allow it",
+            "Do not try to shut off the leak yourself"
+          ],
+          "source": "EMERCOM Main Directorate for Kaluga Oblast · https://40.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pamyatki/chrezvychaynye-situacii-tehnogennogo-haraktera/deystviya-v-usloviyah-vozmozhnogo-himicheskogo-zarazheniya",
+          "contacts": [
+            "112"
+          ]
         }
       },
       "quiz": {
@@ -174,6 +290,44 @@
             ],
             "answer": 0,
             "explanation": "Аммиак легче воздуха в 1,6 раза, поэтому МЧС рекомендует укрываться на нижних этажах."
+          }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "Where is it most dangerous to be during an ammonia leak?",
+            "options": [
+              "In the basement",
+              "On the upper floors",
+              "Outside behind the building",
+              "In a lowland near a river"
+            ],
+            "answer": 1,
+            "explanation": "Ammonia is 1.6 times lighter than air and rises, so upper floors and the roof are the most dangerous."
+          },
+          {
+            "id": "q2",
+            "prompt": "What should you do if you smell a sharp ammonia odor in your building?",
+            "options": [
+              "Open the windows and stay home",
+              "Go lower and leave the building",
+              "Go up to the roof",
+              "Turn the ventilation on full power"
+            ],
+            "answer": 1,
+            "explanation": "You need to go down, leave the building and move across the wind, not stay inside."
+          },
+          {
+            "id": "q3",
+            "prompt": "Where should you shelter if you cannot leave the building?",
+            "options": [
+              "On the lower floors",
+              "On the upper floors",
+              "On the roof",
+              "In an apartment on the top floor"
+            ],
+            "answer": 0,
+            "explanation": "Ammonia is 1.6 times lighter than air, so EMERCOM recommends sheltering on the lower floors."
           }
         ]
       }
@@ -219,6 +373,44 @@
             "112"
           ],
           "source": "ГУ МЧС России по Ивановской области · https://37.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/chto-delat-esli-razbilsya-gradusnik-so-rtutyu"
+        },
+        "en": {
+          "title": "Mercury spill",
+          "summary": "Mercury vapor is poisonous and builds up in the body. Even a broken thermometer is dangerous. Do not collect droplets with a vacuum cleaner or broom: place them in a jar of water and hand them in to a mercury waste disposal service.",
+          "signs": [
+            "Silver droplets on the floor or in cracks",
+            "Broken thermometer, lamp, or device",
+            "Irritability, nausea, weight loss",
+            "Trembling fingers and eyelids after prolonged vapor inhalation"
+          ],
+          "before": [
+            "Store mercury devices in a case, out of children's reach",
+            "Know the emergency phone number of your building management company",
+            "Keep rubber gloves and a glass jar with a lid",
+            "Do not throw mercury devices into regular trash"
+          ],
+          "during": [
+            "Take people and pets out of the room",
+            "Close the door, open the window, but do not create a draft",
+            "Put on gloves and collect the droplets with a rubber bulb",
+            "Place the droplets in a jar of cold water and close the lid"
+          ],
+          "after": [
+            "Hand the jar in to a mercury waste disposal service",
+            "Air out the room",
+            "Rinse your mouth and take a shower",
+            "See a doctor if you have signs of poisoning"
+          ],
+          "forbidden": [
+            "Do not use a vacuum cleaner or a broom",
+            "Do not pour mercury down the sink or toilet",
+            "Do not throw collected mercury into the garbage chute",
+            "Do not place the jar next to a heater"
+          ],
+          "source": "EMERCOM Main Directorate for Ivanovo Oblast · https://37.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/chto-delat-esli-razbilsya-gradusnik-so-rtutyu",
+          "contacts": [
+            "112"
+          ]
         }
       },
       "quiz": {
@@ -258,6 +450,44 @@
             ],
             "answer": 1,
             "explanation": "Людей выводят, помещение проветривают без сквозняка, а сбор доверяют защищённым людям или службе."
+          }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "What must you not use to collect spilled mercury?",
+            "options": [
+              "A rubber bulb",
+              "A vacuum cleaner",
+              "A glass jar",
+              "A cotton pad worn on a glove"
+            ],
+            "answer": 1,
+            "explanation": "A vacuum cleaner sprays mercury and heats the air, speeding up evaporation. EMERCOM prohibits collecting mercury with a vacuum cleaner."
+          },
+          {
+            "id": "q2",
+            "prompt": "Where should collected mercury droplets be placed?",
+            "options": [
+              "In a jar of water with a lid",
+              "In a trash bin",
+              "In the sink",
+              "In a paper bag"
+            ],
+            "answer": 0,
+            "explanation": "Droplets are placed in a glass jar of cold water and closed with a lid, then handed over to specialists."
+          },
+          {
+            "id": "q3",
+            "prompt": "What should you do right after a mercury spill?",
+            "options": [
+              "Close the windows and turn on a heater",
+              "Take people out and open the windows without a draft",
+              "Collect the mercury with a broom",
+              "Flood the floor with bleach"
+            ],
+            "answer": 1,
+            "explanation": "People are taken out and the room is aired out without a draft. Collection is left to protected personnel or a service."
           }
         ]
       }
@@ -303,6 +533,44 @@
             "112"
           ],
           "source": "ГУ МЧС России по Алтайскому краю · https://22.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/otravlenie-preparatami-bytovoy-himii-pervaya-pomoshch"
+        },
+        "en": {
+          "title": "Household chemicals",
+          "summary": "Cleaning products, bleach and insecticides are dangerous when mixed or inhaled. Store them away from food. If they get into your eyes or onto your skin, rinse with water and call 112.",
+          "signs": [
+            "Strong chemical smell in the apartment",
+            "Burning and redness of skin or eyes",
+            "Cough and throat irritation after cleaning",
+            "Nausea and drooling after accidental swallowing"
+          ],
+          "before": [
+            "Keep chemicals locked away, out of children's reach",
+            "Never pour products into drink bottles",
+            "Read the ingredients and precautions on the packaging",
+            "Wear gloves and ventilate the room"
+          ],
+          "during": [
+            "Stop cleaning and go out into fresh air",
+            "Open the windows and remove children and pets from the room",
+            "If the product gets on your skin, wash it off with plenty of water",
+            "If it gets into your eyes, rinse them with a generous stream of clean water"
+          ],
+          "after": [
+            "Keep the product packaging for the doctor",
+            "Call 112 and describe the substance and the amount",
+            "Do not induce vomiting if you swallowed an acid or alkali",
+            "Monitor the victim's breathing and consciousness"
+          ],
+          "forbidden": [
+            "Do not mix chlorine-based products with acids",
+            "Do not store chemicals near food or medicines",
+            "Do not rinse the stomach yourself",
+            "Do not use chemicals in a closed, unventilated room"
+          ],
+          "source": "EMERCOM Main Directorate for Altai Krai · https://22.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/otravlenie-preparatami-bytovoy-himii-pervaya-pomoshch",
+          "contacts": [
+            "112"
+          ]
         }
       },
       "quiz": {
@@ -342,6 +610,44 @@
             ],
             "answer": 1,
             "explanation": "Упаковка нужна медикам, чтобы точно определить вещество и помощь. Переливать химию в другие ёмкости нельзя."
+          }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "Why should you not mix chlorine-based products with acids?",
+            "options": [
+              "The mixture loses its cleaning power",
+              "A toxic gas is released",
+              "The mixture freezes",
+              "The product damages tiles"
+            ],
+            "answer": 1,
+            "explanation": "Mixing chlorine-based and acidic products releases a toxic gas that is dangerous to breathe."
+          },
+          {
+            "id": "q2",
+            "prompt": "How should you rinse your eyes if a product gets into them?",
+            "options": [
+              "With a generous stream of clean water",
+              "With vegetable oil",
+              "With a baking soda solution",
+              "Do not rinse them"
+            ],
+            "answer": 0,
+            "explanation": "EMERCOM advises rinsing the eyes thoroughly with clean water at room temperature and calling an ambulance."
+          },
+          {
+            "id": "q3",
+            "prompt": "What should you do with the product packaging after poisoning?",
+            "options": [
+              "Throw it away so it does not alarm anyone",
+              "Keep it for the doctor",
+              "Hide it from children in a cupboard",
+              "Pour the contents into a water bottle"
+            ],
+            "answer": 1,
+            "explanation": "Doctors need the packaging to identify the substance and give the right help. Never transfer chemicals into other containers."
           }
         ]
       }
@@ -390,6 +696,47 @@
             "112"
           ],
           "source": "ГУ МЧС России по Краснодарскому краю · https://23.mchs.gov.ru/deyatelnost/press-centr/novosti/5784714"
+        },
+        "en": {
+          "title": "Gas leak in an apartment",
+          "summary": "A smell of gas indoors means a risk of explosion. Do not turn on lights or appliances, shut off the gas, open the windows, and go outside. Call 104 or 112 from outside.",
+          "signs": [
+            "Smell of gas in the apartment or stairwell",
+            "Hissing near the gas stove or pipe",
+            "Yellowed flame on the burner",
+            "Frost or rime on the pipe or hose",
+            "Headache and nausea after staying indoors for a long time"
+          ],
+          "before": [
+            "Check the stove after each use",
+            "Do not leave cooking food unattended",
+            "Know where the gas valve in your apartment is located",
+            "Keep access to the valve clear"
+          ],
+          "during": [
+            "Shut off the gas valve and open the windows and doors",
+            "Do not turn lights or appliances on or off",
+            "Get people out, do not use the elevator, go down the stairs",
+            "Call 104 or 112 from the street or from neighbors",
+            "Warn neighbors by knocking on doors, do not ring the doorbell"
+          ],
+          "after": [
+            "Do not re-enter until the gas service gives permission",
+            "Check on the people evacuated from the building",
+            "Wait for a specialist to inspect the equipment",
+            "Do not turn the gas on until the equipment has been checked"
+          ],
+          "forbidden": [
+            "Do not light matches or lighters",
+            "Do not use a fan or extractor hood",
+            "Do not call from inside the gas-filled room",
+            "Do not attempt to repair gas equipment yourself"
+          ],
+          "source": "EMERCOM Main Directorate for Krasnodar Krai · https://23.mchs.gov.ru/deyatelnost/press-centr/novosti/5784714",
+          "contacts": [
+            "104",
+            "112"
+          ]
         }
       },
       "quiz": {
@@ -416,7 +763,7 @@
               "Соседу по квартире"
             ],
             "answer": 0,
-            "explanation": "Аварийная газовая служба принимает звонки по номеру 104, единый номер экстренных служб\u00a0— 112."
+            "explanation": "Аварийная газовая служба принимает звонки по номеру 104, единый номер экстренных служб — 112."
           },
           {
             "id": "q3",
@@ -429,6 +776,44 @@
             ],
             "answer": 1,
             "explanation": "Звонить нужно снаружи: в квартире нельзя пользоваться стационарным телефоном, а искра опасна."
+          }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "What must you not do if you smell gas?",
+            "options": [
+              "Shut off the gas valve",
+              "Open the windows",
+              "Turn on lights and electrical appliances",
+              "Go outside"
+            ],
+            "answer": 2,
+            "explanation": "A spark from a switch or appliance can ignite the gas. Leave lights and devices alone."
+          },
+          {
+            "id": "q2",
+            "prompt": "Who do you call in a gas leak?",
+            "options": [
+              "104 or 112",
+              "Only the property management company",
+              "The clinic",
+              "Your roommate"
+            ],
+            "answer": 0,
+            "explanation": "The emergency gas service takes calls at 104, and 112 is the unified emergency number."
+          },
+          {
+            "id": "q3",
+            "prompt": "Where should you call from in a gas leak?",
+            "options": [
+              "From the kitchen by the stove",
+              "From a safe place outside",
+              "From the bathroom",
+              "From the stairwell by the elevator"
+            ],
+            "answer": 1,
+            "explanation": "Call from outside: you cannot use a landline phone in the apartment, and a spark is dangerous."
           }
         ]
       }
@@ -474,6 +859,44 @@
             "112"
           ],
           "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/ozhogi-ozhog-verhnih-dyhatelnyh-putey_0"
+        },
+        "en": {
+          "title": "Acids and alkalis",
+          "summary": "Concentrated acids and alkalis cause deep burns to skin, eyes and airways. Rinse the affected area under running water for 20 minutes and call 112 immediately.",
+          "signs": [
+            "Sharp pain and burning on the skin",
+            "White or dark spots at the contact site",
+            "Redness and swelling of the eyes, tearing",
+            "Scratchy throat and coughing from inhaling fumes"
+          ],
+          "before": [
+            "Store acids and alkalis in original containers with labels",
+            "Keep them away from food and medicines",
+            "Wear gloves and protective goggles",
+            "Keep a supply of clean water within easy reach"
+          ],
+          "during": [
+            "Call 112 and follow the dispatcher's instructions",
+            "Remove contaminated clothing and jewelry",
+            "Rinse the skin under running water for 20 minutes",
+            "If the substance gets into the eyes, hold the eyelids open and rinse with water"
+          ],
+          "after": [
+            "Cover the burn with a clean dry dressing",
+            "Do not apply ointment or oil to the burn",
+            "Show the doctor the substance container",
+            "Watch the victim's breathing and consciousness"
+          ],
+          "forbidden": [
+            "Do not neutralize acid with alkali or vice versa",
+            "Do not induce vomiting if the substance is swallowed",
+            "Do not rinse the burn with alcohol or oil",
+            "Do not rub the affected area"
+          ],
+          "source": "EMERCOM of Russia · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/ozhogi-ozhog-verhnih-dyhatelnyh-putey_0",
+          "contacts": [
+            "112"
+          ]
         }
       },
       "quiz": {
@@ -512,7 +935,45 @@
               "Показывать врачу тару"
             ],
             "answer": 1,
-            "explanation": "Рвота повторно обжигает пищевод и дыхательные пути. Промывать и вызывать скорую помощь нужно, рвоту\u00a0— нет."
+            "explanation": "Рвота повторно обжигает пищевод и дыхательные пути. Промывать и вызывать скорую помощь нужно, рвоту — нет."
+          }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "How should you treat an acid burn?",
+            "options": [
+              "Rinse with plenty of water",
+              "Neutralize with an alkali",
+              "Apply oil",
+              "Sprinkle with baking soda"
+            ],
+            "answer": 0,
+            "explanation": "EMERCOM recommends prolonged rinsing under running water. Neutralization can worsen the damage."
+          },
+          {
+            "id": "q2",
+            "prompt": "How long should you rinse skin after contact with acid?",
+            "options": [
+              "10 seconds",
+              "One minute",
+              "20 minutes",
+              "Leave it untouched until the doctor arrives"
+            ],
+            "answer": 2,
+            "explanation": "EMERCOM recommends rinsing a chemical burn under running water for 20 minutes, then covering it with a dry dressing."
+          },
+          {
+            "id": "q3",
+            "prompt": "What must you not do if the substance gets into the mouth?",
+            "options": [
+              "Rinse the mouth with water",
+              "Induce vomiting",
+              "Call 112",
+              "Show the doctor the container"
+            ],
+            "answer": 1,
+            "explanation": "Vomiting burns the esophagus and airways again. Rinsing and calling for an ambulance are needed; vomiting is not."
           }
         ]
       }
@@ -559,6 +1020,45 @@
             "102"
           ],
           "source": "ГУ МЧС России по Архангельской области · https://29.mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pamyatka-deystviy-pri-obnaruzhenii-podozritelnogo-predmeta"
+        },
+        "en": {
+          "title": "Unknown substance",
+          "summary": "Do not touch or smell an unknown liquid, powder, or ampoule. Move as far away as possible, keep people away, and report it to the police at 102 or 112.",
+          "signs": [
+            "Unattended canister, ampoule, or bag of powder",
+            "Stains and spills with a sharp odor",
+            "Chemical hazard label or skull mark on the container",
+            "Unusual traces, smoke, or vapors nearby"
+          ],
+          "before": [
+            "Teach children not to touch found objects",
+            "Report unattended items in your building to the police",
+            "Know the number 112 and how to call emergency services",
+            "Do not approach suspicious objects on the street"
+          ],
+          "during": [
+            "Move as far away as possible and take people with you",
+            "Do not touch, smell, or open the container",
+            "Keep people and animals away",
+            "Call 112 and describe the location and appearance of the object"
+          ],
+          "after": [
+            "Stay near the site and meet the services",
+            "Do not approach the find again",
+            "If the substance got on your skin, rinse with water and call 112",
+            "Tell the services when and how you found it"
+          ],
+          "forbidden": [
+            "Do not use your phone near the find",
+            "Do not open, move, or take the object",
+            "Do not try to identify its smell or composition",
+            "Do not let people approach the find"
+          ],
+          "source": "EMERCOM Main Directorate for Arkhangelsk Oblast · https://29.mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pamyatka-deystviy-pri-obnaruzhenii-podozritelnogo-predmeta",
+          "contacts": [
+            "112",
+            "102"
+          ]
         }
       },
       "quiz": {
@@ -598,6 +1098,44 @@
             ],
             "answer": 0,
             "explanation": "О находке сообщают в полицию. Номер 112 принимает вызов экстренных служб."
+          }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "What should you do if you find an unknown canister?",
+            "options": [
+              "Open it and smell it",
+              "Move away and call 112",
+              "Take it to a trash bin",
+              "Pour water on it"
+            ],
+            "answer": 1,
+            "explanation": "Do not touch the container. Move away, warn people, and call emergency services at 112."
+          },
+          {
+            "id": "q2",
+            "prompt": "Can you use your phone near the find?",
+            "options": [
+              "Yes, as long as you do not touch the object",
+              "No, move away and call from a distance",
+              "Yes, but only for photos",
+              "No, calling is forbidden altogether"
+            ],
+            "answer": 1,
+            "explanation": "EMERCOM does not recommend using mobile phones or radios near a suspicious object. Move away and call."
+          },
+          {
+            "id": "q3",
+            "prompt": "Who should you report a find in your building to?",
+            "options": [
+              "The police at 102 or 112",
+              "Only your neighbors",
+              "The building management company",
+              "No one, if the object is not in the way"
+            ],
+            "answer": 0,
+            "explanation": "Report the find to the police. Number 112 accepts calls to emergency services."
           }
         ]
       }

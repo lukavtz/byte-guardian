@@ -5,7 +5,8 @@
     "emoji": "🩺",
     "sort": 5,
     "title": {
-      "ru": "Первая помощь"
+      "ru": "Первая помощь",
+      "en": "First aid"
     }
   },
   "threats": [
@@ -15,7 +16,7 @@
       "texts": {
         "ru": {
           "title": "Сильное кровотечение",
-          "summary": "Кровь вытекает струёй или быстро пропитывает одежду. Давите на рану, наложите давящую повязку, при необходимости\u00a0— жгут и вызов 112.",
+          "summary": "Кровь вытекает струёй или быстро пропитывает одежду. Давите на рану, наложите давящую повязку, при необходимости — жгут и вызов 112.",
           "signs": [
             "Кровь вытекает струёй или фонтаном",
             "Одежда быстро пропитывается кровью",
@@ -30,7 +31,7 @@
           "during": [
             "Прижмите рану чистой салфеткой или тканью и давите сильно",
             "Не снимайте пропитанную повязку, накладывайте новую сверху",
-            "Если давление и повязка не помогают, наложите жгут выше раны на 5–7\u00a0см",
+            "Если давление и повязка не помогают, наложите жгут выше раны на 5–7 см",
             "При отрыве конечности накладывайте жгут сразу, не дожидаясь повязки"
           ],
           "after": [
@@ -48,6 +49,42 @@
             "112"
           ],
           "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/krovotecheniya_8"
+        },
+        "en": {
+          "title": "Severe bleeding",
+          "summary": "Blood is spurting or soaking through clothing quickly. Press on the wound, apply a pressure bandage, use a tourniquet if needed, and call 112.",
+          "signs": [
+            "Blood flows in a stream or spurts",
+            "Clothing soaks through with blood quickly",
+            "Pale skin, cold sweat, weakness",
+            "Confusion after major blood loss"
+          ],
+          "before": [
+            "Make sure you and the victim are safe",
+            "Call 112 and request an ambulance",
+            "Put on medical gloves if available"
+          ],
+          "during": [
+            "Press on the wound with a clean wipe or cloth and apply firm pressure",
+            "Do not remove a soaked bandage; apply a new one on top",
+            "If pressure and the bandage do not help, apply a tourniquet 5–7 cm above the wound",
+            "For an amputated limb, apply the tourniquet right away without waiting for a bandage"
+          ],
+          "after": [
+            "Stay nearby and monitor breathing",
+            "Cover the victim to keep them warm",
+            "Tell the arriving crew when the tourniquet was applied"
+          ],
+          "forbidden": [
+            "Do not remove foreign objects from the wound",
+            "Do not apply a tourniquet below the wound",
+            "Do not apply a tourniquet over a joint",
+            "Do not leave a tourniquet without recording the application time"
+          ],
+          "source": "EMERCOM of Russia · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/krovotecheniya_8",
+          "contacts": [
+            "112"
+          ]
         }
       },
       "quiz": {
@@ -88,6 +125,44 @@
             "answer": 0,
             "explanation": "Снятие повязки разрушает сгусток. Новую повязку накладывают поверх пропитанной."
           }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "What should you do first for severe bleeding from a wound on the arm?",
+            "options": [
+              "Press on the wound and apply a pressure bandage",
+              "Rinse the wound with water and wait for the ambulance",
+              "Give the victim water to drink",
+              "Apply a tourniquet to the neck"
+            ],
+            "answer": 0,
+            "explanation": "Bleeding is stopped by direct pressure on the wound and a pressure bandage."
+          },
+          {
+            "id": "q2",
+            "prompt": "Where should a tourniquet be applied for arterial bleeding from the forearm?",
+            "options": [
+              "Above the wound, 5–7 cm up",
+              "Below the wound, on the hand",
+              "Directly on the wound",
+              "On the neck"
+            ],
+            "answer": 0,
+            "explanation": "Apply the tourniquet 5–7 cm above the wound if pressure and the bandage have not stopped the bleeding. Record the time."
+          },
+          {
+            "id": "q3",
+            "prompt": "The bandage has soaked through with blood. What should you do?",
+            "options": [
+              "Apply a new bandage on top without removing the old one",
+              "Remove the bandage and rinse the wound",
+              "Leave everything as it is",
+              "Replace the bandage with a tourniquet on the neck"
+            ],
+            "answer": 0,
+            "explanation": "Removing the bandage destroys the clot. A new bandage is applied over the soaked one."
+          }
         ]
       }
     },
@@ -111,7 +186,7 @@
           ],
           "during": [
             "Поставьте руки на центр грудной клетки и давите прямыми руками весом тела",
-            "Глубина компрессий 5–6\u00a0см, темп 100–120 нажатий в минуту",
+            "Глубина компрессий 5–6 см, темп 100–120 нажатий в минуту",
             "Чередуйте 30 компрессий с 2 вдохами, если умеете их делать",
             "Меняйтесь с помощником каждые 2 минуты, не прерывая ритм"
           ],
@@ -130,6 +205,42 @@
             "112"
           ],
           "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/serdechno-legochnaya-reanimaciya-slr_3"
+        },
+        "en": {
+          "title": "Cardiopulmonary resuscitation",
+          "summary": "The person is unconscious and not breathing, or breathing rarely and convulsively. Call 112 and start chest compressions right away.",
+          "signs": [
+            "No response to shouting or shaking",
+            "No normal breathing",
+            "Rare convulsive breaths",
+            "Pale or bluish skin"
+          ],
+          "before": [
+            "Make sure the place is safe for you and the victim",
+            "Call 112 or ask someone else to call",
+            "Lay the victim on their back on a firm surface"
+          ],
+          "during": [
+            "Place your hands on the center of the chest and press with straight arms, using your body weight",
+            "Compress 5–6 cm deep at a rate of 100–120 presses per minute",
+            "Alternate 30 compressions with 2 breaths if you know how to give them",
+            "Switch with a helper every 2 minutes without breaking the rhythm"
+          ],
+          "after": [
+            "Keep giving resuscitation until the ambulance arrives or breathing returns",
+            "If breathing returns, place the person in the recovery position",
+            "Tell the doctors when resuscitation started"
+          ],
+          "forbidden": [
+            "Do not waste time searching for a pulse if there is no breathing",
+            "Do not pause compressions for longer than 10 seconds",
+            "Do not give anything to drink or put objects in the mouth",
+            "Do not stop resuscitation until signs of life appear or the ambulance arrives"
+          ],
+          "source": "EMERCOM of Russia · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/serdechno-legochnaya-reanimaciya-slr_3",
+          "contacts": [
+            "112"
+          ]
         }
       },
       "quiz": {
@@ -144,7 +255,7 @@
               "Искать пульс в течение пяти минут"
             ],
             "answer": 0,
-            "explanation": "Отсутствие дыхания\u00a0— показание к немедленной сердечно-лёгочной реанимации."
+            "explanation": "Отсутствие дыхания — показание к немедленной сердечно-лёгочной реанимации."
           },
           {
             "id": "q2",
@@ -156,7 +267,7 @@
               "Один раз в пять секунд"
             ],
             "answer": 0,
-            "explanation": "Оптимальный темп компрессий\u00a0— 100–120 нажатий в минуту."
+            "explanation": "Оптимальный темп компрессий — 100–120 нажатий в минуту."
           },
           {
             "id": "q3",
@@ -168,7 +279,45 @@
               "Только вдохи без компрессий"
             ],
             "answer": 0,
-            "explanation": "Стандартное соотношение\u00a0— 30 компрессий на 2 вдоха."
+            "explanation": "Стандартное соотношение — 30 компрессий на 2 вдоха."
+          }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "A person is not breathing and does not respond. What should you do?",
+            "options": [
+              "Start chest compressions and call an ambulance",
+              "Give water and sit them up",
+              "Wait for them to come round on their own",
+              "Search for a pulse for five minutes"
+            ],
+            "answer": 0,
+            "explanation": "Absence of breathing is an indication for immediate cardiopulmonary resuscitation."
+          },
+          {
+            "id": "q2",
+            "prompt": "At what rate should chest compressions be given?",
+            "options": [
+              "100–120 per minute",
+              "20–30 per minute",
+              "200 per minute",
+              "Once every five seconds"
+            ],
+            "answer": 0,
+            "explanation": "The optimal compression rate is 100–120 presses per minute."
+          },
+          {
+            "id": "q3",
+            "prompt": "How do you alternate compressions and breaths during resuscitation?",
+            "options": [
+              "30 compressions and 2 breaths",
+              "5 compressions and 5 breaths",
+              "10 compressions and 1 breath",
+              "Breaths only, no compressions"
+            ],
+            "answer": 0,
+            "explanation": "The standard ratio is 30 compressions to 2 breaths."
           }
         ]
       }
@@ -206,12 +355,48 @@
             "Не наносите масло, крем и зубную пасту",
             "Не вскрывайте пузыри",
             "Не отрывайте прилипшую одежду",
-            "Не прикладывайте лёд прямо на кожу: холод\u00a0— только через ткань"
+            "Не прикладывайте лёд прямо на кожу: холод — только через ткань"
           ],
           "contacts": [
             "112"
           ],
           "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/termicheskiy-ozhog_2"
+        },
+        "en": {
+          "title": "Thermal burn",
+          "summary": "A burn from flame, boiling water, or a hot object. Cool it with cool water for at least 20 minutes and cover it with a clean, dry cloth.",
+          "signs": [
+            "Redness and sharp pain",
+            "Blisters on the skin",
+            "Whitish or charred areas in a severe burn",
+            "A burn to the face, neck, hands, or a large area"
+          ],
+          "before": [
+            "Stop the heat source",
+            "Call 112 for a large or deep burn",
+            "Remove jewelry and clothing near the burn if they are not stuck to it"
+          ],
+          "during": [
+            "Cool the burn with cool water for at least 20 minutes",
+            "Cover the area with a clean, dry cloth or dressing",
+            "Give the victim water in small sips if they are conscious",
+            "If the face or neck is burned, monitor their breathing"
+          ],
+          "after": [
+            "Cover the victim to prevent hypothermia",
+            "Do not leave them alone until the ambulance arrives",
+            "Tell the doctors what caused the burn and when"
+          ],
+          "forbidden": [
+            "Do not apply oil, cream, or toothpaste",
+            "Do not burst blisters",
+            "Do not peel off stuck clothing",
+            "Do not place ice directly on the skin: apply cold only through a cloth"
+          ],
+          "source": "EMERCOM of Russia · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/termicheskiy-ozhog_2",
+          "contacts": [
+            "112"
+          ]
         }
       },
       "quiz": {
@@ -251,6 +436,44 @@
             ],
             "answer": 0,
             "explanation": "Прилипшую одежду не отрывают, чтобы не расширить повреждение."
+          }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "What should you cool a burn with right after the injury?",
+            "options": [
+              "Cool water for at least 20 minutes",
+              "Ice directly on the skin",
+              "Oil or cream",
+              "Toothpaste"
+            ],
+            "answer": 0,
+            "explanation": "Cool the burn with cool water for at least 20 minutes. Ice is applied only through a cloth."
+          },
+          {
+            "id": "q2",
+            "prompt": "What should you do with blisters at the burn site?",
+            "options": [
+              "Do not burst them; cover with a clean cloth",
+              "Burst them and treat with alcohol",
+              "Rub them with oil",
+              "Cut them off with scissors"
+            ],
+            "answer": 0,
+            "explanation": "Do not burst blisters: they protect the wound from infection."
+          },
+          {
+            "id": "q3",
+            "prompt": "Clothing is stuck to the burn. What should you do?",
+            "options": [
+              "Do not pull it off; cover the burn with a clean cloth",
+              "Tear it off quickly",
+              "Pour alcohol on it",
+              "Cut it off together with the skin"
+            ],
+            "answer": 0,
+            "explanation": "Do not pull off stuck clothing, as this widens the injury."
           }
         ]
       }
@@ -295,6 +518,43 @@
             "112"
           ],
           "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pervaya-pomoshch-pri-obmorozhenii_0"
+        },
+        "en": {
+          "title": "Frostbite",
+          "summary": "Skin exposed to cold has lost feeling, turned white, or gone numb. Cover the area with an insulating bandage. Do not rub it.",
+          "signs": [
+            "White or bluish skin",
+            "Numbness and loss of feeling",
+            "Tingling and pain while warming up",
+            "Skin areas that feel hard to the touch"
+          ],
+          "before": [
+            "Move the person to a warm room",
+            "Call 112 for deep frostbite",
+            "Remove wet and tight clothing and footwear",
+            "Remove rings and bracelets from the affected limb"
+          ],
+          "during": [
+            "Apply an insulating bandage to the affected areas",
+            "Immobilize the affected limb",
+            "Give warm drinks if the person is conscious",
+            "Wrap the whole body, including the head"
+          ],
+          "after": [
+            "Do not rub or massage the affected areas",
+            "Immobilize the limb and call an ambulance",
+            "Monitor breathing and consciousness"
+          ],
+          "forbidden": [
+            "Do not rub with snow, alcohol, or rough cloth",
+            "Do not put the area in hot water",
+            "Do not apply ointments to the affected areas",
+            "Do not give alcohol"
+          ],
+          "source": "EMERCOM of Russia · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pervaya-pomoshch-pri-obmorozhenii_0",
+          "contacts": [
+            "112"
+          ]
         }
       },
       "quiz": {
@@ -334,6 +594,44 @@
             ],
             "answer": 0,
             "explanation": "Алкоголь усиливает потерю тепла. Нужно тёплое питьё и укрытие."
+          }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "What must you not use to rub a frostbitten area?",
+            "options": [
+              "Snow and alcohol",
+              "Dry warm cloth",
+              "A clean wipe",
+              "A blanket over the bandage"
+            ],
+            "answer": 0,
+            "explanation": "Rubbing with snow and alcohol damages the skin and deepens the frostbite."
+          },
+          {
+            "id": "q2",
+            "prompt": "How should you warm a frostbitten hand?",
+            "options": [
+              "Apply an insulating bandage",
+              "In hot water right away",
+              "Over an open fire",
+              "By rubbing with snow"
+            ],
+            "answer": 0,
+            "explanation": "Warming happens from the inside: cover the area with insulating material. Hot water and fire are dangerous."
+          },
+          {
+            "id": "q3",
+            "prompt": "What should you give a person with frostbite?",
+            "options": [
+              "Warm drinks if they are conscious",
+              "Alcohol to warm up",
+              "Cold water",
+              "Nothing, and leave them outside"
+            ],
+            "answer": 0,
+            "explanation": "Alcohol increases heat loss. Give warm drinks and cover them up."
           }
         ]
       }
@@ -377,6 +675,42 @@
             "112"
           ],
           "source": "Минздрав России · https://static-0.minzdrav.gov.ru/system/attachments/attaches/000/080/129/original/%D0%A3%D1%87%D0%B5%D0%B1%D0%BD%D0%BE%D0%B5_%D0%BF%D0%BE%D1%81%D0%BE%D0%B1%D0%B8%D0%B5_%D0%B4%D0%BB%D1%8F_%D0%BF%D1%80%D0%B5%D0%BF%D0%BE%D0%B4%D0%B0%D0%B2%D0%B0%D1%82%D0%B5%D0%BB%D0%B5%D0%B9.pdf"
+        },
+        "en": {
+          "title": "Drowning",
+          "summary": "A person has gone underwater or swallowed water. Get them out safely, check breathing, and call 112.",
+          "signs": [
+            "No breathing or gasping",
+            "Coughing and wheezing after rescue",
+            "Bluish skin, foam at the mouth",
+            "Loss of consciousness"
+          ],
+          "before": [
+            "Call for help and call 112",
+            "Do not jump into the water without rescue training",
+            "Remove the person from the water only in a safe way",
+            "Lay them on a firm surface on the shore"
+          ],
+          "during": [
+            "Check breathing and consciousness",
+            "If there is no breathing, give 5 rescue breaths, then 30 compressions",
+            "Alternate 30 compressions with 2 breaths; if breaths are not possible, keep pressing continuously",
+            "Remove wet clothing and cover the person"
+          ],
+          "after": [
+            "Continue resuscitation until the ambulance arrives",
+            "Once breathing returns, place the person in the recovery position",
+            "Stay nearby and watch their breathing until the ambulance arrives"
+          ],
+          "forbidden": [
+            "Do not waste time trying to drain water from the lungs",
+            "Do not leave the person unattended",
+            "Do not give fluids to an unconscious person"
+          ],
+          "source": "Ministry of Health of Russia · https://static-0.minzdrav.gov.ru/system/attachments/attaches/000/080/129/original/%D0%A3%D1%87%D0%B5%D0%B1%D0%BD%D0%BE%D0%B5_%D0%BF%D0%BE%D1%81%D0%BE%D0%B1%D0%B8%D0%B5_%D0%B4%D0%BB%D1%8F_%D0%BF%D1%80%D0%B5%D0%BF%D0%BE%D0%B4%D0%B0%D0%B2%D0%B0%D1%82%D0%B5%D0%BB%D0%B5%D0%B9.pdf",
+          "contacts": [
+            "112"
+          ]
         }
       },
       "quiz": {
@@ -416,6 +750,44 @@
             ],
             "answer": 0,
             "explanation": "При сохранённом дыхании и отсутствии сознания придают устойчивое боковое положение и ждут скорую."
+          }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "A person has been pulled from the water and is not breathing. What should you do?",
+            "options": [
+              "Start chest compressions and call an ambulance",
+              "Turn them upside down and shake them",
+              "Give them water",
+              "Leave them to dry in the sun"
+            ],
+            "answer": 0,
+            "explanation": "If there is no breathing, start cardiopulmonary resuscitation."
+          },
+          {
+            "id": "q2",
+            "prompt": "Should you spend time removing water from the lungs?",
+            "options": [
+              "No, check breathing immediately and start resuscitation",
+              "Yes, for at least five minutes",
+              "Yes, by pressing on the abdomen",
+              "Yes, by turning the person upside down"
+            ],
+            "answer": 0,
+            "explanation": "Modern first aid does not include squeezing out water. It wastes time."
+          },
+          {
+            "id": "q3",
+            "prompt": "A person is breathing but does not regain consciousness after being pulled from the water. What should you do?",
+            "options": [
+              "Place them in the recovery position",
+              "Sit them up and give them water",
+              "Leave them to dry in the sun",
+              "Turn them upside down"
+            ],
+            "answer": 0,
+            "explanation": "If breathing is present and the person is unconscious, place them in the recovery position and wait for the ambulance."
           }
         ]
       }
@@ -459,6 +831,42 @@
             "112"
           ],
           "source": "МЧС России · https://71.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pozharnaya-bezopasnost/otravlenie-ugarnym-gazom"
+        },
+        "en": {
+          "title": "Carbon monoxide poisoning",
+          "summary": "Headache, nausea and drowsiness in a room with a stove or gas appliance. Move the person to fresh air and call 112.",
+          "signs": [
+            "Headache and dizziness",
+            "Nausea and vomiting",
+            "Drowsiness and confusion",
+            "Pink skin tone, ringing in the ears"
+          ],
+          "before": [
+            "Open the windows and doors, turn off the appliance",
+            "Carry the victim outside to fresh air",
+            "Call 112 from outside, do not stay indoors"
+          ],
+          "during": [
+            "Loosen tight clothing and make sure air can reach the person",
+            "If the person is unconscious, place them in the recovery position",
+            "If there is no breathing, start chest compressions",
+            "Cover the victim so they do not get cold"
+          ],
+          "after": [
+            "Wait for the ambulance in the fresh air",
+            "Do not return indoors until the room has been aired out",
+            "Have everyone who was in the room see a doctor"
+          ],
+          "forbidden": [
+            "Do not stay in a room with gas",
+            "Do not light a fire or turn on electrical appliances",
+            "Do not leave the victim alone",
+            "Do not give drinks to an unconscious person"
+          ],
+          "source": "EMERCOM of Russia · https://71.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pozharnaya-bezopasnost/otravlenie-ugarnym-gazom",
+          "contacts": [
+            "112"
+          ]
         }
       },
       "quiz": {
@@ -473,7 +881,7 @@
               "Закрыть окна и включить обогреватель"
             ],
             "answer": 0,
-            "explanation": "Главное\u00a0— прекратить поступление газа и обеспечить свежий воздух."
+            "explanation": "Главное — прекратить поступление газа и обеспечить свежий воздух."
           },
           {
             "id": "q2",
@@ -498,6 +906,44 @@
             ],
             "answer": 0,
             "explanation": "Отсутствие дыхания требует немедленной реанимации на свежем воздухе."
+          }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "What should you do first in case of carbon monoxide poisoning?",
+            "options": [
+              "Move the person to fresh air and call an ambulance",
+              "Lay them down in the same room",
+              "Give them strong coffee",
+              "Close the windows and turn on a heater"
+            ],
+            "answer": 0,
+            "explanation": "The main thing is to stop exposure to the gas and get fresh air."
+          },
+          {
+            "id": "q2",
+            "prompt": "Can you light a fire in a room with gas?",
+            "options": [
+              "No, it can cause a flash and an explosion",
+              "Yes, if you open a window",
+              "Yes, if you cannot smell the gas",
+              "Yes, to check for a leak"
+            ],
+            "answer": 0,
+            "explanation": "In a room with gas you must not light a fire or turn on appliances."
+          },
+          {
+            "id": "q3",
+            "prompt": "The victim is not breathing after gas poisoning. What should you do?",
+            "options": [
+              "Start chest compressions",
+              "Give them water",
+              "Sit them up and wait",
+              "Let them sleep"
+            ],
+            "answer": 0,
+            "explanation": "No breathing requires immediate resuscitation in the fresh air."
           }
         ]
       }
@@ -542,6 +988,43 @@
             "112"
           ],
           "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/travmy-konechnostey-immobilizaciya_0"
+        },
+        "en": {
+          "title": "Fracture",
+          "summary": "Sharp pain, swelling, and deformity of a limb after a blow or fall. Do not try to set the bone. Immobilize the limb.",
+          "signs": [
+            "Sharp pain at the injury site",
+            "Swelling and deformity of the limb",
+            "Inability to bear weight or move the limb",
+            "A crack or snap at the moment of injury"
+          ],
+          "before": [
+            "Make sure the area is safe",
+            "Call 112 for an open fracture or spinal injury",
+            "Do not move the injured person unless necessary"
+          ],
+          "during": [
+            "Immobilize the limb in the position it is in",
+            "Apply a splint over clothing, covering the two joints above and below the fracture",
+            "For a shoulder or thigh fracture, immobilize three joints",
+            "For an open fracture, stop the bleeding first, then cover the wound with a clean dressing",
+            "Apply cold through a cloth"
+          ],
+          "after": [
+            "Stay nearby and monitor the person's condition",
+            "Help the injured person into a comfortable position",
+            "Tell the doctors how the injury happened"
+          ],
+          "forbidden": [
+            "Do not set the bone yourself",
+            "Do not massage the fracture site",
+            "Do not apply a splint directly on a wound",
+            "Do not let the injured person stand up"
+          ],
+          "source": "EMERCOM of Russia · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/travmy-konechnostey-immobilizaciya_0",
+          "contacts": [
+            "112"
+          ]
         }
       },
       "quiz": {
@@ -581,6 +1064,44 @@
             ],
             "answer": 0,
             "explanation": "При переломе бедра фиксируют три сустава. При переломе предплечья достаточно двух."
+          }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "What should you do with a deformed limb in a fracture?",
+            "options": [
+              "Immobilize it in its current position with a splint",
+              "Set the bone back in place",
+              "Massage it firmly",
+              "Make the injured person walk"
+            ],
+            "answer": 0,
+            "explanation": "The bone is not set. Immobilize the limb in the position it is in."
+          },
+          {
+            "id": "q2",
+            "prompt": "An open fracture with bleeding. What do you do with the wound?",
+            "options": [
+              "Cover it with a clean dressing and immobilize the limb",
+              "Rinse the wound with water from a puddle",
+              "Push the bone back into the wound",
+              "Apply ice directly to the bone"
+            ],
+            "answer": 0,
+            "explanation": "Cover the wound with a clean dressing and do not touch the bone."
+          },
+          {
+            "id": "q3",
+            "prompt": "How many joints are immobilized in a thigh fracture?",
+            "options": [
+              "Three: hip, knee, and ankle",
+              "One",
+              "Two",
+              "None"
+            ],
+            "answer": 0,
+            "explanation": "A thigh fracture requires immobilizing three joints. A forearm fracture needs only two."
           }
         ]
       }
@@ -623,6 +1144,41 @@
             "112"
           ],
           "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/optimalnoe-polozhenie-tela-postradavshego_9"
+        },
+        "en": {
+          "title": "Fainting",
+          "summary": "A person suddenly turns pale and loses consciousness. Check breathing and place them in the recovery position.",
+          "signs": [
+            "Sudden pallor",
+            "Brief loss of consciousness",
+            "Cold sweat and weakness",
+            "Quick return of consciousness"
+          ],
+          "before": [
+            "Check that the person is breathing",
+            "Call 112 if consciousness does not return",
+            "Loosen the collar and give access to fresh air"
+          ],
+          "during": [
+            "Place the person in the recovery position",
+            "Monitor breathing",
+            "Do not leave the person alone",
+            "If vomiting starts, turn the head to the side"
+          ],
+          "after": [
+            "Stay nearby until the person is fully conscious",
+            "Help them stand up slowly",
+            "Get them to a doctor to find out why they fainted"
+          ],
+          "forbidden": [
+            "Do not pull the person sharply to their feet",
+            "Do not give anything to drink until fully awake",
+            "Do not pour water into the mouth"
+          ],
+          "source": "EMERCOM of Russia · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/optimalnoe-polozhenie-tela-postradavshego_9",
+          "contacts": [
+            "112"
+          ]
         }
       },
       "quiz": {
@@ -662,6 +1218,44 @@
             ],
             "answer": 0,
             "explanation": "Воду в рот не льют: человек может задохнуться. Вставать резко не дают, пока сознание не вернулось."
+          }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "A person is unconscious but breathing. What should you do?",
+            "options": [
+              "Place them in the recovery position",
+              "Sit them up and give water",
+              "Pull them to their feet",
+              "Douse them with a bucket of cold water"
+            ],
+            "answer": 0,
+            "explanation": "If breathing is present but there is no consciousness, place the person in the recovery position to keep the airway clear."
+          },
+          {
+            "id": "q2",
+            "prompt": "When should you call an ambulance for a faint?",
+            "options": [
+              "If consciousness does not return",
+              "Never",
+              "Only if the person fell",
+              "Only at night"
+            ],
+            "answer": 0,
+            "explanation": "Prolonged loss of consciousness requires calling an ambulance."
+          },
+          {
+            "id": "q3",
+            "prompt": "What must you not do during a faint?",
+            "options": [
+              "Pour water into the mouth or pull the person up sharply",
+              "Loosen the collar",
+              "Give access to fresh air",
+              "Raise the legs"
+            ],
+            "answer": 0,
+            "explanation": "Do not pour water into the mouth: the person may choke. Do not let them stand up sharply while consciousness has not returned."
           }
         ]
       }

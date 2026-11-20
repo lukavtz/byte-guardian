@@ -1,6 +1,14 @@
 {
   "version": 1,
-  "category": {"slug": "rad", "emoji": "☢️", "sort": 7, "title": {"ru": "Радиация"}},
+  "category": {
+    "slug": "rad",
+    "emoji": "☢️",
+    "sort": 7,
+    "title": {
+      "ru": "Радиация",
+      "en": "Radiation"
+    }
+  },
   "threats": [
     {
       "slug": "rad-accident",
@@ -39,8 +47,50 @@
             "Не ешьте продукты, лежавшие открытыми на улице",
             "Не доверяйте слухам из мессенджеров"
           ],
-          "contacts": ["112", "ЕДДС города"],
+          "contacts": [
+            "112",
+            "ЕДДС города"
+          ],
           "source": "МЧС России · https://41.mchs.gov.ru/deyatelnost/poleznaya-informaciya/dopolnitelnye-stranicy/staticheskie-stranicy/kompleksnaya-sistema-ekstrennogo-opoveshcheniya-naseleniya/prakticheskie-meropriyatiya/pamyatki-po-deystviyam-naseleniya/pamyatka-po-deystviyam-naseleniya-pri-poluchenii-signala-ekstrennogo-opoveshcheniya-o-radiacionnoy-opasnosti"
+        },
+        "en": {
+          "title": "Radiation accident",
+          "summary": "A signal about a release of radioactive substances. Take shelter indoors, remove outer clothing, close windows and vents, turn on the radio, and wait for official instructions.",
+          "signs": [
+            "The Radiation Hazard signal, a siren or intermittent horns",
+            "An official message by radio, television, and loudspeakers",
+            "Elevated readings at monitoring posts and on dosimeters",
+            "Thick dust or smoke over an industrial site"
+          ],
+          "before": [
+            "Ask your local administration or the unified emergency dispatch service how radiation accidents are announced",
+            "Keep a home supply of water, food, and medicines for several days",
+            "Stock airtight bags and film for sealing windows and food",
+            "Write down the number 112 and your local alert channel"
+          ],
+          "during": [
+            "Go indoors, put outer clothing and shoes in a bag",
+            "Close windows, doors, and vents, and seal gaps",
+            "Turn on the radio or television and wait for official messages",
+            "Stay in the innermost part of the room, away from windows"
+          ],
+          "after": [
+            "Go outside only with official permission",
+            "Pass radiation screening at the assembly point",
+            "Change clothes and shower as directed by services",
+            "Follow messages about safe areas"
+          ],
+          "forbidden": [
+            "Do not go outside and do not let children go out to play",
+            "Do not open windows for ventilation",
+            "Do not eat food that was left out in the open",
+            "Do not trust rumors from messengers"
+          ],
+          "source": "EMERCOM of Russia · https://41.mchs.gov.ru/deyatelnost/poleznaya-informaciya/dopolnitelnye-stranicy/staticheskie-stranicy/kompleksnaya-sistema-ekstrennogo-opoveshcheniya-naseleniya/prakticheskie-meropriyatiya/pamyatki-po-deystviyam-naseleniya/pamyatka-po-deystviyam-naseleniya-pri-poluchenii-signala-ekstrennogo-opoveshcheniya-o-radiacionnoy-opasnosti",
+          "contacts": [
+            "112",
+            "City emergency dispatch service"
+          ]
         }
       },
       "quiz": {
@@ -55,7 +105,7 @@
               "Поехать к предприятию за подробностями"
             ],
             "answer": 0,
-            "explanation": "Укрытие и официальные сообщения\u00A0— основа защиты при выбросе."
+            "explanation": "Укрытие и официальные сообщения — основа защиты при выбросе."
           },
           {
             "id": "q2",
@@ -80,6 +130,44 @@
             ],
             "answer": 1,
             "explanation": "Только официальные каналы дают проверенные указания."
+          }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "What should you do first when a radiation accident is announced?",
+            "options": [
+              "Go indoors, close the windows, and turn on the radio",
+              "Go outside and watch what is happening",
+              "Open the windows for ventilation",
+              "Go to the facility for details"
+            ],
+            "answer": 0,
+            "explanation": "Sheltering and official messages are the basis of protection during a release."
+          },
+          {
+            "id": "q2",
+            "prompt": "Where is it safest to stay in an apartment during a radioactive release?",
+            "options": [
+              "On the balcony",
+              "Next to the living room window",
+              "Deep inside the room, away from windows",
+              "In the stairwell by the entrance door"
+            ],
+            "answer": 2,
+            "explanation": "More dust collects near windows and outer walls, so stay in the innermost part of the room."
+          },
+          {
+            "id": "q3",
+            "prompt": "Where should you get information about the radiation situation?",
+            "options": [
+              "From rumors and chats",
+              "From official messages of authorities and services",
+              "From posts by unknown bloggers",
+              "From street conversations"
+            ],
+            "answer": 1,
+            "explanation": "Only official channels give verified instructions."
           }
         ]
       }
@@ -116,8 +204,45 @@
             "Не откладывайте приём: в первые часы защита максимальна",
             "Не храните таблетки дольше срока годности"
           ],
-          "contacts": ["112", "Скорая помощь 103"],
+          "contacts": [
+            "112",
+            "Скорая помощь 103"
+          ],
           "source": "МЧС России · https://mchs.gov.ru/ministerstvo/o-ministerstve/terminy-mchs-rossii/term/3015 · ГУ МЧС России по Камчатскому краю · https://41.mchs.gov.ru/deyatelnost/poleznaya-informaciya/dopolnitelnye-stranicy/staticheskie-stranicy/kompleksnaya-sistema-ekstrennogo-opoveshcheniya-naseleniya/prakticheskie-meropriyatiya/pamyatki-po-deystviyam-naseleniya/pamyatka-po-deystviyam-naseleniya-pri-poluchenii-signala-ekstrennogo-opoveshcheniya-o-radiacionnoy-opasnosti"
+        },
+        "en": {
+          "title": "Iodine prophylaxis",
+          "summary": "Iodine prophylaxis is taking stable iodine preparations when authorities officially instruct you after a radiation accident. In Russia, potassium iodide is used: a 0.125 g tablet for adults and children from 2 years. Effectiveness is highest in the first hours after the announcement.",
+          "signs": [
+            "Radiation accident with release of radioactive iodine",
+            "Risk of radioactive iodine entering the body",
+            "Official announcement of the need for iodine prophylaxis"
+          ],
+          "before": [
+            "Check the tablet expiration date: it is 4 years",
+            "Find out where potassium iodide tablets are stored",
+            "Write down the 112 number and the clinic phone number"
+          ],
+          "during": [
+            "Take a 0.125 g tablet (for adults and children from 2 years) only after an official announcement by authorities",
+            "Do not delay taking it: protection is highest in the first hours after the announcement",
+            "Take 1 tablet per day, but no longer than 10 days or until authorities instruct you to stop",
+            "Children under 2: 1/4 tablet, only as prescribed by a doctor"
+          ],
+          "after": [
+            "Stop taking it when authorities instruct you, but no later than 10 days",
+            "Pregnant women and children under 2: only as prescribed by a doctor, the regimen is different",
+            "Check the instructions and expiration date of the preparation"
+          ],
+          "forbidden": [
+            "Do not delay taking it: protection is highest in the first hours",
+            "Do not keep tablets beyond their expiration date"
+          ],
+          "source": "EMERCOM of Russia · https://mchs.gov.ru/ministerstvo/o-ministerstve/terminy-mchs-rossii/term/3015 · EMERCOM Main Directorate for Kamchatka Krai · https://41.mchs.gov.ru/deyatelnost/poleznaya-informaciya/dopolnitelnye-stranicy/staticheskie-stranicy/kompleksnaya-sistema-ekstrennogo-opoveshcheniya-naseleniya/prakticheskie-meropriyatiya/pamyatki-po-deystviyam-naseleniya/pamyatka-po-deystviyam-naseleniya-pri-poluchenii-signala-ekstrennogo-opoveshcheniya-o-radiacionnoy-opasnosti",
+          "contacts": [
+            "112",
+            "Ambulance 103"
+          ]
         }
       },
       "quiz": {
@@ -158,6 +283,44 @@
             "answer": 0,
             "explanation": "Разработаны стабилизированные таблетки по 0,125 г для взрослых и детей от 2 лет."
           }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "When is iodine prophylaxis most effective?",
+            "options": [
+              "In the first hours after the accident",
+              "A month after the accident",
+              "Every day before the accident",
+              "At any mention of radiation"
+            ],
+            "answer": 0,
+            "explanation": "Effectiveness is highest when it is carried out within the first hours after the accident."
+          },
+          {
+            "id": "q2",
+            "prompt": "Which preparation is used for iodine prophylaxis in Russia?",
+            "options": [
+              "Potassium iodide",
+              "Activated charcoal",
+              "Aspirin",
+              "Validol"
+            ],
+            "answer": 0,
+            "explanation": "In Russia, potassium iodide is recommended and used for this purpose."
+          },
+          {
+            "id": "q3",
+            "prompt": "What is the potassium iodide tablet dose for adults?",
+            "options": [
+              "0.125 g",
+              "0.5 g",
+              "1 g",
+              "0.005 g"
+            ],
+            "answer": 0,
+            "explanation": "Stabilized tablets of 0.125 g have been developed for adults and children from 2 years."
+          }
         ]
       }
     },
@@ -196,8 +359,48 @@
             "Не берите с собой загрязнённые вещи и игрушки",
             "Не пейте воду из открытых источников"
           ],
-          "contacts": ["112", "ЕДДС города"],
+          "contacts": [
+            "112",
+            "ЕДДС города"
+          ],
           "source": "МЧС России · https://73.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/deystviya-naseleniya-pri-radiacionnoy-avarii-i-radioaktivnom-zagryaznenii-mestnosti"
+        },
+        "en": {
+          "title": "Evacuation from a contaminated zone",
+          "summary": "Evacuation begins only with an official announcement. Gather documents, medicines and water, secure your home, and follow the designated route.",
+          "signs": [
+            "Evacuation announcement on radio and television",
+            "Loudspeaker warning vehicles",
+            "An order to report to the assembly point"
+          ],
+          "before": [
+            "Gather documents, money, medicines and a supply of water",
+            "Pack your belongings in airtight bags or film",
+            "Close windows and doors, switch off electricity and gas",
+            "Warn your neighbors and help elderly people get ready"
+          ],
+          "during": [
+            "Put on thick clothing, a hat and gloves",
+            "Cover your mouth and nose with a damp cloth or a mask",
+            "Follow the designated route to the assembly point",
+            "Register with the evacuation committee when boarding"
+          ],
+          "after": [
+            "Hand over outer clothing for decontamination or disposal",
+            "Wash your body with soap and rinse your mouth with clean water",
+            "Pass radiation screening and put on clean clothing",
+            "Tell medical staff how you feel"
+          ],
+          "forbidden": [
+            "Do not return home until permission is given",
+            "Do not take contaminated items or toys with you",
+            "Do not drink water from open sources"
+          ],
+          "source": "EMERCOM of Russia · https://73.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/deystviya-naseleniya-pri-radiacionnoy-avarii-i-radioaktivnom-zagryaznenii-mestnosti",
+          "contacts": [
+            "112",
+            "City emergency dispatch service"
+          ]
         }
       },
       "quiz": {
@@ -238,6 +441,44 @@
             "answer": 0,
             "explanation": "Контроль показывает, осталось ли загрязнение на теле и одежде."
           }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "When does evacuation from a radioactive contamination zone begin?",
+            "options": [
+              "As soon as you see smoke",
+              "After an official government announcement",
+              "When the workday ends",
+              "On a neighbour's advice"
+            ],
+            "answer": 1,
+            "explanation": "Evacuation routes and timing are set by the authorities."
+          },
+          {
+            "id": "q2",
+            "prompt": "How do you protect your breathing while leaving the zone?",
+            "options": [
+              "Breathe more deeply",
+              "Cover your mouth and nose with a damp cloth or a mask",
+              "Remove your outer clothing",
+              "Walk against the wind without protection"
+            ],
+            "answer": 1,
+            "explanation": "A damp cloth or mask traps some of the radioactive dust."
+          },
+          {
+            "id": "q3",
+            "prompt": "What happens after washing at the assembly point?",
+            "options": [
+              "You pass radiation screening",
+              "You go to a shop",
+              "You return home for your belongings",
+              "You eat food brought from home"
+            ],
+            "answer": 0,
+            "explanation": "The screening shows whether contamination remains on the body or clothing."
+          }
         ]
       }
     },
@@ -274,8 +515,46 @@
             "Не стирайте загрязнённые вещи в общей машине",
             "Не храните загрязнённые вещи в жилой комнате"
           ],
-          "contacts": ["112", "ЕДДС города"],
+          "contacts": [
+            "112",
+            "ЕДДС города"
+          ],
           "source": "МЧС России · https://73.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/deystviya-naseleniya-pri-radiacionnoy-avarii-i-radioaktivnom-zagryaznenii-mestnosti"
+        },
+        "en": {
+          "title": "Contaminated clothing and footwear",
+          "summary": "Clothing worn after leaving the zone may carry radioactive dust. Remove it at the entrance and place it in a sealed bag.",
+          "signs": [
+            "Dust on clothing and footwear after being outside",
+            "Authorities report an elevated background level in the area",
+            "Officials ask you to undergo decontamination"
+          ],
+          "before": [
+            "Keep spare bags and clean clothing at home",
+            "Prepare a spot near the entrance for outerwear",
+            "Find out where decontamination is provided"
+          ],
+          "during": [
+            "Remove outer clothing and footwear at the entrance",
+            "Place the items in a bag and tie it tightly",
+            "Wash your hands and face with soap under running water",
+            "Take a shower and put on clean clothing"
+          ],
+          "after": [
+            "Do not wash contaminated items together with other laundry",
+            "Hand over the items for radiation monitoring as instructed by the services",
+            "Wash footwear with water outside"
+          ],
+          "forbidden": [
+            "Do not shake out clothing inside your home",
+            "Do not wash contaminated items in a shared washing machine",
+            "Do not store contaminated items in a living room"
+          ],
+          "source": "EMERCOM of Russia · https://73.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/deystviya-naseleniya-pri-radiacionnoy-avarii-i-radioaktivnom-zagryaznenii-mestnosti",
+          "contacts": [
+            "112",
+            "City emergency dispatch service"
+          ]
         }
       },
       "quiz": {
@@ -316,6 +595,44 @@
             "answer": 1,
             "explanation": "Стирка дома разносит загрязнение на машину, воду и другие вещи."
           }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "Where should you put outer clothing after leaving the contamination zone?",
+            "options": [
+              "In a wardrobe in the bedroom",
+              "In a sealed bag at the entrance",
+              "On the balcony",
+              "In the washing machine with other laundry"
+            ],
+            "answer": 1,
+            "explanation": "A bag at the entrance keeps dust from spreading through the home."
+          },
+          {
+            "id": "q2",
+            "prompt": "What should you do with your hands after removing contaminated clothing?",
+            "options": [
+              "Wash them with soap under running water",
+              "Wipe them with a dry cloth",
+              "Leave them alone until morning",
+              "Rub them on clothing"
+            ],
+            "answer": 0,
+            "explanation": "Soap and running water remove dust from the skin."
+          },
+          {
+            "id": "q3",
+            "prompt": "Why should you not wash contaminated items at home?",
+            "options": [
+              "The fabric gets damaged",
+              "Dust gets into the machine, the water, and other items",
+              "Store rules forbid it",
+              "Detergent is expensive"
+            ],
+            "answer": 1,
+            "explanation": "Washing at home spreads contamination to the machine, the water, and other items."
+          }
         ]
       }
     },
@@ -352,8 +669,46 @@
             "Не пейте воду из крана без разрешения служб",
             "Не кормите детей продуктами из зоны загрязнения"
           ],
-          "contacts": ["112", "Роспотребнадзор"],
+          "contacts": [
+            "112",
+            "Роспотребнадзор"
+          ],
           "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pravila-povedeniya-naseleniya-na-radiaktivno-zagryaznennoy-territorii_2"
+        },
+        "en": {
+          "title": "Contaminated water and food",
+          "summary": "Water and food from a contamination zone can be dangerous. Drink tested or bottled water and eat food in sealed packaging.",
+          "signs": [
+            "Warning about contaminated water sources",
+            "Ban on selling food from the zone",
+            "Dust settled on exposed food and surfaces"
+          ],
+          "before": [
+            "Stock up on bottled water and food in sealed packaging",
+            "Keep food in cabinets and the refrigerator",
+            "Find out which water sources are considered safe"
+          ],
+          "during": [
+            "Drink bottled water or water from tested sources",
+            "Wash vegetables and fruit with tested water",
+            "Do not gather mushrooms, berries, or herbs in the contamination zone",
+            "Do not drink water from wells or open bodies of water"
+          ],
+          "after": [
+            "Hand in your supplies for radiation testing as directed by the services",
+            "Throw away food that was left outdoors uncovered",
+            "Ask the services when the water will be safe again"
+          ],
+          "forbidden": [
+            "Do not eat food that was left uncovered",
+            "Do not drink tap water without permission from the services",
+            "Do not feed children food from the contamination zone"
+          ],
+          "source": "EMERCOM of Russia · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pravila-povedeniya-naseleniya-na-radiaktivno-zagryaznennoy-territorii_2",
+          "contacts": [
+            "112",
+            "Rospotrebnadzor"
+          ]
         }
       },
       "quiz": {
@@ -394,6 +749,44 @@
             "answer": 2,
             "explanation": "Грибы и ягоды накапливают радиоактивные вещества, поэтому в зоне загрязнения их не собирают."
           }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "What water should you drink when water sources are contaminated?",
+            "options": [
+              "From the nearest well",
+              "From an open body of water",
+              "Bottled or tested water",
+              "Tap water without a warning from the services"
+            ],
+            "answer": 2,
+            "explanation": "Tested water contains no radioactive substances, or they are within safe limits."
+          },
+          {
+            "id": "q2",
+            "prompt": "What should you do with food that was left outdoors uncovered?",
+            "options": [
+              "Throw it away",
+              "Rinse it and eat it",
+              "Give it to animals",
+              "Put it in the refrigerator"
+            ],
+            "answer": 0,
+            "explanation": "Radioactive dust settled on the uncovered food."
+          },
+          {
+            "id": "q3",
+            "prompt": "Can you gather mushrooms and berries in the contamination zone?",
+            "options": [
+              "Yes, if you wash them well",
+              "Yes, if you boil them for a long time",
+              "No",
+              "Only in September"
+            ],
+            "answer": 2,
+            "explanation": "Mushrooms and berries accumulate radioactive substances, so they are not gathered in the contamination zone."
+          }
         ]
       }
     },
@@ -430,8 +823,46 @@
             "Не выдавайте непроверенные цифры за прогноз",
             "Не разбирайте и не ремонтируйте прибор самостоятельно"
           ],
-          "contacts": ["112", "ЕДДС города"],
+          "contacts": [
+            "112",
+            "ЕДДС города"
+          ],
           "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pravila-povedeniya-naseleniya-na-radiaktivno-zagryaznennoy-territorii_2"
+        },
+        "en": {
+          "title": "Dosimeter and background readings",
+          "summary": "A dosimeter shows the dose rate at your location. It does not replace official reports: if readings rise, take shelter and call 112.",
+          "signs": [
+            "Dosimeter readings above the usual background",
+            "Authorities report elevated background in your area",
+            "Radio alert or siren"
+          ],
+          "before": [
+            "Check your dosimeter's battery and operation in advance",
+            "Write down the usual background level for your area",
+            "Read the device manual and learn the units of measurement"
+          ],
+          "during": [
+            "Compare readings with the usual background in your area",
+            "If readings rise, go indoors and turn on the radio",
+            "Report high readings by calling 112",
+            "Do not panic over a single spike; check the device"
+          ],
+          "after": [
+            "Write down readings and times for the authorities",
+            "Follow official reports",
+            "Forward the readings to a radiation monitoring point"
+          ],
+          "forbidden": [
+            "Do not take pills based on device readings alone",
+            "Do not present unverified figures as a forecast",
+            "Do not disassemble or repair the device yourself"
+          ],
+          "source": "EMERCOM of Russia · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pravila-povedeniya-naseleniya-na-radiaktivno-zagryaznennoy-territorii_2",
+          "contacts": [
+            "112",
+            "City emergency dispatch service"
+          ]
         }
       },
       "quiz": {
@@ -472,6 +903,44 @@
             "answer": 2,
             "explanation": "Таблетки принимают только по официальному сообщению."
           }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "What does a dosimeter show?",
+            "options": [
+              "The radiation dose rate at your location",
+              "An accurate week-long forecast",
+              "The weather",
+              "The tap water level"
+            ],
+            "answer": 0,
+            "explanation": "The device measures the background where it is located."
+          },
+          {
+            "id": "q2",
+            "prompt": "What should you do if dosimeter readings rise?",
+            "options": [
+              "Keep walking around",
+              "Go indoors, turn on the radio, and call 112",
+              "Turn off the device",
+              "Open the windows"
+            ],
+            "answer": 1,
+            "explanation": "Shelter and contact with the authorities matter more than drawing your own conclusions."
+          },
+          {
+            "id": "q3",
+            "prompt": "Can you take potassium iodide based only on dosimeter readings?",
+            "options": [
+              "Yes, always",
+              "Yes, if the device is expensive",
+              "No, an official signal and a medical worker's instruction are required",
+              "Yes, children only need it"
+            ],
+            "answer": 2,
+            "explanation": "Pills are taken only after an official announcement."
+          }
         ]
       }
     },
@@ -508,8 +977,46 @@
             "Не пользуйтесь вытяжкой и кондиционером",
             "Не держите продукты и воду открытыми"
           ],
-          "contacts": ["112", "ЕДДС города"],
+          "contacts": [
+            "112",
+            "ЕДДС города"
+          ],
           "source": "МЧС России · https://41.mchs.gov.ru/deyatelnost/poleznaya-informaciya/dopolnitelnye-stranicy/staticheskie-stranicy/kompleksnaya-sistema-ekstrennogo-opoveshcheniya-naseleniya/prakticheskie-meropriyatiya/pamyatki-po-deystviyam-naseleniya/pamyatka-po-deystviyam-naseleniya-pri-poluchenii-signala-ekstrennogo-opoveshcheniya-o-radiacionnoy-opasnosti"
+        },
+        "en": {
+          "title": "Sheltering in a building",
+          "summary": "Sheltering indoors reduces the amount of radioactive dust that gets inside. Close windows and vents, move to a windowless room, and wait for official messages.",
+          "signs": [
+            "Alarm signal and a shelter instruction",
+            "Radiation levels above normal",
+            "Dust in the air after a release"
+          ],
+          "before": [
+            "Find out where the nearest shelter or basement is",
+            "Keep water, food, a flashlight, a radio, and medicines at home",
+            "Stock plastic sheeting and tape for sealing gaps"
+          ],
+          "during": [
+            "Go indoors and close windows, doors, and vents",
+            "Move to a windowless room or a basement",
+            "Seal window gaps with plastic sheeting or tape",
+            "Listen to the radio and wait for official messages"
+          ],
+          "after": [
+            "Leave only after authorities give permission",
+            "Ask the services whether the room can be aired out",
+            "Go through radiation monitoring when exiting"
+          ],
+          "forbidden": [
+            "Do not go out on the balcony or open windows",
+            "Do not use extractor fans or air conditioners",
+            "Do not keep food and water uncovered"
+          ],
+          "source": "EMERCOM of Russia · https://41.mchs.gov.ru/deyatelnost/poleznaya-informaciya/dopolnitelnye-stranicy/staticheskie-stranicy/kompleksnaya-sistema-ekstrennogo-opoveshcheniya-naseleniya/prakticheskie-meropriyatiya/pamyatki-po-deystviyam-naseleniya/pamyatka-po-deystviyam-naseleniya-pri-poluchenii-signala-ekstrennogo-opoveshcheniya-o-radiacionnoy-opasnosti",
+          "contacts": [
+            "112",
+            "City emergency dispatch service"
+          ]
         }
       },
       "quiz": {
@@ -549,6 +1056,44 @@
             ],
             "answer": 2,
             "explanation": "Безопасность выхода определяют службы по замерам."
+          }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "Which room is best for sheltering during a radioactive release?",
+            "options": [
+              "A balcony",
+              "A windowless room inside the building",
+              "A stairwell by the entrance",
+              "The yard of the building"
+            ],
+            "answer": 1,
+            "explanation": "An inner room without windows protects against dust and radiation."
+          },
+          {
+            "id": "q2",
+            "prompt": "What should you do with ventilation while sheltering?",
+            "options": [
+              "Turn it on at full power",
+              "Close it",
+              "Open the windows for airflow",
+              "It does not matter"
+            ],
+            "answer": 1,
+            "explanation": "Ventilation draws radioactive dust into the room."
+          },
+          {
+            "id": "q3",
+            "prompt": "When can you leave the shelter?",
+            "options": [
+              "After an hour",
+              "When the wind dies down",
+              "After authorities give permission",
+              "Whenever you want"
+            ],
+            "answer": 2,
+            "explanation": "Services determine when it is safe to leave based on measurements."
           }
         ]
       }

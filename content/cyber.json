@@ -5,7 +5,8 @@
     "emoji": "🔐",
     "sort": 8,
     "title": {
-      "ru": "Кибербезопасность"
+      "ru": "Кибербезопасность",
+      "en": "Cybersecurity"
     }
   },
   "threats": [
@@ -15,7 +16,7 @@
       "texts": {
         "ru": {
           "title": "Фишинг",
-          "summary": "Поддельное письмо, сообщение или сайт выманивает пароль, код из\u00A0СМС или данные карты. Мошенники подделывают адрес отправителя и\u00A0домен, поэтому проверяйте их\u00A0сами и\u00A0не\u00A0вводите данные на\u00A0страницах по\u00A0ссылке.",
+          "summary": "Поддельное письмо, сообщение или сайт выманивает пароль, код из СМС или данные карты. Мошенники подделывают адрес отправителя и домен, поэтому проверяйте их сами и не вводите данные на страницах по ссылке.",
           "signs": [
             "Неожиданное письмо или сообщение требует срочно войти, оплатить или подтвердить данные",
             "Адрес отправителя или сайта отличается от официального на одну букву или символ",
@@ -43,11 +44,47 @@
             "Вводить данные карты на страницах, открытых по ссылке"
           ],
           "contacts": [
-            "8\u00A0800\u00A0300-30-00\u00A0— Банк России",
-            "8\u00A0800\u00A0100-70-10\u00A0— поддержка Госуслуг",
-            "102\u00A0— полиция"
+            "8 800 300-30-00 — Банк России",
+            "8 800 100-70-10 — поддержка Госуслуг",
+            "102 — полиция"
           ],
           "source": "Минцифры России · https://www.gosuslugi.ru/help/faq/personal_data/504351"
+        },
+        "en": {
+          "title": "Phishing",
+          "summary": "A fake email, message, or website tricks you into revealing a password, an SMS code, or card details. Scammers forge sender addresses and domains, so verify them yourself and never enter data on pages opened from a link.",
+          "signs": [
+            "An unexpected email or message urgently demands you log in, pay, or confirm details",
+            "The sender or site address differs from the official one by one letter or character",
+            "A page opened from a link asks for a password, SMS code, or CVV",
+            "The text has typos, and links do not match the addresses given in the signature"
+          ],
+          "before": [
+            "Enable sign-in with extra verification for your email, bank, and Gosuslugi accounts",
+            "Open services from a bookmark, not from a link in a message",
+            "Check the site domain and sender address before entering any data"
+          ],
+          "during": [
+            "Do not follow the link: open the site manually and check your notifications there",
+            "Call the organization using the number from its official website",
+            "Report the phishing site through Gosuslugi; after review it will be blocked"
+          ],
+          "after": [
+            "Change the password on the service where you entered your data and end all sessions",
+            "Report suspicious transactions to your bank and block your card",
+            "Keep screenshots of the email and page for a police report"
+          ],
+          "forbidden": [
+            "Following links in unexpected emails and messages",
+            "Sharing SMS codes and passwords, even with a support agent",
+            "Entering card details on pages opened from a link"
+          ],
+          "source": "Ministry of Digital Development of Russia · https://www.gosuslugi.ru/help/faq/personal_data/504351",
+          "contacts": [
+            "8 800 300-30-00 — Bank of Russia",
+            "8 800 100-70-10 — Gosuslugi support",
+            "102 — police"
+          ]
         }
       },
       "quiz": {
@@ -88,6 +125,44 @@
             "answer": 2,
             "explanation": "Дизайн и логотип легко скопировать. Проверяйте точный домен в адресной строке: лишняя буква или символ выдаёт подделку."
           }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "You receive an email from your bank asking you to urgently confirm your card via a link. What should you do?",
+            "options": [
+              "Open the bank's website manually and check your notifications there",
+              "Follow the link and enter your card details",
+              "Reply to the email and ask what happened",
+              "Call the number in the email"
+            ],
+            "answer": 0,
+            "explanation": "The link and the number in the email may lead to scammers. Open the bank's website manually or call the number on the back of your card."
+          },
+          {
+            "id": "q2",
+            "prompt": "A support agent asks for an SMS code to cancel a transfer. What do you do?",
+            "options": [
+              "Dictate the code to cancel the transfer",
+              "Not share the code and call the bank on its official number",
+              "Send the code in a reply message",
+              "Give only the last three digits of the code"
+            ],
+            "answer": 1,
+            "explanation": "An SMS code confirms a transaction and gives access to your account. Banks and government agencies never ask for codes; call only the official number."
+          },
+          {
+            "id": "q3",
+            "prompt": "How can you tell a phishing site from a real one?",
+            "options": [
+              "By its bright design and logo",
+              "By the presence of a login form",
+              "By the exact domain in the address bar",
+              "By a safe label on the page"
+            ],
+            "answer": 2,
+            "explanation": "Design and logos are easy to copy. Check the exact domain in the address bar: an extra letter or character reveals a fake."
+          }
         ]
       }
     },
@@ -97,7 +172,7 @@
       "texts": {
         "ru": {
           "title": "Взлом аккаунта",
-          "summary": "Злоумышленник получает доступ к\u00A0почте или соцсети, меняет пароль и\u00A0пишет от\u00A0вашего имени. Признаки: входы с\u00A0чужих устройств, смена пароля и\u00A0странные сообщения друзьям.",
+          "summary": "Злоумышленник получает доступ к почте или соцсети, меняет пароль и пишет от вашего имени. Признаки: входы с чужих устройств, смена пароля и странные сообщения друзьям.",
           "signs": [
             "Пришло уведомление о входе с незнакомого устройства или из другого города",
             "Пароль не подходит, а почта и номер для восстановления изменены",
@@ -117,7 +192,7 @@
           "after": [
             "Включите дополнительное подтверждение входа заново",
             "Предупредите друзей, что от вашего имени могли писать мошенники",
-            "Обратитесь в поддержку сервиса, а при краже денег\u00A0— в банк и полицию"
+            "Обратитесь в поддержку сервиса, а при краже денег — в банк и полицию"
           ],
           "forbidden": [
             "Использовать один пароль для почты, банка и соцсетей",
@@ -125,10 +200,45 @@
             "Пересылать коды восстановления кому-либо"
           ],
           "contacts": [
-            "8\u00A0800\u00A0100-70-10\u00A0— поддержка Госуслуг",
-            "102\u00A0— полиция"
+            "8 800 100-70-10 — поддержка Госуслуг",
+            "102 — полиция"
           ],
           "source": "Минцифры России · https://www.gosuslugi.ru/help/faq/personal_data/100465"
+        },
+        "en": {
+          "title": "Account hacking",
+          "summary": "An attacker gets access to your email or social media, changes the password, and writes in your name. Signs: logins from unfamiliar devices, a changed password, and strange messages to friends.",
+          "signs": [
+            "You get a notification of a login from an unfamiliar device or another city",
+            "Your password no longer works, and the recovery email and phone number have been changed",
+            "Friends receive money requests and links in your name",
+            "Settings change: linked phone numbers and email forwarding rules"
+          ],
+          "before": [
+            "Turn on extra login verification: an SMS code, a code app, or biometrics",
+            "Use a unique password for each service and store them in a password manager",
+            "Add a trusted contact who will confirm access recovery"
+          ],
+          "during": [
+            "Change your password from a device you trust",
+            "End all sessions and sign out unknown devices",
+            "Check linked phone numbers, the recovery email, and email forwarding"
+          ],
+          "after": [
+            "Turn extra login verification back on",
+            "Warn friends that scammers may have written in your name",
+            "Contact the service's support, and if money was stolen, contact the bank and the police"
+          ],
+          "forbidden": [
+            "Use one password for email, banking, and social media",
+            "Turn off extra login verification for convenience",
+            "Send recovery codes to anyone"
+          ],
+          "source": "Ministry of Digital Development of Russia · https://www.gosuslugi.ru/help/faq/personal_data/100465",
+          "contacts": [
+            "8 800 100-70-10 — Gosuslugi support",
+            "102 — police"
+          ]
         }
       },
       "quiz": {
@@ -169,6 +279,44 @@
             "answer": 0,
             "explanation": "Взломанный аккаунт пишет от имени друга. Надёжная проверка одна: звонок по номеру, который вы знали раньше."
           }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "You get a notification of a login to your account from another city. First step?",
+            "options": [
+              "Ignore it, it is a random error",
+              "Change the password and end all sessions",
+              "Delete the app and wait",
+              "Write to support and wait for a reply"
+            ],
+            "answer": 1,
+            "explanation": "First cut off the attacker's access: change the password and end all sessions. Then check linked contacts and email forwarding."
+          },
+          {
+            "id": "q2",
+            "prompt": "Which account protection is the most reliable?",
+            "options": [
+              "A long password made of your name and birth year",
+              "One password for all services",
+              "Unique passwords and extra login verification",
+              "A secret question about your mother's maiden name"
+            ],
+            "answer": 2,
+            "explanation": "A leak in one service must not open the others. Unique passwords and a second factor sharply reduce the risk of hacking."
+          },
+          {
+            "id": "q3",
+            "prompt": "A friend writes on social media and urgently asks you to transfer money. What should you check?",
+            "options": [
+              "Call the friend on a number you already know",
+              "Check how long ago they were online",
+              "Look at the number of mutual friends",
+              "Reply and ask for the payment details in the chat"
+            ],
+            "answer": 0,
+            "explanation": "A hacked account writes in your friend's name. There is one reliable check: a call to a number you knew before."
+          }
         ]
       }
     },
@@ -178,7 +326,7 @@
       "texts": {
         "ru": {
           "title": "Мошенничество по телефону",
-          "summary": "Звонящий представляется сотрудником банка, полиции или оператора и\u00A0выманивает деньги и\u00A0коды. Банки и\u00A0госструктуры не\u00A0запрашивают данные карты и\u00A0коды из\u00A0СМС, а\u00A0Банк России не\u00A0открывает счета и\u00A0не\u00A0работает с\u00A0гражданами.",
+          "summary": "Звонящий представляется сотрудником банка, полиции или оператора и выманивает деньги и коды. Банки и госструктуры не запрашивают данные карты и коды из СМС, а Банк России не открывает счета и не работает с гражданами.",
           "signs": [
             "Звонок с незнакомого номера, звонящий называет себя «службой безопасности»",
             "Требуют срочно действовать, пугают списанием или уголовным делом",
@@ -206,10 +354,45 @@
             "Устанавливать программы по просьбе звонящего"
           ],
           "contacts": [
-            "8\u00A0800\u00A0300-30-00\u00A0— Банк России",
-            "102\u00A0— полиция"
+            "8 800 300-30-00 — Банк России",
+            "102 — полиция"
           ],
           "source": "Банк России · https://www.cbr.ru/information_security/pmp"
+        },
+        "en": {
+          "title": "Phone scams",
+          "summary": "The caller poses as a bank, police, or mobile operator employee and tries to extract money and codes. Banks and government bodies never ask for card details or SMS codes, and the Bank of Russia does not open accounts or deal with private individuals.",
+          "signs": [
+            "Call from an unknown number, the caller claims to be from a security service",
+            "They push you to act fast, scaring you with a write-off or a criminal case",
+            "They ask for an SMS code, CVV, or a transfer to a safe account",
+            "They tell you to stay on the line and not consult your family"
+          ],
+          "before": [
+            "Safe and special accounts do not exist: the Bank of Russia does not deal with individuals",
+            "Save your bank's and the police's numbers in your contacts",
+            "Agree with your family on a verification word for urgent requests"
+          ],
+          "during": [
+            "Hang up and call your bank using the number on your card or its website",
+            "Do not share SMS codes, passwords, or card details",
+            "Do not transfer money as the caller instructs"
+          ],
+          "after": [
+            "Block your card in the bank's app or through its contact center",
+            "Within 24 hours, file a dispute with the bank over the transaction, then report to the police",
+            "Keep the caller's number, the time, and the transfer amount"
+          ],
+          "forbidden": [
+            "Transfer money to a safe or special account",
+            "Give SMS codes or CVV to strangers",
+            "Install software at a caller's request"
+          ],
+          "source": "Bank of Russia · https://www.cbr.ru/information_security/pmp",
+          "contacts": [
+            "8 800 300-30-00 — Bank of Russia",
+            "102 — police"
+          ]
         }
       },
       "quiz": {
@@ -250,6 +433,44 @@
             "answer": 1,
             "explanation": "Карту блокируют сразу, заявление о несогласии с операцией подают в банк в течение суток. Если вы перевели деньги сами, банк не обязан их возвращать."
           }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "A caller says they are a bank employee and demands you transfer money to a safe account. What should you do?",
+            "options": [
+              "Transfer it to save your money",
+              "Hang up and call your bank using the number on your card",
+              "Give the SMS code for confirmation",
+              "Keep talking and ask for details"
+            ],
+            "answer": 1,
+            "explanation": "Safe and special accounts do not exist, and the Bank of Russia does not deal with individuals. End the call and call your bank using the number on your card."
+          },
+          {
+            "id": "q2",
+            "prompt": "What data must you never share by phone with strangers?",
+            "options": [
+              "Only your last name",
+              "Only your city of residence",
+              "SMS codes, CVV, and passwords",
+              "Nothing, all data is safe"
+            ],
+            "answer": 2,
+            "explanation": "An SMS code, CVV, and password give access to your money. Never share them with anyone, including callers posing as bank employees."
+          },
+          {
+            "id": "q3",
+            "prompt": "Scammers have already taken your money. What should you do first?",
+            "options": [
+              "Wait for the bank to return it on its own",
+              "Block the card through the bank and file a police report",
+              "Call the scammers and demand a refund",
+              "Delete the transaction history in the app"
+            ],
+            "answer": 1,
+            "explanation": "Block the card immediately and file a dispute over the transaction with the bank within 24 hours. If you transferred the money yourself, the bank is not obliged to return it."
+          }
         ]
       }
     },
@@ -259,7 +480,7 @@
       "texts": {
         "ru": {
           "title": "Вредоносный файл",
-          "summary": "Вирус или троян приходит во\u00A0вложении, установщике или по\u00A0ссылке и\u00A0получает доступ к\u00A0устройству и\u00A0данным. Ставьте программы из\u00A0официальных магазинов, обновляйте систему и\u00A0не\u00A0открывайте неожиданные вложения.",
+          "summary": "Вирус или троян приходит во вложении, установщике или по ссылке и получает доступ к устройству и данным. Ставьте программы из официальных магазинов, обновляйте систему и не открывайте неожиданные вложения.",
           "signs": [
             "Устройство тормозит, появляются всплывающие окна и новые расширения",
             "Неизвестные программы запускаются сами и просят права администратора",
@@ -279,7 +500,7 @@
           "after": [
             "Смените пароли с другого, чистого устройства",
             "Проверьте автозагрузку, удалите неизвестные программы и расширения",
-            "При краже денег обратитесь в банк, при потере данных\u00A0— в полицию"
+            "При краже денег обратитесь в банк, при потере данных — в полицию"
           ],
           "forbidden": [
             "Открывать вложения от незнакомых отправителей",
@@ -287,10 +508,45 @@
             "Давать неизвестным программам права администратора"
           ],
           "contacts": [
-            "102\u00A0— полиция",
-            "8\u00A0800\u00A0300-30-00\u00A0— Банк России"
+            "102 — полиция",
+            "8 800 300-30-00 — Банк России"
           ],
           "source": "Минцифры России · https://www.gosuslugi.ru/help/faq/personal_data/210509"
+        },
+        "en": {
+          "title": "Malicious file",
+          "summary": "A virus or trojan arrives in an attachment, installer, or link and gets access to your device and data. Install apps from official stores, keep the system updated, and do not open unexpected attachments.",
+          "signs": [
+            "The device slows down, pop-ups and new extensions appear",
+            "Unknown programs launch on their own and request administrator rights",
+            "The attachment came from a stranger and the file has a double extension like pdf.exe",
+            "The antivirus has been disabled and browser settings have changed"
+          ],
+          "before": [
+            "Update the system and apps, enable automatic updates",
+            "Install an antivirus from an official store and keep it updated",
+            "Download programs only from the developer's website or an app store"
+          ],
+          "during": [
+            "Disconnect the device from the network",
+            "Do not run the suspicious file and do not give it administrator rights",
+            "Run a full antivirus scan"
+          ],
+          "after": [
+            "Change your passwords from another, clean device",
+            "Check startup items, remove unknown programs and extensions",
+            "If money is stolen, contact your bank; if data is lost, contact the police"
+          ],
+          "forbidden": [
+            "Open attachments from unknown senders",
+            "Disable the antivirus to install a program",
+            "Give unknown programs administrator rights"
+          ],
+          "source": "Ministry of Digital Development of Russia · https://www.gosuslugi.ru/help/faq/personal_data/210509",
+          "contacts": [
+            "102 — police",
+            "8 800 300-30-00 — Bank of Russia"
+          ]
         }
       },
       "quiz": {
@@ -331,6 +587,44 @@
             "answer": 0,
             "explanation": "Отключение от сети мешает программе передавать данные, проверка антивирусом находит и удаляет вредоносный код."
           }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "An email arrived with an attachment called «счёт.pdf.exe». What should you do?",
+            "options": [
+              "Open it, it is a regular invoice",
+              "Do not open it and delete the email",
+              "Forward it to a colleague for review",
+              "Open it in safe mode"
+            ],
+            "answer": 1,
+            "explanation": "The double extension disguises a program as a document. Such attachments are not opened and the email is deleted."
+          },
+          {
+            "id": "q2",
+            "prompt": "Where is it safe to download programs?",
+            "options": [
+              "On file-sharing sites and torrents",
+              "Via a link in an email from a stranger",
+              "On the developer's official website or in an app store",
+              "In chats and groups with \"cracked\" versions"
+            ],
+            "answer": 2,
+            "explanation": "The official website and app stores check programs and updates. Pirated builds often contain malicious code."
+          },
+          {
+            "id": "q3",
+            "prompt": "What should you do right after a device is infected?",
+            "options": [
+              "Disconnect the device from the network and run an antivirus scan",
+              "Reboot and keep working",
+              "Uninstall the antivirus, it gets in the way",
+              "Send the files to friends"
+            ],
+            "answer": 0,
+            "explanation": "Disconnecting from the network stops the program from sending data. An antivirus scan finds and removes the malicious code."
+          }
         ]
       }
     },
@@ -340,7 +634,7 @@
       "texts": {
         "ru": {
           "title": "Утечка данных",
-          "summary": "Личные данные попадают в\u00A0открытый доступ из-за\u00A0взлома сервиса или неосторожной публикации. По\u00A0ним мошенники звонят с\u00A0точными деталями и\u00A0подбирают пароли. Одних паспортных данных для кредита мало, им\u00A0нужен доступ к\u00A0аккаунту.",
+          "summary": "Личные данные попадают в открытый доступ из-за взлома сервиса или неосторожной публикации. По ним мошенники звонят с точными деталями и подбирают пароли. Одних паспортных данных для кредита мало, им нужен доступ к аккаунту.",
           "signs": [
             "Приходят звонки и письма с данными, которые вы не публиковали",
             "Сервис сообщил о взломе или просит срочно сменить пароль",
@@ -368,11 +662,47 @@
             "Сообщать личные данные по звонку без проверки"
           ],
           "contacts": [
-            "8\u00A0800\u00A0100-70-10\u00A0— поддержка Госуслуг",
-            "8\u00A0800\u00A0300-30-00\u00A0— Банк России",
-            "102\u00A0— полиция"
+            "8 800 100-70-10 — поддержка Госуслуг",
+            "8 800 300-30-00 — Банк России",
+            "102 — полиция"
           ],
           "source": "Минцифры России · https://www.gosuslugi.ru/scammer_protection"
+        },
+        "en": {
+          "title": "Data leak",
+          "summary": "Personal data ends up in open access through a service breach or careless posting. Using it, scammers call with accurate details and try passwords. Passport data alone is not enough for a loan; they need access to your account.",
+          "signs": [
+            "Calls and letters arrive with data you never published",
+            "A service reported a breach or asks you to change your password urgently",
+            "Loan or order applications appear in your name",
+            "Your documents, address, or phone number appeared in open access"
+          ],
+          "before": [
+            "Do not post photos of your passport, SNILS, or bank cards",
+            "Check what data a website or app requests when you register",
+            "Use a separate email for sign-ups and unique passwords"
+          ],
+          "during": [
+            "Change your password in the service where the leak happened and enable extra login verification",
+            "Check your linked cards and remove the ones you do not need",
+            "Report the breach to the service's support team"
+          ],
+          "after": [
+            "Find out which bureaus store your credit history and request a report",
+            "Set a self-ban on loans and credits on Gosuslugi; it has no time limit",
+            "If a loan was taken out in your name, contact the bank, the credit history bureau, and the police"
+          ],
+          "forbidden": [
+            "Posting photos of documents and cards on social media and in chats",
+            "Keeping passwords and codes in plain notes",
+            "Giving personal data over a phone call without verification"
+          ],
+          "source": "Ministry of Digital Development of Russia · https://www.gosuslugi.ru/scammer_protection",
+          "contacts": [
+            "8 800 100-70-10 — Gosuslugi support",
+            "8 800 300-30-00 — Bank of Russia",
+            "102 — police"
+          ]
         }
       },
       "quiz": {
@@ -413,6 +743,44 @@
             "answer": 1,
             "explanation": "Заявление в полицию и обращение в бюро помогают оспорить чужой заём. Самозапрет на кредиты закрывает лазейку на будущее."
           }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "A service reports a password leak. What should you do?",
+            "options": [
+              "Nothing, the password is old",
+              "Change your password in that service and enable extra login verification",
+              "Delete the account and forget about it",
+              "Give your password to support for verification"
+            ],
+            "answer": 1,
+            "explanation": "After a leak, change your password and enable a second factor. This stops old data from giving access to your account."
+          },
+          {
+            "id": "q2",
+            "prompt": "Which data is most dangerous to publish in open access?",
+            "options": [
+              "Photos of your passport, SNILS, and card numbers",
+              "The name of your favorite book",
+              "Nature photos",
+              "A list of movies"
+            ],
+            "answer": 0,
+            "explanation": "A card number can be used to steal money; documents can be used to prepare fake applications. A loan is issued if scammers gain access to your Gosuslugi account."
+          },
+          {
+            "id": "q3",
+            "prompt": "Someone tries to take out a loan in your name. Where should you turn?",
+            "options": [
+              "Only to the scammers who call",
+              "The credit history bureau, the bank, and the police",
+              "Nowhere, the loan will be annulled on its own",
+              "The social network where you are registered"
+            ],
+            "answer": 1,
+            "explanation": "A police report and a request to the bureau help dispute a loan taken out by someone else. A self-ban on loans closes this loophole in the future."
+          }
         ]
       }
     },
@@ -422,7 +790,7 @@
       "texts": {
         "ru": {
           "title": "Публичный Wi-Fi",
-          "summary": "В\u00A0кафе, аэропорту и\u00A0транспорте трафик в\u00A0открытой сети можно перехватить: под угрозой логины, пароли и\u00A0данные карт. Для банка и\u00A0Госуслуг используйте мобильный интернет, а\u00A0не\u00A0бесплатный Wi-Fi.",
+          "summary": "В кафе, аэропорту и транспорте трафик в открытой сети можно перехватить: под угрозой логины, пароли и данные карт. Для банка и Госуслуг используйте мобильный интернет, а не бесплатный Wi-Fi.",
           "signs": [
             "Сеть без пароля или с названием, похожим на название заведения",
             "Браузер предупреждает, что соединение не защищено",
@@ -449,10 +817,44 @@
             "Оплачивать покупки в публичной сети"
           ],
           "contacts": [
-            "8\u00A0800\u00A0300-30-00\u00A0— Банк России",
-            "102\u00A0— полиция"
+            "8 800 300-30-00 — Банк России",
+            "102 — полиция"
           ],
           "source": "Минцифры России · https://www.gosuslugi.ru/help/faq/personal_data/210509"
+        },
+        "en": {
+          "title": "Public Wi-Fi",
+          "summary": "In cafes, airports, and transport, traffic on an open network can be intercepted: logins, passwords, and card data are at risk. Use mobile internet, not free Wi-Fi, for banking and Gosuslugi.",
+          "signs": [
+            "A network with no password or with a name similar to the venue's name",
+            "The browser warns that the connection is not secure",
+            "The bank site opens at an unfamiliar address or without a padlock icon"
+          ],
+          "before": [
+            "Turn off automatic connection to open networks",
+            "Use mobile internet for important actions",
+            "Confirm the exact network name with a staff member"
+          ],
+          "during": [
+            "Do not log into your bank or Gosuslugi over a public network",
+            "Do not make payments or enter passwords",
+            "Turn off file and printer sharing"
+          ],
+          "after": [
+            "End sessions in services you used on the public network",
+            "Change passwords if you entered them without protection",
+            "Check card transactions and report suspicious ones to your bank"
+          ],
+          "forbidden": [
+            "Logging into your bank over an open network",
+            "Connecting to a network with a suspicious name",
+            "Paying for purchases on a public network"
+          ],
+          "source": "Ministry of Digital Development of Russia · https://www.gosuslugi.ru/help/faq/personal_data/210509",
+          "contacts": [
+            "8 800 300-30-00 — Bank of Russia",
+            "102 — police"
+          ]
         }
       },
       "quiz": {
@@ -493,6 +895,44 @@
             "answer": 0,
             "explanation": "Завершение сеансов и смена паролей закрывают доступ, если данные всё же перехватили."
           }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "You need to check your bank balance and you are in a cafe with open Wi-Fi. What should you do?",
+            "options": [
+              "Log in over the open network, it is quick",
+              "Use mobile internet",
+              "Ask another guest for the network password",
+              "Disable your antivirus for speed"
+            ],
+            "answer": 1,
+            "explanation": "Mobile internet does not pass through the venue's network, so traffic cannot be intercepted. A password at the cafe entrance does not guarantee safety."
+          },
+          {
+            "id": "q2",
+            "prompt": "What is a sign of a dangerous public network?",
+            "options": [
+              "The network requires a password from the venue",
+              "The name looks official but there is no password",
+              "The network is slow",
+              "The network is available only in the hall"
+            ],
+            "answer": 1,
+            "explanation": "A network name is easy to fake. If a network has no password and looks official, confirm its name with the venue's staff."
+          },
+          {
+            "id": "q3",
+            "prompt": "What should you do after using a public network?",
+            "options": [
+              "End sessions and change passwords if in doubt",
+              "Save your password in the browser",
+              "Leave the connection on",
+              "Disable two-factor authentication"
+            ],
+            "answer": 0,
+            "explanation": "Ending sessions and changing passwords closes access if data was intercepted."
+          }
         ]
       }
     },
@@ -502,7 +942,7 @@
       "texts": {
         "ru": {
           "title": "Дипфейк-звонок",
-          "summary": "Мошенник подделывает голос или видео родственника, руководителя или знакомого и\u00A0просит деньги. Запись берут из\u00A0взломанного аккаунта, поэтому проверяйте просьбу звонком по\u00A0известному номеру.",
+          "summary": "Мошенник подделывает голос или видео родственника, руководителя или знакомого и просит деньги. Запись берут из взломанного аккаунта, поэтому проверяйте просьбу звонком по известному номеру.",
           "signs": [
             "Речь монотонная, без интонаций, со сбоями звука",
             "Видео со знакомым лицом выдаёт неестественная мимика",
@@ -530,10 +970,45 @@
             "Действовать срочно под давлением звонящего"
           ],
           "contacts": [
-            "8\u00A0800\u00A0300-30-00\u00A0— Банк России",
-            "102\u00A0— полиция"
+            "8 800 300-30-00 — Банк России",
+            "102 — полиция"
           ],
           "source": "Банк России · https://www.cbr.ru/information_security/pmp/15082024"
+        },
+        "en": {
+          "title": "Deepfake call",
+          "summary": "A scammer fakes the voice or video of a relative, boss, or acquaintance and asks for money. The recording comes from a hacked account, so verify any request by calling a known number.",
+          "signs": [
+            "Monotone speech with no intonation and sound glitches",
+            "Unnatural facial expressions on a familiar face",
+            "They urge you to transfer money at once and call no one",
+            "The message came in a messenger, and the account may have been hacked"
+          ],
+          "before": [
+            "Agree with your family on a check word or question",
+            "Restrict access to your photos and videos on social media, and turn on extra login verification",
+            "A short voice recording is enough to make a fake"
+          ],
+          "during": [
+            "End the call and phone the person back at a number you know",
+            "Ask a question only that person can answer",
+            "Ask them to confirm the request through another channel"
+          ],
+          "after": [
+            "Tell your family and colleagues about the fraud attempt",
+            "Keep the recording and the number, and file a police report",
+            "If you transferred money, contact your bank right away"
+          ],
+          "forbidden": [
+            "Transfer money on the strength of a single call",
+            "Trust a voice or video without checking another way",
+            "Act in haste under pressure from the caller"
+          ],
+          "source": "Bank of Russia · https://www.cbr.ru/information_security/pmp/15082024",
+          "contacts": [
+            "8 800 300-30-00 — Bank of Russia",
+            "102 — police"
+          ]
         }
       },
       "quiz": {
@@ -573,6 +1048,44 @@
             ],
             "answer": 2,
             "explanation": "Голос и номер подделываются. Личный вопрос или звонок по своему номеру надёжнее."
+          }
+        ],
+        "en": [
+          {
+            "id": "q1",
+            "prompt": "Your son calls and urgently asks you to transfer money. The voice sounds like his. What should you do?",
+            "options": [
+              "Transfer the money, the voice is recognizable",
+              "Call your son back at a known number and check",
+              "Ask his name and transfer",
+              "Send money to any account he gives"
+            ],
+            "answer": 1,
+            "explanation": "A voice can be faked from a recording. Only one check is reliable: call the number you knew before, or ask a question only he can answer."
+          },
+          {
+            "id": "q2",
+            "prompt": "What is a sign of a deepfake video?",
+            "options": [
+              "Clear speech and good lighting",
+              "Unnatural facial expressions, sound and video glitches",
+              "A familiar room in the background",
+              "The video lasts over a minute"
+            ],
+            "answer": 1,
+            "explanation": "Fakes are betrayed by monotone speech, sound and video defects, and unusual facial expressions."
+          },
+          {
+            "id": "q3",
+            "prompt": "What helps confirm the caller's identity?",
+            "options": [
+              "A matching voice",
+              "Caller ID",
+              "A check question only that person can answer",
+              "Asking them to speak louder"
+            ],
+            "answer": 2,
+            "explanation": "Voices and numbers can be faked. A personal question or a call to a number you know is more reliable."
           }
         ]
       }
