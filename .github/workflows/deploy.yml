@@ -61,16 +61,17 @@ jobs:
               "${{ steps.preflight.outputs.user }}@$ALTARE_HOST" \
               'bash -s' <<'REMOTE'
           set -eu
+          export PATH=/root/.local/bin:/usr/local/bin:/usr/bin:/bin:$PATH
           cd /opt/bytebot
           before=$(git rev-parse HEAD)
           git pull --ff-only
           if ! git diff --quiet "$before" HEAD -- uv.lock; then
             echo "uv.lock changed, syncing"
-            uv sync --frozen --no-dev
+            /root/.local/bin/uv sync --frozen --no-dev
           fi
           set -a; . /opt/bytebot/.env; set +a
-          uv run alembic upgrade head
-          supervisorctl restart bytebot-bot bytebot-worker
+          /root/.local/bin/uv run alembic upgrade head
+          /usr/bin/supervisorctl restart bytebot-bot bytebot-worker
           for i in $(seq 1 30); do
             if curl -fsS -o /dev/null localhost:8080/healthz \
                && curl -fsS -o /dev/null localhost:8080/readyz; then
