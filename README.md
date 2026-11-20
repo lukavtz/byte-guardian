@@ -7,7 +7,7 @@
 <p align="center">
   <a href="https://t.me/ByteTisbi_bot"><img alt="Telegram: @ByteTisbi_bot" src="https://img.shields.io/badge/Telegram-@ByteTisbi__bot-2CA5E0?logo=telegram&logoColor=white&style=flat-square"></a>
   <img alt="Python 3.14" src="https://img.shields.io/badge/Python-3.14-3776AB?logo=python&logoColor=white&style=flat-square">
-  <img alt="aiogram 3.31" src="https://img.shields.io/badge/aiogram-3.31-2CA5E0?style=flat-square">
+  <img alt="aiogram 3.33" src="https://img.shields.io/badge/aiogram-3.33-2CA5E0?style=flat-square">
   <img alt="PostgreSQL 16" src="https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white&style=flat-square">
   <img alt="Redis 7" src="https://img.shields.io/badge/Redis-7-DC382D?logo=redis&logoColor=white&style=flat-square">
   <img alt="Ubuntu 24.04" src="https://img.shields.io/badge/Ubuntu-24.04-E95420?logo=ubuntu&logoColor=white&style=flat-square">
@@ -86,7 +86,7 @@ curl -fsS localhost:8080/healthz   # {"ok": true}
 
 ```mermaid
 flowchart LR
-  TG([Telegram]) -->|webhook / polling| BOT[aiogram 3.31]
+  TG([Telegram]) -->|webhook / polling| BOT[aiogram 3.33]
   BOT -->|карточки, очередь| PG[(Postgres 16)]
   BOT -->|dedupe, лимиты| RD[(Redis 7)]
   BOT -->|RAG: 3 карточки| LLM[LLM API]

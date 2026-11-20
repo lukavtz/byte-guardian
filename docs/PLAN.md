@@ -4,9 +4,9 @@
 
 **Goal:** Бот-справочник БЖД с маскотом Ба́йтом: 8 категорий угроз, карточки, тесты, поиск, ИИ в личке и группах, рассылка.
 
-**Architecture:** aiogram 3.31 + Postgres + Redis; экраны stateless на `callback_data`, рендер Rich HTML, сид контента из JSON в БД и in-memory индекс, ИИ — RAG по 3 карточкам через OpenAI-совместимый API.
+**Architecture:** aiogram 3.33 + Postgres + Redis; экраны stateless на `callback_data`, рендер Rich HTML, сид контента из JSON в БД и in-memory индекс, ИИ — RAG по 3 карточкам через OpenAI-совместимый API.
 
-**Tech Stack:** Python 3.14, aiogram 3.31, SQLAlchemy 2 async + asyncpg, Alembic, Postgres 18, Redis 8 (dedupe `update_id`, rate limit, очередь), pytest, Podman Compose.
+**Tech Stack:** Python 3.14, aiogram 3.33, SQLAlchemy 2 async + asyncpg, Alembic, Postgres 18, Redis 8 (dedupe `update_id`, rate limit, очередь), pytest, Podman Compose.
 
 **Spec:** `ByteBot-DESIGN.md`
 
@@ -38,7 +38,7 @@
 - Move: `ByteBot-DESIGN.md` → `ByteBot/docs/DESIGN.md`; `ByteBot-PLAN.md` → `ByteBot/docs/PLAN.md`
 
 **Interfaces:**
-- Produces: рабочее дерево `ByteBot/` со стеком aiogram 3.31, `app/main.py`, `app/bot.py`, `app/db/*`, `app/services/i18n.py`, `app/handlers/{commands,llm,inline,broadcast,rich}.py`, `app/jobs/{llm,broadcast}.py`, `compose.yaml`.
+- Produces: рабочее дерево `ByteBot/` со стеком aiogram 3.33, `app/main.py`, `app/bot.py`, `app/db/*`, `app/services/i18n.py`, `app/handlers/{commands,llm,inline,broadcast,rich}.py`, `app/jobs/{llm,broadcast}.py`, `compose.yaml`.
 
 - [ ] **Step 1:** `telegram_bot_target_resolve` со `stack: "aiogram"`; зафиксировать версии в заметке.
 - [ ] **Step 2:** `telegram_bot_scaffold` с BotSpec из дизайна §5 (`features: commands, inline, llm, broadcast, rich`; `storage.postgres: true`; `storage.redis: true` — dedupe и rate limit; `runtime.queue: postgres`; admin `1715051614`).

@@ -2,7 +2,7 @@
 
 Дата: 2026-11-20
 Проект: телеграм-бот-справочник по БЖД (безопасность жизнедеятельности), практика в вузе.
-Стек: Python 3.14 + aiogram 3.31, Postgres 16, Redis 7 (dedupe, rate limit, очередь),
+Стек: Python 3.14 + aiogram 3.33, Postgres 16, Redis 7 (dedupe, rate limit, очередь),
 OpenAI-совместимый LLM.
 Прод: нативный запуск под supervisor на Ubuntu 24.04 (Altare); Postgres 16 и Redis 7 —
 на том же хосте. Webhook — опция, по умолчанию polling.
@@ -42,9 +42,9 @@ OpenAI-совместимый LLM.
 
 ## 3. Ограничения (проверено)
 
-- aiogram 3.31: Python `>=3.11,<3.15`; локально 3.14.8, системный 3.15.2 не подходит.
-- В aiogram 3.31 есть `InputRichMessage`, `send_rich_message`, `EditMessageText.rich_message`,
-  `InlineKeyboardButton.style` — сырой адаптер не нужен (проверено по колесу 3.31.0).
+- aiogram 3.33: Python `>=3.11,<3.15`; локально 3.14.8, системный 3.15.2 не подходит.
+- В aiogram 3.33 есть `InputRichMessage`, `send_rich_message`, `EditMessageText.rich_message`,
+  `InlineKeyboardButton.style` — сырой адаптер не нужен (проверено по колесу 3.33.0).
 - Custom emoji (`<tg-emoji>`) разрешены ботам с Fragment-username **или** если у
   владельца бота Telegram Premium (core.telegram.org/bots/api/formatting.md:78-79,120-121).
 - Callback data ≤64 байта. Rich-кнопки `tg-button` с callback_data приходят как текст,
@@ -194,7 +194,7 @@ Severity 1–3, рендер — `●●○` + подпись «Высокая/�
 
 ## 8. Слой вывода (перенос паттернов из raw/)
 
-Из `raw/duckmods` (aiogram 3.31, ближайший аналог):
+Из `raw/duckmods` (aiogram 3.33, ближайший аналог):
 - один экран = одно сообщение, `show()` редактирует по `message_id`;
 - лестница деградации: `not modified` → успех, устаревшее сообщение → новая копия,
   отказ `<tg-emoji>` → повтор без премиум-эмодзи только для этого экрана;
