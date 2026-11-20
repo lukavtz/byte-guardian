@@ -17,7 +17,7 @@ from aiogram.types import InlineKeyboardMarkup
 from app.content.types import CardView, CategoryView, QuizView, ThreatView
 from app.services.callbacks import cb_card, cb_cat, cb_menu, cb_quiz, cb_quiz_next
 from app.services.i18n import t
-from app.ui.emoji import emoji
+from app.ui.emoji import emoji, plain_emoji
 from app.ui.keyboards import MAX_BUTTONS, PAGE_SIZE, button, markup, paired
 
 TITLE = 120
@@ -58,7 +58,7 @@ def _badge(card: CardView, locale: str) -> str:
 
 def render_menu(categories: list[CategoryView], locale: str) -> RichScreen:
     buttons = [
-        button(f"{emoji(item.slug, item.emoji)} {_clip(item.title, TITLE)}", cb_cat(item.slug))
+        button(f"{plain_emoji(item.slug, item.emoji)} {_clip(item.title, TITLE)}", cb_cat(item.slug))
         for item in categories[:MAX_BUTTONS]
     ]
     rows = paired(buttons)
@@ -88,7 +88,7 @@ def render_category(
             rows.append(nav)
     rows.append([button(t(locale, "button.menu"), cb_menu())])
     html = (
-        f"<h1>{emoji(category.slug, category.emoji)} {_esc(_clip(category.title, TITLE))}</h1>"
+        f"<h1>{emoji(category.slug, _esc(category.emoji))} {_esc(_clip(category.title, TITLE))}</h1>"
         f"<p>{_esc(t(locale, 'category.count', n=category.threat_count))}"
         f" · {_esc(t(locale, 'category.page', page=page, pages=pages))}</p>"
         f"<hr/>"
@@ -105,7 +105,7 @@ def render_card(card: CardView, locale: str, page: int, has_quiz: bool) -> RichS
     )
     contacts = " · ".join(_esc(_clip(item, ITEM)) for item in card.contacts[:ITEMS])
     html = (
-        f"<h1>{emoji(card.category_slug, card.icon)} {_esc(_clip(card.title, TITLE))}</h1>"
+        f"<h1>{emoji(card.category_slug, _esc(card.icon))} {_esc(_clip(card.title, TITLE))}</h1>"
         f"<p>{_severity(card.severity, locale)} · {_esc(_clip(card.category_title, TITLE))}{_badge(card, locale)}</p>"
         f"<p>{_esc(_clip(card.summary, SUMMARY))}</p>"
         f"<blockquote><b>{_esc(t(locale, 'card.signs'))}</b><br/>{_items(card.signs, locale)}</blockquote>"

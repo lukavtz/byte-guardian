@@ -8,7 +8,7 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from app.content.types import CardView, CategoryView, QuizView, ThreatView
 from app.services.callbacks import parse_cb
 from app.ui import emoji as emoji_mod
-from app.ui.emoji import emoji, strip_premium
+from app.ui.emoji import emoji, plain_emoji, strip_premium
 from app.ui.keyboards import PAGE_SIZE
 from app.ui.render import (
     RichScreen,
@@ -99,6 +99,37 @@ def test_emoji_uses_a_pinned_id(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(emoji_mod, "CUSTOM", {"fire": "5368324170671202286"})
     assert emoji("fire", "🔥") == '<tg-emoji emoji-id="5368324170671202286">🔥</tg-emoji>'
     assert strip_premium(emoji("fire", "🔥")) == "🔥"
+    assert plain_emoji("fire", "🔥") == "🔥"
+
+
+def test_pinned_premium_emoji_never_reaches_button_text(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(emoji_mod, "CUSTOM", {"fire": "1", "shield": "2", "quiz": "3", "done": "4", "search": "5"})
+    screens = [
+        render_menu([_category()], LOCALE),
+        render_category(_category(), [_threat()], LOCALE, 1, 1),
+        render_card(_card(), LOCALE, 1, True),
+        render_question(_quiz(), "fire-home", 1, 3, "a3f1", LOCALE),
+        render_result(2, 3, "fire-home", LOCALE),
+        search_screen("пожар", [_threat()], LOCALE),
+    ]
+    for screen in screens:
+        assert screen.keyboard is not None
+        for button in _buttons(screen.keyboard):
+            assert "<tg-emoji" not in button.text
+    menu = screens[0]
+    assert menu.keyboard is not None
+    assert menu.keyboard.inline_keyboard[0][0].text.startswith("🔥")
+    assert "<tg-emoji" in menu.html
+
+
+def test_content_icon_is_escaped_in_heading() -> None:
+    category = dataclasses.replace(_category(), emoji="<b>icon</b>")
+    html = render_category(category, [_threat()], LOCALE, 1, 1).html
+    assert "<b>icon</b>" not in html
+    assert "&lt;b&gt;icon&lt;/b&gt;" in html
+
+    card = dataclasses.replace(_card(), icon="<i>")
+    assert "&lt;i&gt;" in render_card(card, LOCALE, 1, False).html
 
 
 # --- menu ----------------------------------------------------------------

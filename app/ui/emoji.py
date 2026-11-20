@@ -37,6 +37,15 @@ def emoji(name: str, fallback: str) -> str:
     return f'<tg-emoji emoji-id="{custom_id}">{fallback}</tg-emoji>'
 
 
+def plain_emoji(name: str, fallback: str) -> str:
+    """The character alone, for places Telegram never parses markup.
+
+    Button labels are plain text: a `<tg-emoji>` there would be shown verbatim,
+    so a pinned id must not leak into them.
+    """
+    return strip_premium(emoji(name, fallback))
+
+
 def strip_premium(html: str) -> str:
     """Every `<tg-emoji>` reduced to the character it wraps."""
     return TAG.sub(r"\1", html)
