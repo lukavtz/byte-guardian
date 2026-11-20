@@ -39,7 +39,114 @@ GROUP_LIMIT = 1
 GROUP_WINDOW = 10.0
 MAX_BUCKETS = 10_000
 
+TEMPERATURE = 0.3
+MAX_TOKENS = 700
+TOPICAL_MIN_TOKENS = 2
+SMALLTALK_MAX_WORDS = 6
+INSULT_MAX_WORDS = 8
+
 _ASK_RE = re.compile(r"^/ask(?:@[A-Za-z0-9_]+)?(?:\s|$)", re.IGNORECASE)
+_WORD_RE = re.compile(r"\w+", re.UNICODE)
+
+# Filler that says nothing about the topic: pleasantries, politeness, small talk.
+_VAGUE_STOP = frozenset(
+    {
+        "что", "делать", "если", "при", "как", "мне", "нужно", "можно", "бот",
+        "это", "там", "тут", "вот", "тебе", "тебя", "меня", "есть", "быть",
+        "чувак", "брат", "братан", "бро", "побратски", "пожалуйста", "плиз",
+        "срочно", "помоги", "помогите", "подскажи", "подскажите", "слушай",
+        "please", "help", "the", "and", "for", "you", "what", "how", "can",
+        "нужна", "нужен", "надо", "хочу", "хотел", "можешь", "может",
+    }
+)
+
+_GREETING_RE = re.compile(
+    r"\b(?:привет\w*|здравствуй\w*|здорово|хай|ку|салам\w*|hello|hi|hey|yo)\b",
+    re.IGNORECASE,
+)
+_THANKS_RE = re.compile(
+    r"\b(?:спасиб\w*|благодар\w*|спс|рахмат|thanks|thank\s+you|thx)\b",
+    re.IGNORECASE,
+)
+_INSULT_RE = re.compile(
+    r"\b(?:дурак\w*|туп\w*|идиот\w*|дебил\w*|кретин\w*|придурок\w*|мудак\w*|"
+    r"stupid|idiot|moron|dumb)\b",
+    re.IGNORECASE,
+)
+_SMALLTALK_RE = re.compile(
+    r"\b(?:как\s+(?:дела|ты|сам|оно)|что\s+делаешь|чем\s+занимаешься|кто\s+ты|"
+    r"ты\s+(?:бот|человек|живой)|как\s+тебя\s+зовут|how\s+are\s+you|who\s+are\s+you)\b",
+    re.IGNORECASE,
+)
+_HELP_RE = re.compile(
+    r"^\s*(?:эй|слушай|ну|чувак|брат|братан|бро)?[\s,]*"
+    r"(?:помоги(?:те)?|подскажи(?:те)?|help)"
+    r"(?:\s+(?:побратски|пожалуйста|плиз|срочно|брат|братан|бро|чувак))?[\s!.?]*$",
+    re.IGNORECASE,
+)
+
+
+def words_of(text: str) -> list[str]:
+    return _WORD_RE.findall(text.casefold())
+
+
+def content_tokens(text: str) -> list[str]:
+    """Words that carry the topic: no politeness, no question scaffolding."""
+    return [
+        word
+        for word in words_of(text)
+        if len(word) >= 3 and word not in _VAGUE_STOP
+    ]
+
+
+def detect_smalltalk(text: str) -> str | None:
+    """``greeting``/``thanks``/``smalltalk``/``insult`` for chit-chat, else ``None``.
+
+    A short message that matches one of these is answered without a model:
+    searching the corpus for «привет» only ever yields an empty card list.
+    """
+    value = text.strip()
+    words = words_of(value)
+    if not words:
+        return None
+    if len(words) <= INSULT_MAX_WORDS and _INSULT_RE.search(value):
+        return "insult"
+    if len(words) <= SMALLTALK_MAX_WORDS and _THANKS_RE.search(value):
+        return "thanks"
+    if _HELP_RE.match(value):
+        return "greeting"
+    if len(words) <= SMALLTALK_MAX_WORDS and _SMALLTALK_RE.search(value):
+        return "smalltalk"
+    if len(words) <= SMALLTALK_MAX_WORDS and _GREETING_RE.search(value):
+        return "greeting"
+    return None
+
+
+def is_vague(question: str, cards: list[CardView], *, indexed: bool = True) -> bool:
+    """A message too short or too empty to search: ask one question instead."""
+    if len(words_of(question)) < 3:
+        return True
+    return indexed and not cards and len(content_tokens(question)) < TOPICAL_MIN_TOKENS
+
+
+_INTRO_GREETING_RE = re.compile(
+    r"^\s*(?:привет|здравствуйте|здорово|хай|hello|hi)[!,.…\s]+", re.IGNORECASE
+)
+_INTRO_PERSONA_RE = re.compile(
+    r"^\s*(?:я\s*[—–-]?\s*байт|я\s+помощник\s+по)\b[^.!?\n]*[.!?]\s*",
+    re.IGNORECASE,
+)
+
+
+def strip_intro(text: str) -> str:
+    """Drop the «Привет! Я Байт…» opening a model repeats on later answers."""
+    value = text.strip()
+    trimmed = _INTRO_GREETING_RE.sub("", value, count=1)
+    if trimmed:
+        value = trimmed
+    trimmed = _INTRO_PERSONA_RE.sub("", value, count=1)
+    return trimmed if trimmed else value
+
 
 # Models often answer in Markdown even when asked for HTML. Convert the two
 # emphasis forms, and leave anything inside code alone.
@@ -119,12 +226,13 @@ def build_messages(
     question: str, locale: str, cards: list[CardView], web: str | None = None
 ) -> list[dict[str, Any]]:
     blocks = [_card_block(number, card) for number, card in enumerate(cards[:CARD_LIMIT], start=1)]
-    context = "\n\n".join(blocks) if blocks else "Карточек по теме нет."
-    user = (
-        f"Язык ответа: {locale}\n"
-        f"Вопрос: {question.strip()}\n\n"
-        f"Карточки:\n{context}"
-    )
+    user = f"Язык ответа: {locale}\nВопрос: {question.strip()}"
+    # «Карточек нет» belongs only to a real topical question: a greeting that
+    # misses the corpus must not be answered with a catalogue apology.
+    if blocks:
+        user += "\n\nКарточки:\n" + "\n\n".join(blocks)
+    elif len(content_tokens(question)) >= TOPICAL_MIN_TOKENS:
+        user += "\n\nКарточки:\nКарточек по теме нет."
     if web:
         user += f"\n\n{web}"
     return [
@@ -182,7 +290,12 @@ async def answer(client: httpx.AsyncClient, messages: list[dict[str, Any]], mode
     The prompt and the answer stay out of the logs on purpose: only status,
     latency and token counts are reported.
     """
-    body = {"model": model, "messages": messages}
+    body = {
+        "model": model,
+        "messages": messages,
+        "temperature": TEMPERATURE,
+        "max_tokens": MAX_TOKENS,
+    }
     for attempt in (0, 1):
         started = time.perf_counter()
         try:

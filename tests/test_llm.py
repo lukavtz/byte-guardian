@@ -10,7 +10,7 @@ import httpx
 import pytest
 from test_nav import FakeDB
 
-from app.content.types import CardView, ThreatView
+from app.content.types import CardView, CategoryView, ThreatView
 from app.handlers import llm as handlers
 from app.services import llm as service
 from app.services.prompt import SYSTEM_PROMPT
@@ -62,6 +62,13 @@ class _Repo:
     def card(self, slug: str, locale: str) -> CardView | None:
         return self.cards.get(slug)
 
+    def categories(self) -> list[CategoryView]:
+        return [
+            CategoryView("fire", "Пожар", "🔥", 1, 4),
+            CategoryView("medical", "Медицина", "💊", 2, 3),
+            CategoryView("cyber", "Кибербезопасность", "🔒", 3, 2),
+        ]
+
 
 def _message(text: str = "", *, chat_type: str = "private", reply_to=None):
     message = MagicMock()
@@ -107,7 +114,7 @@ def test_build_messages_carries_persona_locale_and_three_cards() -> None:
     assert [item["role"] for item in messages] == ["system", "user"]
     assert messages[0]["content"] == SYSTEM_PROMPT
     assert "Звоните 112" in SYSTEM_PROMPT
-    assert "максимум 700 знаков" in SYSTEM_PROMPT
+    assert "до 900 знаков" in SYSTEM_PROMPT
     user = messages[1]["content"]
     assert "Язык ответа: en" in user
     assert "что делать?" in user
@@ -127,9 +134,49 @@ def test_build_messages_clips_each_field() -> None:
             assert len(line) <= service.FIELD_LIMIT + len("Во время: ")
 
 
-def test_build_messages_without_cards() -> None:
-    messages = service.build_messages("пожар", "ru", [])
-    assert "Карточек по теме нет" in messages[1]["content"]
+def test_build_messages_reports_missing_cards_only_for_a_topical_question() -> None:
+    topical = service.build_messages("запах газа в квартире", "ru", [])
+    assert "Карточек по теме нет" in topical[1]["content"]
+
+    chit_chat = service.build_messages("привет", "ru", [])
+    assert "Карточек по теме нет" not in chit_chat[1]["content"]
+    assert "Карточки:" not in chit_chat[1]["content"]
+
+
+def test_prompt_keeps_the_persona_and_four_examples() -> None:
+    assert "свой человек в ТИСБИ" in SYSTEM_PROMPT
+    assert "Не повторяй вопрос" in SYSTEM_PROMPT
+    assert "Примеры:" in SYSTEM_PROMPT
+    for example in (
+        "Привет!",
+        "Чувак, помоги побратски",
+        "Что делать при запахе газа?",
+        "Какая погода завтра?",
+    ):
+        assert example in SYSTEM_PROMPT
+
+
+def test_detect_smalltalk_separates_chatter_from_questions() -> None:
+    assert service.detect_smalltalk("Привет!") == "greeting"
+    assert service.detect_smalltalk("Здравствуйте, как дела?") == "smalltalk"
+    assert service.detect_smalltalk("Спасибо большое!") == "thanks"
+    assert service.detect_smalltalk("Чувак, помоги побратски") == "greeting"
+    assert service.detect_smalltalk("Ты тупой бот") == "insult"
+    assert service.detect_smalltalk("что делать при запахе газа?") is None
+
+
+def test_is_vague_needs_a_topic() -> None:
+    assert service.is_vague("помоги", []) is True
+    assert service.is_vague("что-то странное", []) is True
+    assert service.is_vague("привет", [_card()]) is True
+    assert service.is_vague("что делать при запахе газа?", [_card()]) is False
+
+
+def test_strip_intro_removes_a_repeated_opening() -> None:
+    repeated = "Привет! Я Байт — помощник по безопасности. Закрой газ и выйди."
+    assert service.strip_intro(repeated) == "Закрой газ и выйди."
+    assert service.strip_intro("Газовый кран закрой.") == "Газовый кран закрой."
+    assert service.strip_intro("Я Байт.") == "Я Байт."
 
 
 # --- strip_html -----------------------------------------------------------
@@ -407,7 +454,7 @@ async def test_respond_shows_typing_and_cancels_the_repeat(
 
     await handlers.respond(
         message,
-        "что делать?",
+        "что делать при пожаре?",
         bot=bot,
         settings=_settings(),
         repository=_Repo([_card()]),
@@ -446,6 +493,96 @@ async def test_respond_replies_in_group(monkeypatch: pytest.MonkeyPatch) -> None
     message.answer.assert_not_awaited()
 
 
+async def test_greeting_is_warm_and_skips_search(monkeypatch: pytest.MonkeyPatch) -> None:
+    def boom(settings: object) -> None:
+        raise AssertionError("chit-chat must not reach the model")
+
+    monkeypatch.setattr(service, "client_for", boom)
+    screen = AsyncMock()
+    monkeypatch.setattr(handlers, "show", screen)
+    message = _message("Привет!")
+
+    await handlers.respond(
+        message,
+        "Привет!",
+        bot=SimpleNamespace(id=999),
+        settings=_settings(),
+        repository=_Repo([]),
+        bot_username="bytebot",
+    )
+
+    text = message.answer.await_args.args[0]
+    assert text == handlers.SMALLTALK["ru"]["greeting"]
+    assert "карточек" not in text.lower()
+    screen.assert_not_awaited()
+    markup = message.answer.await_args.kwargs["reply_markup"]
+    assert [item.callback_data for item in markup.inline_keyboard[0]] == [
+        "b1:menu",
+        "b1:chat",
+    ]
+
+
+async def test_vague_request_asks_one_question_with_three_sections(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def boom(settings: object) -> None:
+        raise AssertionError("a vague request must not reach the model")
+
+    monkeypatch.setattr(service, "client_for", boom)
+    message = _message("Что-то странное")
+
+    await handlers.respond(
+        message,
+        "Что-то странное",
+        bot=SimpleNamespace(id=999),
+        settings=_settings(),
+        repository=_Repo([]),
+        bot_username="bytebot",
+    )
+
+    assert message.answer.await_args.args[0] == handlers.VAGUE["ru"]
+    markup = message.answer.await_args.kwargs["reply_markup"]
+    assert [item.callback_data for row in markup.inline_keyboard for item in row] == [
+        "b1:cat:fire:1",
+        "b1:cat:medical:1",
+        "b1:cat:cyber:1",
+        "b1:chat",
+    ]
+
+
+async def test_thanks_and_insult_get_a_calm_human_reply() -> None:
+    for question, kind in (("Спасибо!", "thanks"), ("Ты тупой бот", "insult")):
+        message = _message(question)
+        await handlers.respond(
+            message,
+            question,
+            bot=SimpleNamespace(id=999),
+            settings=_settings(),
+            repository=_Repo([]),
+            bot_username="bytebot",
+        )
+        assert message.answer.await_args.args[0] == handlers.SMALLTALK["ru"][kind]
+
+
+async def test_a_repeated_intro_is_trimmed_from_the_answer(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    raw = "Привет! Я Байт — помощник по безопасности. Закрой газ и выйди."
+    monkeypatch.setattr(service, "client_for", lambda settings: _ok_client(raw))
+    message = _message("что делать при запахе газа?")
+
+    await handlers.respond(
+        message,
+        "что делать при запахе газа?",
+        bot=SimpleNamespace(id=999),
+        settings=_settings(),
+        repository=_Repo([_card()]),
+        bot_username="bytebot",
+    )
+
+    assert message.answer.await_args.args[0] == "Закрой газ и выйди."
+
+
 async def test_respond_falls_back_on_missing_key(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(service, "client_for", lambda settings: None)
     screen = AsyncMock()
@@ -454,7 +591,7 @@ async def test_respond_falls_back_on_missing_key(monkeypatch: pytest.MonkeyPatch
 
     await handlers.respond(
         message,
-        "пожар",
+        "чем тушить пожар",
         bot=SimpleNamespace(id=999),
         settings=_settings(llm_api_key=""),
         repository=_Repo([_card()]),
@@ -478,7 +615,7 @@ async def test_respond_falls_back_on_timeout(monkeypatch: pytest.MonkeyPatch) ->
 
     await handlers.respond(
         message,
-        "пожар",
+        "чем тушить пожар",
         bot=SimpleNamespace(id=999),
         settings=_settings(),
         repository=_Repo([_card()]),
@@ -499,7 +636,7 @@ async def test_respond_falls_back_on_empty_answer(monkeypatch: pytest.MonkeyPatc
 
     await handlers.respond(
         message,
-        "пожар",
+        "чем тушить пожар",
         bot=SimpleNamespace(id=999),
         settings=_settings(),
         repository=None,
@@ -552,7 +689,7 @@ async def test_respond_refuses_politely_over_rate_limit() -> None:
 
     await handlers.respond(
         message,
-        "пожар",
+        "чем тушить пожар",
         bot=SimpleNamespace(id=999),
         settings=_settings(),
         repository=None,
@@ -616,7 +753,7 @@ async def test_chat_text_answers_with_the_menu_and_exit_buttons(
 
 
 async def test_chat_text_outside_chat_mode_falls_through_to_search() -> None:
-    message = _message("пожар")
+    message = _message("чем тушить пожар")
 
     with pytest.raises(Exception) as error:
         await handlers.chat_text(
@@ -638,7 +775,7 @@ async def test_chat_text_fallback_keeps_the_mode_and_shows_search(
     await set_chat_mode(db.factory(), 42, True)
     monkeypatch.setattr(service, "client_for", lambda settings: None)
     monkeypatch.setattr(handlers, "show", AsyncMock())
-    message = _message("пожар")
+    message = _message("чем тушить пожар")
 
     await handlers.chat_text(
         message,
@@ -660,7 +797,7 @@ async def test_ask_answers_while_chat_mode_is_on(monkeypatch: pytest.MonkeyPatch
 
     await handlers.ask_command(
         message,
-        SimpleNamespace(args="что делать?"),
+        SimpleNamespace(args="что делать при пожаре?"),
         bot=SimpleNamespace(id=999),
         settings=_settings(),
         repo=_Repo([_card()]),

@@ -19,7 +19,7 @@ from app.config import Settings
 from app.content.repository import ContentRepository
 from app.content.types import CardView
 from app.services import llm as llm_service
-from app.services.callbacks import cb_chat_exit, cb_menu
+from app.services.callbacks import cb_cat, cb_chat, cb_chat_exit, cb_menu
 from app.services.i18n import resolve_locale, t
 from app.services.llm import (
     RateLimiter,
@@ -72,6 +72,47 @@ FALLBACK = {
     "en": "The assistant is unavailable right now — here are search results.",
     "zh": "助手暂不可用——这是搜索结果。",
     "tt": "ИИ хәзер эшләми — эзләү нәтиҗәләре.",
+}
+
+# Chit-chat never reaches the model: a warm line and one way forward beat a
+# corpus search that only ever reports «карточек нет».
+SMALLTALK: dict[str, dict[str, str]] = {
+    "ru": {
+        "greeting": "Привет! Я Байт, свой в ТИСБИ. Что случилось — пожар, травма или что-то другое?",
+        "thanks": "Пожалуйста. Если что-то ещё — я рядом, спрашивай.",
+        "smalltalk": "Да всё нормально, на посту. А у тебя что — учёба, работа или что-то случилось?",
+        "insult": "Спокойно, без обид. Скажи, что случилось, — помогу по делу.",
+    },
+    "en": {
+        "greeting": "Hey, I'm Byte — the TISBI one. What's up: fire, an injury, or something else?",
+        "thanks": "Any time. If something else comes up, I'm here.",
+        "smalltalk": "All good on my shift. What about you — studies, work, or something happened?",
+        "insult": "Easy, no offence taken. Tell me what happened and I'll help for real.",
+    },
+    "zh": {
+        "greeting": "你好，我是 TISBI 的 Byte。怎么了：火灾、受伤，还是别的事？",
+        "thanks": "不客气。还有问题就问我。",
+        "smalltalk": "我这儿一切正常。你那边呢：学习、工作，还是出了什么事？",
+        "insult": "别急，我不介意。告诉我发生了什么，我来帮上忙。",
+    },
+    "tt": {
+        "greeting": "Исәнме! Мин — Байт, ТИСБИдә үзебезнең кеше. Ни булды: янгын, җәрәхәт әллә башка нәрсә?",
+        "thanks": "Рәхмәт әйтүгә кирәкми. Тагын сорау булса — языгыз.",
+        "smalltalk": "Минем якта барысы да тәртиптә. Ә синең: уку, эш әллә берәр нәрсә булды?",
+        "insult": "Тыныч, үпкәләмим. Ни булганын әйт — эш буенча ярдәм итәм.",
+    },
+}
+VAGUE = {
+    "ru": "Уточни чуть-чуть, чтобы я не гадал: что у тебя сейчас?",
+    "en": "Give me a little more so I don't guess: what's going on right now?",
+    "zh": "再说清楚一点，我好帮你：你现在遇到什么？",
+    "tt": "Бераз ачыкла әле: хәзер ни булды?",
+}
+LABELS = {
+    "ru": {"sections": "Разделы", "ask_more": "Спросить ещё"},
+    "en": {"sections": "Sections", "ask_more": "Ask again"},
+    "zh": {"sections": "栏目", "ask_more": "再问一句"},
+    "tt": {"sections": "Бүлекләр", "ask_more": "Тагын сорау"},
 }
 
 router = Router(name="llm")
@@ -131,6 +172,63 @@ def _chat_keyboard(locale: str) -> InlineKeyboardMarkup:
             ]
         ]
     )
+
+
+def _intent_keyboard(locale: str) -> InlineKeyboardMarkup:
+    """A warm answer still offers the next step; «Спросить ещё» leads."""
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                button(
+                    LABELS[locale]["sections"],
+                    cb_menu(),
+                    icon_custom_emoji_id=custom_id("catalog"),
+                ),
+                button(
+                    LABELS[locale]["ask_more"],
+                    cb_chat(),
+                    style="primary",
+                    icon_custom_emoji_id=custom_id("support"),
+                ),
+            ],
+            [
+                button(
+                    t(locale, "button.menu"),
+                    cb_menu(),
+                    icon_custom_emoji_id=custom_id("menu"),
+                )
+            ],
+        ]
+    )
+
+
+def _category_keyboard(
+    repository: ContentRepository | None, locale: str
+) -> InlineKeyboardMarkup:
+    """Three concrete sections answer «с чем именно?» better than a sentence."""
+    rows: list[list[InlineKeyboardButton]] = []
+    if repository is not None:
+        for category in repository.categories()[:3]:
+            rows.append(
+                [
+                    button(
+                        f"{category.emoji} {category.title}",
+                        cb_cat(category.slug),
+                        icon_custom_emoji_id=custom_id(category.slug),
+                    )
+                ]
+            )
+    rows.append(
+        [
+            button(
+                LABELS[locale]["ask_more"],
+                cb_chat(),
+                style="primary",
+                icon_custom_emoji_id=custom_id("support"),
+            )
+        ]
+    )
+    return InlineKeyboardMarkup(inline_keyboard=rows)
 
 
 def _with_sources(
@@ -236,6 +334,10 @@ async def respond(
     if not question:
         await _send(message, USAGE[locale], group=group, markup=_chat_keyboard(locale) if chat else None)
         return
+    intent = llm_service.detect_smalltalk(question)
+    if intent is not None:
+        await _send(message, SMALLTALK[locale][intent], group=group, markup=_intent_keyboard(locale))
+        return
     user = message.from_user
     if not LIMITER.allow(
         user_id=user.id if user else 0,
@@ -245,6 +347,14 @@ async def respond(
         await _send(message, RATE[locale], group=group, markup=_chat_keyboard(locale) if chat else None)
         return
     cards = context_cards(repository, question, locale)
+    if llm_service.is_vague(question, cards, indexed=repository is not None):
+        await _send(
+            message,
+            VAGUE[locale],
+            group=group,
+            markup=_category_keyboard(repository, locale),
+        )
+        return
     web, web_results = await _web_context(question, cards)
     client = llm_service.client_for(settings)
     if client is None:
@@ -266,7 +376,7 @@ async def respond(
     if failed:
         await _fallback(message, question, bot=bot, repository=repository, locale=locale, group=group)
         return
-    text = strip_html(raw)
+    text = strip_html(llm_service.strip_intro(raw))
     if not text:
         await _fallback(message, question, bot=bot, repository=repository, locale=locale, group=group)
         return
