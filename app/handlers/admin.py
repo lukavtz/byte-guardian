@@ -41,13 +41,12 @@ from app.services.callbacks import (
     cb_admin_threats,
     cb_admin_toggle,
     cb_broadcast_status,
-    cb_menu,
     parse_cb,
 )
 from app.services.i18n import DEFAULT_LOCALE, resolve_locale, t
 from app.ui.delivery import show
 from app.ui.emoji import premium
-from app.ui.keyboards import rich_button, rich_row
+from app.ui.keyboards import menu_button, rich_button, rich_row
 from app.ui.render import RichScreen
 
 router = Router(name="admin")
@@ -130,6 +129,11 @@ def _esc(text_value: object) -> str:
     return escape(str(text_value), quote=False)
 
 
+def _menu_row() -> str:
+    """The universal home button, last row on every admin page."""
+    return rich_row(menu_button(DEFAULT_LOCALE))
+
+
 def _title(titles: Any, slug: str) -> str:
     if isinstance(titles, dict):
         value = titles.get("ru") or next(iter(titles.values()), "")
@@ -204,7 +208,6 @@ def _stats_table(stats: dict[str, int]) -> str:
     )
     return (
         "<table bordered striped compact>"
-        f"<caption>{premium('stats', '🔢')} Сводка</caption>"
         "<tr><th>Пользователи</th><th>Карточки</th>"
         "<th>Вопросы</th><th>Ответы тестов</th></tr>"
         f"<tr>{cells}</tr>"
@@ -228,60 +231,46 @@ def home_screen(
     categories: list[CategoryRow],
     health: Mapping[str, str],
 ) -> RichScreen:
-    """The control screen: counters, category toggles, broadcast, health."""
+    """Summary, content, broadcast, health, then refresh and home.
+
+    ``categories`` stays in the signature for callers that already read the
+    rows; the toggles themselves live inside «Контент».
+    """
     parts = [
         f"<h1>{premium('panel', '🛠')} Админ-панель</h1>",
         f"<p>{premium('lock', '🔒')} Только для администраторов</p>",
         "<hr/>",
+        f"<h2>{premium('stats', '📊')} Сводка</h2>",
         _stats_table(stats),
-        f"<h2>{premium('people', '👥')} Разделы</h2>",
-    ]
-    if categories:
-        parts.extend(
-            rich_row(
-                rich_button(
-                    item.title,
-                    data=cb_admin_category(item.slug),
-                    icon=("done", "✅") if item.enabled else ("cancel", "⛔"),
-                )
+        f"<p>{premium('people', '👥')} Разделов: <b>{len(categories)}</b></p>",
+        f"<h2>{premium('catalog', '📂')} Контент</h2>",
+        rich_row(
+            rich_button(
+                "Контент",
+                data=cb_admin_content(),
+                style="primary",
+                icon=("catalog", "📂"),
             )
-            for item in categories
-        )
-    else:
-        parts.append("<p>Разделов пока нет.</p>")
-    parts.extend(
-        (
-            f"<h2>{premium('catalog', '📂')} Контент</h2>",
-            rich_row(
-                rich_button(
-                    "Контент",
-                    data=cb_admin_content(),
-                    icon=("catalog", "📂"),
-                )
+        ),
+        f"<h2>{premium('broadcast', '📣')} Рассылка</h2>",
+        rich_row(
+            rich_button(
+                "Рассылка",
+                data=cb_admin_broadcast(),
+                icon=("broadcast", "📣"),
+            )
+        ),
+        f"<h2>{premium('health', '❤️')} Здоровье</h2>",
+        _health_block(health),
+        rich_row(
+            rich_button(
+                "Обновить",
+                data=cb_admin(),
+                icon=("refresh", "🔄"),
             ),
-            f"<h2>{premium('broadcast', '📣')} Рассылка</h2>",
-            rich_row(
-                rich_button(
-                    "Рассылка",
-                    data=cb_admin_broadcast(),
-                    icon=("broadcast", "📣"),
-                )
-            ),
-            f"<h2>{premium('health', '💓')} Здоровье</h2>",
-            _health_block(health),
-            rich_row(
-                rich_button(
-                    "Обновить",
-                    data=cb_admin(),
-                    style="primary",
-                    icon=("refresh", "🔄"),
-                )
-            ),
-            rich_row(
-                rich_button("Меню", data=cb_menu(), icon=("menu", "🏘"))
-            ),
-        )
-    )
+            menu_button(DEFAULT_LOCALE),
+        ),
+    ]
     return RichScreen("\n".join(parts))
 
 
@@ -319,19 +308,20 @@ def broadcast_screen(audience: int, last: Mapping[str, Any] | None) -> RichScree
             rich_row(
                 rich_button("Назад", data=cb_admin(), icon=("back", "🏠"))
             ),
+            _menu_row(),
         )
     )
     return RichScreen(html)
 
 
 def content_screen(categories: list[content_admin.CategoryItem]) -> RichScreen:
-    """Every section, including the disabled ones, with its card count."""
+    """Every section with its card count, then the one add entry at the bottom."""
     rows = [
         rich_row(
             rich_button(
                 f"{item.title} · {item.active}/{item.total}",
                 data=cb_admin_threats(item.slug),
-                icon=("catalog", _esc(item.emoji)),
+                icon=("done", "✅") if item.enabled else ("cancel", "⛔"),
             ),
             rich_button(
                 "Изменить",
@@ -344,11 +334,47 @@ def content_screen(categories: list[content_admin.CategoryItem]) -> RichScreen:
     if not rows:
         rows.append("<p>Разделов пока нет.</p>")
     rows.append(
+        rich_row(
+            rich_button(
+                "Добавить карточку",
+                data=cb_admin_add(),
+                style="success",
+                icon=("new", "🆕"),
+            )
+        )
+    )
+    rows.append(
         rich_row(rich_button("Назад", data=cb_admin(), icon=("back", "🏠")))
     )
+    rows.append(_menu_row())
     html = (
         f"<h1>{premium('catalog', '📂')} Контент</h1>"
         "<p>Раздел → карточки → поля. Правки переживают пересев.</p><hr/>"
+    )
+    return RichScreen(html + "\n".join(rows))
+
+
+def add_category_screen(categories: list[content_admin.CategoryItem]) -> RichScreen:
+    """Pick the section a new card goes into, one tap per section."""
+    rows = [
+        rich_row(
+            rich_button(
+                f"{item.title} · {item.active}/{item.total}",
+                data=cb_admin_add(item.slug),
+                icon=(item.slug, _esc(item.emoji)),
+            )
+        )
+        for item in categories
+    ]
+    if not rows:
+        rows.append("<p>Разделов пока нет.</p>")
+    rows.append(
+        rich_row(rich_button("Назад", data=cb_admin_content(), icon=("back", "🏠")))
+    )
+    rows.append(_menu_row())
+    html = (
+        f"<h1>{premium('new', '🆕')} Добавить карточку</h1>"
+        "<p>Выберите раздел новой карточки.</p><hr/>"
     )
     return RichScreen(html + "\n".join(rows))
 
@@ -374,7 +400,7 @@ def threats_screen(
             rich_button(
                 "Добавить карточку",
                 data=cb_admin_add(category),
-                style="primary",
+                style="success",
                 icon=("new", "🆕"),
             )
         )
@@ -382,6 +408,7 @@ def threats_screen(
     rows.append(
         rich_row(rich_button("Назад", data=cb_admin_content(), icon=("back", "🏠")))
     )
+    rows.append(_menu_row())
     html = (
         f"<h1>{premium('catalog', '📂')} {_esc(category)}</h1>"
         f"<p>{premium('stats', '🔢')} Карточек: <b>{len(threats)}</b></p><hr/>"
@@ -390,7 +417,7 @@ def threats_screen(
 
 
 def category_editor_screen(item: content_admin.CategoryItem) -> RichScreen:
-    """A section's title and icon; enabled stays on the admin home."""
+    """A section's title, icon and on/off switch, in one place."""
     rows = [
         rich_row(
             rich_button(
@@ -404,7 +431,16 @@ def category_editor_screen(item: content_admin.CategoryItem) -> RichScreen:
                 icon=("category", "🏷"),
             ),
         ),
+        rich_row(
+            rich_button(
+                "Выключить" if item.enabled else "Включить",
+                data=cb_admin_category(item.slug),
+                style="danger" if item.enabled else "success",
+                icon=("mute", "🔕") if item.enabled else ("done", "✅"),
+            )
+        ),
         rich_row(rich_button("Назад", data=cb_admin_content(), icon=("back", "🏠"))),
+        _menu_row(),
     ]
     html = (
         f"<h1>{premium('category', '🏷')} {_esc(item.title)}</h1>"
@@ -433,6 +469,7 @@ def quiz_screen(
             rich_button("Назад", data=cb_admin_threat(slug, locale), icon=("back", "🏠"))
         )
     )
+    rows.append(_menu_row())
     html = (
         f"<h1>{premium('test', '✅')} Тесты</h1>"
         f"<p>{premium('stats', '🔢')} Вопросов: <b>{len(quizzes)}</b>"
@@ -484,6 +521,7 @@ def quiz_question_screen(
                 icon=("back", "🏠"),
             )
         ),
+        _menu_row(),
     ]
     html = (
         f"<h1>{premium('test', '✅')} Вопрос {index}/{total}</h1>"
@@ -571,6 +609,7 @@ def threat_editor_screen(detail: content_admin.ThreatDetail) -> RichScreen:
             rich_button("Назад", data=cb_admin_threats(detail.category_slug), icon=("back", "🏠")),
         )
     )
+    rows.append(_menu_row())
     missing = (
         ""
         if detail.exact
@@ -606,6 +645,7 @@ def prompt_screen(text: str, cancel_data: str) -> RichScreen:
                 rich_row(
                     rich_button("Отмена", data=cancel_data, icon=("cancel", "❌"))
                 ),
+                _menu_row(),
             )
         )
     )
@@ -734,6 +774,15 @@ async def admin_callback(
         await query.answer()
         await _redraw(
             query, bot, content_screen(await content_admin.list_categories(session_factory))
+        )
+        return
+
+    if callback.arg == "add" and not callback.extra:
+        await query.answer()
+        await _redraw(
+            query,
+            bot,
+            add_category_screen(await content_admin.list_categories(session_factory)),
         )
         return
 
@@ -947,7 +996,9 @@ async def admin_callback(
         # and search stop offering the section in the same breath.
         await repo.load()
     await query.answer("Раздел включён" if enabled else "Раздел выключен")
-    await _redraw(query, bot, await _home(session_factory, dispatcher))
+    await _redraw(
+        query, bot, content_screen(await content_admin.list_categories(session_factory))
+    )
 
 
 @router.message(F.text, ~F.text.startswith("/"))

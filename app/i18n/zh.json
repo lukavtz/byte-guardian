@@ -107,5 +107,8 @@
   "game.offline": "请在 Telegram 应用内打开。",
   "game.finish": "结果",
   "game.fallback": "小游戏暂不可用，已打开普通测验。",
-  "game.private": "小游戏在机器人的私聊中打开。"
+  "game.private": "小游戏在机器人的私聊中打开。",
+  "button.sections": "分区",
+  "button.settings": "设置",
+  "sections.lead": "八个分区：从火灾到网络安全。"
 }

@@ -88,6 +88,7 @@ ICONS: dict[str, str] = {
     "new": "🆕",
     "panel": "🛠",
     "tech": "🛠",
+    "gear": "⚙",
     "admin": "🛠",
     "tools": "🛠",
     "back": "🏠",

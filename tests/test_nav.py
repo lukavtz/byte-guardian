@@ -20,6 +20,8 @@ from app.services.callbacks import (
     cb_menu,
     cb_random,
     cb_search_hint,
+    cb_sections,
+    cb_settings,
     parse_cb,
 )
 from app.services.settings import chat_mode_on, set_chat_mode
@@ -249,7 +251,7 @@ async def test_start_without_payload_sends_only_the_menu() -> None:
     await commands.start(message, SimpleNamespace(args=None), bot, repo, db.factory())
 
     assert len(bot.sent) == 1
-    assert any(item.text == "🔥 Пожар" for item in _buttons(bot.sent[0]))
+    assert any(item.text.endswith("Разделы") for item in _buttons(bot.sent[0]))
     message.answer_photo.assert_not_awaited()
 
 
@@ -273,7 +275,7 @@ async def test_menu_callback_edits_in_private_chat() -> None:
     query.answer.assert_awaited_once()
     assert bot.edited and not bot.sent
     assert bot.edited[0]["message_id"] == 10
-    assert any(item.text == "🔥 Пожар" for item in _buttons(bot.edited[0]))
+    assert any(item.text.endswith("Разделы") for item in _buttons(bot.edited[0]))
 
 
 @pytest.mark.asyncio
@@ -387,7 +389,7 @@ async def test_language_callback_saves_and_rerenders_language_screen() -> None:
     assert bot.edited[0]["message_id"] == 10
     html = bot.edited[0]["rich_message"].html
     assert "Language" in html
-    assert any(item.text == "English" for item in _buttons(bot.edited[0]))
+    assert any(item.text.endswith("English") for item in _buttons(bot.edited[0]))
 
 
 @pytest.mark.asyncio
@@ -453,7 +455,7 @@ async def test_language_menu_opens_four_languages() -> None:
     assert bot.edited and not bot.sent
     assert bot.edited[0]["message_id"] == 10
     labels = [item.text for item in _buttons(bot.edited[0])]
-    assert {"Русский", "English", "中文", "Татарча"} <= set(labels)
+    assert all(any(label.endswith(name) for label in labels) for name in ("Русский", "English", "中文", "Татарча"))
 
 
 @pytest.mark.asyncio
@@ -522,7 +524,7 @@ def _screen_buttons(screen) -> list[object]:
 
 def test_language_screen_marks_the_current_locale_success() -> None:
     buttons = _screen_buttons(nav.language_screen("ru"))
-    styles = {item.text: item.style for item in buttons}
+    styles = {item.text.split(" ", 1)[-1]: item.style for item in buttons}
     assert styles["Русский"] == "success"
     assert [item.style for item in buttons].count("primary") == 0
 
@@ -567,7 +569,7 @@ async def test_chat_exit_clears_the_mode_and_draws_the_menu() -> None:
 
     assert await chat_mode_on(db.factory(), 7) is False
     assert bot.edited and not bot.sent
-    assert any(item.text == "🔥 Пожар" for item in _buttons(bot.edited[0]))
+    assert any(item.text.endswith("Разделы") for item in _buttons(bot.edited[0]))
 
 
 def test_chat_callbacks_fit_telegram() -> None:
@@ -578,12 +580,54 @@ def test_chat_callbacks_fit_telegram() -> None:
 
 
 def test_settings_primary_is_navigation_not_the_destructive_toggle() -> None:
+def test_settings_has_no_primary_and_ends_with_the_menu_button() -> None:
     buttons = _screen_buttons(nav.settings_screen("ru", True))
     primary = [item for item in buttons if item.style == "primary"]
     assert len(primary) == 1
     assert primary[0].callback_data == cb_menu()
+    assert not [item for item in buttons if item.style == "primary"]
+    assert buttons[-1].callback_data == cb_menu()
+    assert buttons[-1].style is None
     toggle = next(item for item in buttons if item.callback_data == nav.OPT_IN_OFF)
     assert toggle.style is None
+
+
+def test_language_settings_and_help_end_with_one_menu_button() -> None:
+    for screen in (
+        nav.language_screen("ru"),
+        nav.settings_screen("ru", False),
+        nav.help_screen("ru"),
+    ):
+        buttons = _screen_buttons(screen)
+        menu = [item for item in buttons if item.callback_data == cb_menu()]
+        assert len(menu) == 1
+        assert menu[0].text.endswith("Меню") and menu[0].style is None
+        assert buttons[-1] is menu[0]
+
+
+@pytest.mark.asyncio
+async def test_sections_callback_opens_the_section_picker() -> None:
+    bot = FakeBot()
+    query = _query(cb_sections())
+
+    await nav.on_sections(query, bot, FakeRepo(), FakeDB().factory())
+
+    query.answer.assert_awaited_once()
+    html = bot.edited[0]["rich_message"].html
+    assert "Восемь разделов" in html
+    datas = [item.callback_data for item in _buttons(bot.edited[0]) if item.callback_data]
+    assert cb_cat("fire", 1) in datas and cb_menu() in datas
+
+
+@pytest.mark.asyncio
+async def test_settings_callback_reads_the_stored_opt_in() -> None:
+    bot = FakeBot()
+    query = _query(cb_settings())
+
+    await nav.on_settings(query, bot, FakeDB({7: False}).factory())
+
+    html = bot.edited[0]["rich_message"].html
+    assert "Настройки" in html and "Выключена" in html
 
 
 def test_menu_offers_a_neutral_random_card_row() -> None:

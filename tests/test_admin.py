@@ -9,6 +9,7 @@ import pytest
 
 from app.config import Settings
 from app.handlers import admin
+from app.services import content_admin
 from app.services import settings as settings_service
 from app.services.callbacks import Callback, cb_admin, cb_admin_broadcast, cb_admin_category, cb_admin_hint, parse_cb
 from app.services.i18n import DEFAULT_LOCALE, t
@@ -24,6 +25,9 @@ class _Result:
 
     def mappings(self) -> _Result:
         return self
+
+    def all(self) -> list:
+        return self.rows
 
     def __iter__(self):
         return iter(self.rows)
@@ -105,6 +109,20 @@ class FakeDB:
             )
         if sql.startswith("SELECT count(*) FROM users WHERE broadcasts_opt_in"):
             return _Result([(self.audience,)])
+        if sql.startswith("SELECT c.slug, c.emoji, c.enabled, c.titles"):
+            return _Result(
+                [
+                    {
+                        "slug": slug,
+                        "emoji": emoji,
+                        "enabled": enabled,
+                        "titles": {"ru": title},
+                        "total": 3,
+                        "active": 2,
+                    }
+                    for slug, enabled, title, emoji in self.categories
+                ]
+            )
         if sql.startswith("SELECT status, sent, failed FROM broadcasts"):
             return _Result([self.last] if self.last is not None else [])
         if sql.startswith("UPDATE category SET enabled = NOT enabled"):
@@ -200,9 +218,9 @@ def test_home_screen_has_table_values_and_premium_tags() -> None:
     assert "<h1>" in html and "Админ-панель" in html
     assert "Только для администраторов" in html
     assert f'emoji-id="{DEFAULT_IDS["admin"]}"' in html  # panel
-    assert "b1:admin:cat:fire" in html
-    assert "b1:admin:cat:cyber" in html
-    assert "✅" in html and "⛔" in html
+    assert "b1:admin:content" in html
+    assert "b1:admin:cat:fire" not in html
+    assert "Разделов: <b>2</b>" in html
     assert "healthz: <b>ok</b>" in html
     assert "<img" not in html
 
@@ -215,7 +233,60 @@ def test_home_screen_has_one_primary_button() -> None:
     )
 
     assert screen.html.count('style="primary"') == 1
+    primary = [line for line in screen.html.splitlines() if "primary" in line]
+    assert "Контент" in primary[0]
     assert "Обновить" in screen.html
+
+
+def test_admin_home_sections_follow_the_one_order() -> None:
+    html = admin.home_screen(
+        {"users": 1, "threats": 2, "quizzes": 3, "answers": 4},
+        _categories(),
+        {"postgres": "ok"},
+    ).html
+
+    order = ["Сводка", "Контент", "Рассылка", "Здоровье", "Обновить", "Меню"]
+    positions = [html.index(word) for word in order]
+    assert positions == sorted(positions)
+    assert html.rindex("Меню") > html.rindex("Обновить")
+
+
+def test_content_screen_lists_categories_then_the_add_entry() -> None:
+    items = [
+        content_admin.CategoryItem("fire", "Пожар", "🔥", True, 3, 2),
+        content_admin.CategoryItem("cyber", "Кибербезопасность", "🔐", False, 2, 0),
+    ]
+    html = admin.content_screen(items).html
+
+    assert html.index("Пожар") < html.index("Кибербезопасность") < html.index("Добавить карточку")
+    assert "b1:admin:add" in html
+    assert "b1:admin:add:fire" not in html
+    add_line = next(line for line in html.splitlines() if "Добавить карточку" in line)
+    assert 'style="success"' in add_line
+    assert html.rstrip().endswith("Меню</tg-button></tg-button-row>")
+
+
+def test_add_entry_opens_the_section_picker_first() -> None:
+    items = [content_admin.CategoryItem("fire", "Пожар", "🔥", True, 3, 2)]
+    html = admin.add_category_screen(items).html
+
+    assert "b1:admin:add:fire" in html
+    assert "Выберите раздел" in html
+
+
+def test_admin_screens_have_one_primary_at_most() -> None:
+    screens = [
+        admin.home_screen({"users": 1, "threats": 2, "quizzes": 3, "answers": 4}, _categories(), {"postgres": "ok"}),
+        admin.broadcast_screen(7, None),
+        admin.content_screen([content_admin.CategoryItem("fire", "Пожар", "🔥", True, 3, 2)]),
+        admin.add_category_screen([content_admin.CategoryItem("fire", "Пожар", "🔥", True, 3, 2)]),
+        admin.threats_screen("fire", []),
+        admin.category_editor_screen(content_admin.CategoryItem("fire", "Пожар", "🔥", True, 3, 2)),
+        admin.quiz_screen("fire-home", "ru", []),
+    ]
+    for screen in screens:
+        assert screen.html.count('style="primary"') <= 1
+        assert screen.html.rstrip().endswith("Меню</tg-button></tg-button-row>")
 
 
 def test_broadcast_screen_shows_audience_and_one_primary() -> None:
@@ -282,7 +353,7 @@ async def test_admin_panel_sends_rich_home() -> None:
     html = bot.html()
     assert "Админ-панель" in html
     assert "<td>7</td><td>12</td><td>30</td><td>99</td>" in html
-    assert "b1:admin:cat:fire" in html
+    assert "b1:admin:content" in html
 
 
 async def test_toggle_changes_only_enabled() -> None:
@@ -348,6 +419,7 @@ async def test_broadcast_callback_opens_screen() -> None:
     assert "Аудитория: <b>7</b>" in html
     assert "идёт" in html
     assert "b1:admin" in html
+    assert "Добавить карточку" in html
 
 
 async def test_settings_round_trip() -> None:

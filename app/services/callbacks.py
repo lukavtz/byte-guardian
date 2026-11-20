@@ -45,6 +45,8 @@ MAX_SLUG = 32
 ACTIONS = frozenset(
     {
         "menu",
+        "sections",
+        "settings",
         "cat",
         "card",
         "random",
@@ -64,9 +66,18 @@ ACTIONS = frozenset(
     }
 )
 _BARE = frozenset(
-    {"menu", "random", "lang_menu", "search_hint", "chat", "chat_exit"}
+    {
+        "menu",
+        "sections",
+        "settings",
+        "random",
+        "lang_menu",
+        "search_hint",
+        "chat",
+        "chat_exit",
+    }
 )
-_ADMIN_BARE = frozenset({"bc", "hint"})
+_ADMIN_BARE = frozenset({"bc", "hint", "add"})
 _PAGES = frozenset({"cat", "card"})
 _HEX = frozenset("0123456789abcdef")
 _BOOL_ARGS = frozenset({"yes", "no"})
@@ -138,6 +149,16 @@ def _uuid(raw: str) -> str:
 
 def cb_menu() -> str:
     return _pack("menu")
+
+
+def cb_sections() -> str:
+    """The section picker: the menu keeps one row instead of a grid."""
+    return _pack("sections")
+
+
+def cb_settings() -> str:
+    """Language and broadcast toggles, one tap from the menu."""
+    return _pack("settings")
 
 
 def cb_cat(slug: str, page: int = 1) -> str:
@@ -213,8 +234,9 @@ def cb_admin_edit(slug: str, locale: str, field: str) -> str:
     return _pack("admin", "edit", _slug(slug), _locale(locale), field)
 
 
-def cb_admin_add(category: str) -> str:
-    return _pack("admin", "add", _slug(category))
+def cb_admin_add(category: str | None = None) -> str:
+    """`None` asks which section first; a slug adds straight into it."""
+    return _pack("admin", "add") if category is None else _pack("admin", "add", _slug(category))
 
 
 def cb_admin_cancel(slug: str, locale: str = "ru") -> str:

@@ -15,12 +15,16 @@ from typing import Literal
 
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
+from app.services.callbacks import cb_menu
+from app.services.i18n import t
 from app.ui.emoji import first_id, premium
 
 Style = Literal["primary", "success", "danger"]
 
 MAX_BUTTONS = 8
 PAGE_SIZE = 5
+
+MENU_ICON = ("home", "🏠")
 
 
 def button(text: str, data: str | None = None, style: Style | None = None, **kwargs: object) -> InlineKeyboardButton:
@@ -87,6 +91,11 @@ def rich_button(
 def rich_row(*buttons: str) -> str:
     """One row of buttons; the client stretches them over the message width."""
     return f"<tg-button-row>{''.join(buttons)}</tg-button-row>"
+
+
+def menu_button(locale: str, style: Style | None = None) -> str:
+    """The one way home, appended as the last row of every screen but the menu."""
+    return rich_button(t(locale, "button.menu"), data=cb_menu(), style=style, icon=MENU_ICON)
 
 
 def strip_rich_buttons(html: str) -> str:

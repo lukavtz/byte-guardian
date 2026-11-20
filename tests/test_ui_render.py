@@ -35,6 +35,7 @@ from app.ui.render import (
     render_not_found,
     render_question,
     render_result,
+    render_sections,
     search_screen,
     share_text,
     share_url,
@@ -440,22 +441,80 @@ def test_card_and_quiz_use_the_category_artwork() -> None:
 # --- menu ----------------------------------------------------------------
 
 
-def test_menu_has_one_button_per_category_and_the_chat_row() -> None:
+def test_menu_is_a_doorway_with_at_most_seven_buttons() -> None:
     slugs = ["fire", "terror", "tech", "nature", "medical", "chem", "rad", "cyber"]
     categories = [_category(slug=slug, title=slug.title()) for slug in slugs]
     screen = render_menu(categories, LOCALE)
 
     rows = _rows(screen.html)
-    assert [len(row) for row in rows] == [1] * 8 + [1, 1, 2]
-    categories_only = _parsed(screen.html)
-    assert [cb.arg for cb in categories_only[:8]] == slugs
-    assert all(cb.action == "cat" for cb in categories_only[:8])
-    assert [cb.action for cb in categories_only[8:]] == [
+    assert [len(row) for row in rows] == [1, 1, 2, 2]
+    parsed = _parsed(screen.html)
+    assert [cb.action for cb in parsed] == [
         "chat",
-        "random",
+        "sections",
         "search_hint",
+        "random",
         "lang_menu",
+        "settings",
     ]
+    assert len(parsed) <= 7
+    # The eight sections are one tap deeper, not in the menu.
+    assert not [cb for cb in parsed if cb.action == "cat"]
+
+
+def test_sections_screen_lists_eight_sections_and_a_way_back() -> None:
+    slugs = ["fire", "terror", "tech", "nature", "medical", "chem", "rad", "cyber"]
+    categories = [_category(slug=slug, title=slug.title()) for slug in slugs]
+    screen = render_sections(categories, LOCALE)
+
+    parsed = _parsed(screen.html)
+    assert [cb.arg for cb in parsed[:8]] == slugs
+    assert all(cb.action == "cat" for cb in parsed[:8])
+    assert [cb.action for cb in parsed[8:]] == ["menu", "menu"]
+    assert screen.html.index("‹ Назад") < screen.html.rindex("Меню")
+
+
+def test_every_screen_but_the_menu_ends_with_one_menu_button() -> None:
+    screens = [
+        render_sections([_category()], LOCALE),
+        render_chat(LOCALE),
+        render_category(_category(), [_threat()], LOCALE, 1, 1),
+        render_card(_card(), LOCALE, page=1, has_quiz=True),
+        render_card(_card(), LOCALE, page=1, has_quiz=False),
+        render_question(_quiz(), "fire-home", 1, 3, "a3f1", LOCALE),
+        render_question(_quiz(), "fire-home", 1, 3, "a3f1", LOCALE, chosen=0),
+        render_result(2, 3, "fire-home", LOCALE),
+        search_screen("пожар", [_threat()], LOCALE),
+        search_screen("", [], LOCALE),
+        render_not_found(LOCALE),
+    ]
+    for screen in screens:
+        rows = _rows(screen.html)
+        last = rows[-1]
+        assert len(last) == 1 and last[0]["data"] == "b1:menu"
+        assert last[0]["label"] == "🏠 Меню"
+        assert "style" not in last[0]
+
+
+def test_menu_itself_has_no_menu_button() -> None:
+    screen = render_menu([_category()], LOCALE, is_admin=True)
+    assert "🏠 Меню" not in [button["label"] for button in _buttons(screen.html)]
+    assert "b1:menu" not in _data(screen.html)
+
+
+def test_menu_button_is_neutral_even_beside_a_primary_cta() -> None:
+    for screen in (
+        render_card(_card(), LOCALE, page=1, has_quiz=True),
+        render_question(_quiz(), "fire-home", 1, 3, "a3f1", LOCALE, chosen=0),
+    ):
+        assert len(_primary(screen.html)) == 1
+    for screen in (
+        render_card(_card(), LOCALE, page=1, has_quiz=True),
+        render_question(_quiz(), "fire-home", 1, 3, "a3f1", LOCALE, chosen=0),
+        render_result(2, 3, "fire-home", LOCALE),
+    ):
+        menu = [b for b in _buttons(screen.html) if b["label"] == "🏠 Меню"]
+        assert len(menu) == 1 and "style" not in menu[0]
 
 
 def test_menu_shows_the_shared_header_and_brand() -> None:
@@ -535,11 +594,16 @@ def test_inline_keyboard_fallback_keeps_plain_text_and_the_id() -> None:
             assert item.icon_custom_emoji_id is not None
 
 
-def test_menu_never_exceeds_eight_categories() -> None:
+def test_menu_never_exceeds_seven_buttons() -> None:
     categories = [_category(slug=f"c{i}", title=f"Раздел {i}") for i in range(9)]
-    screen = render_menu(categories, LOCALE)
+    screen = render_menu(categories, LOCALE, is_admin=True)
+    assert len(_data(screen.html)) == 7
+
+
+def test_sections_screen_never_exceeds_eight_categories() -> None:
+    categories = [_category(slug=f"c{i}", title=f"Раздел {i}") for i in range(9)]
+    screen = render_sections(categories, LOCALE)
     assert "b1:cat:c8:1" not in _data(screen.html)
-    assert len(_data(screen.html)) == 12
 
 
 def test_chat_screen_carries_the_heading_lead_and_two_ways_out() -> None:
@@ -547,10 +611,11 @@ def test_chat_screen_carries_the_heading_lead_and_two_ways_out() -> None:
     assert "<h1>" in screen.html and "Чат с Байтом" in screen.html
     assert "Напишите вопрос по БЖД — отвечу по карточкам. Выйти — кнопка ниже." in screen.html
     rows = _rows(screen.html)
-    assert len(rows) == 1
-    assert [button["data"] for button in rows[0]] == ["b1:chat_exit", "b1:menu"]
-    assert all("style" not in button for button in rows[0])
-    assert [button["label"].split(" ", 1)[-1] for button in rows[0]] == ["Выйти", "Меню"]
+    assert [len(row) for row in rows] == [1, 1]
+    assert [button["data"] for button in rows[0]] == ["b1:chat_exit"]
+    assert [button["data"] for button in rows[1]] == ["b1:menu"]
+    assert all("style" not in button for row in rows for button in row)
+    assert rows[1][0]["label"].endswith("Меню")
 
 
 # --- category ------------------------------------------------------------
@@ -656,8 +721,8 @@ def test_question_offers_four_options_one_per_row() -> None:
     screen = render_question(_quiz(), "fire-home", index=1, total=3, seed="a3f1", locale=LOCALE)
     rows = _rows(screen.html)
 
-    assert [len(row) for row in rows] == [1, 1, 1, 1]
-    answers = [parse_cb(button["data"]) for button in rows[0] + rows[1] + rows[2] + rows[3]]
+    assert [len(row) for row in rows] == [1, 1, 1, 1, 1]
+    answers = [parse_cb(button["data"]) for row in rows[:4] for button in row]
     assert [cb.extra for cb in answers] == [
         ("q1", "0", "a3f1"),
         ("q1", "1", "a3f1"),
@@ -827,7 +892,7 @@ def test_not_found_names_the_state_and_offers_menu_and_search() -> None:
     screen = render_not_found(LOCALE)
 
     assert "Карточка не найдена" in screen.html
-    assert [cb.action for cb in _parsed(screen.html)] == ["menu", "search_hint"]
+    assert [cb.action for cb in _parsed(screen.html)] == ["search_hint", "menu"]
 
 
 # --- paged search --------------------------------------------------------

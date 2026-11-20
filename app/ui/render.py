@@ -36,10 +36,12 @@ from app.services.callbacks import (
     cb_random,
     cb_search,
     cb_search_hint,
+    cb_sections,
+    cb_settings,
 )
 from app.services.i18n import t
 from app.ui.emoji import premium
-from app.ui.keyboards import PAGE_SIZE, Style, rich_button, rich_row
+from app.ui.keyboards import PAGE_SIZE, Style, menu_button, rich_button, rich_row
 
 RESULTS = 7
 CARD_CAP = 30000
@@ -120,17 +122,12 @@ def _header(slug: str, heading: str, lead: str = "") -> str:
 
 
 def render_menu(categories: list[CategoryView], locale: str, is_admin: bool = False) -> RichScreen:
+    """Banner, heading, one lead line, six rows at most (seven with admin).
+
+    The eight sections live one tap deeper: the menu stays a doorway, not a
+    catalog. There is no menu button here, because this is the menu.
+    """
     rows = [
-        rich_row(
-            rich_button(
-                item.title,
-                data=cb_cat(item.slug),
-                icon=(item.slug, _esc(item.emoji)),
-            )
-        )
-        for item in categories[:8]
-    ]
-    rows.append(
         rich_row(
             rich_button(
                 t(locale, "button.chat"),
@@ -138,18 +135,14 @@ def render_menu(categories: list[CategoryView], locale: str, is_admin: bool = Fa
                 style="primary",
                 icon=("support", "💬"),
             )
-        )
-    )
-    rows.append(
+        ),
         rich_row(
             rich_button(
-                t(locale, "button.random"),
-                data=cb_random(),
-                icon=("refresh", "🎲"),
+                t(locale, "button.sections"),
+                data=cb_sections(),
+                icon=("catalog", "📂"),
             )
-        )
-    )
-    rows.append(
+        ),
         rich_row(
             rich_button(
                 t(locale, "button.search"),
@@ -157,12 +150,24 @@ def render_menu(categories: list[CategoryView], locale: str, is_admin: bool = Fa
                 icon=("search", "🔍"),
             ),
             rich_button(
+                t(locale, "button.random"),
+                data=cb_random(),
+                icon=("refresh", "🎲"),
+            ),
+        ),
+        rich_row(
+            rich_button(
                 t(locale, "button.language"),
                 data=cb_lang_menu(),
                 icon=("lang", "🌐"),
             ),
-        )
-    )
+            rich_button(
+                t(locale, "button.settings"),
+                data=cb_settings(),
+                icon=("gear", "⚙"),
+            ),
+        ),
+    ]
     if is_admin:
         # One small neutral row, and only for an id in ADMIN_IDS. The public
         # command list stays the same: the panel is reached from here.
@@ -180,21 +185,44 @@ def render_menu(categories: list[CategoryView], locale: str, is_admin: bool = Fa
     return RichScreen(html + "\n".join(rows))
 
 
+def render_sections(categories: list[CategoryView], locale: str) -> RichScreen:
+    """The eight sections, one per row, plus a way back and the menu button."""
+    rows = [
+        rich_row(
+            rich_button(
+                item.title,
+                data=cb_cat(item.slug),
+                icon=(item.slug, _esc(item.emoji)),
+            )
+        )
+        for item in categories[:8]
+    ]
+    rows.append(
+        rich_row(
+            rich_button(
+                t(locale, "button.back"),
+                data=cb_menu(),
+                icon=("back", "🏠"),
+            )
+        )
+    )
+    rows.append(rich_row(menu_button(locale)))
+    heading = f"{premium('catalog', '📂')} {_esc(t(locale, 'button.sections'))}"
+    html = _header("hero", heading, f"<p>{_esc(t(locale, 'sections.lead'))}</p>")
+    return RichScreen(html + "\n".join(rows))
+
+
 def render_chat(locale: str) -> RichScreen:
-    """The chat screen: one lead line and the two ways out."""
+    """The chat screen: one lead line, the way out, and the menu button."""
     rows = [
         rich_row(
             rich_button(
                 t(locale, "button.chat_exit"),
                 data=cb_chat_exit(),
                 icon=("cancel", "❌"),
-            ),
-            rich_button(
-                t(locale, "button.menu"),
-                data=cb_menu(),
-                icon=("menu", "🏘"),
-            ),
-        )
+            )
+        ),
+        rich_row(menu_button(locale)),
     ]
     heading = f"{premium('support', '💬')} {_esc(t(locale, 'chat.title'))}"
     html = _header("chat", heading, f"<p>{_esc(t(locale, 'chat.lead'))}</p>")
@@ -203,11 +231,15 @@ def render_chat(locale: str) -> RichScreen:
 
 def render_not_found(locale: str) -> RichScreen:
     """A stale card or section: say so, and keep both ways forward."""
-    rows = rich_row(
-        rich_button(t(locale, "button.menu"), data=cb_menu(), icon=("menu", "🏘")),
-        rich_button(
-            t(locale, "button.search"), data=cb_search_hint(), icon=("search", "🔍")
-        ),
+    rows = "\n".join(
+        (
+            rich_row(
+                rich_button(
+                    t(locale, "button.search"), data=cb_search_hint(), icon=("search", "🔍")
+                )
+            ),
+            rich_row(menu_button(locale)),
+        )
     )
     heading = f"{premium('error', '❗')} {_esc(t(locale, 'card.not_found.title'))}"
     html = _header("hero", heading, f"<p>{_esc(t(locale, 'card.not_found.lead'))}</p>")
@@ -239,15 +271,7 @@ def render_category(
     ]
     if pages > 1:
         rows.append(_pager(locale, page, pages, lambda number: cb_cat(category.slug, number)))
-    rows.append(
-        rich_row(
-            rich_button(
-                t(locale, "button.menu"),
-                data=cb_menu(),
-                icon=("menu", "🏘"),
-            )
-        )
-    )
+    rows.append(rich_row(menu_button(locale)))
     lead = t(locale, "category.lead")
     meta = (
         f"{premium('stats', '🔢')} {_esc(t(locale, 'category.count', n=category.threat_count))}"
@@ -383,6 +407,7 @@ def render_card(
             ),
         )
     )
+    rows.append(rich_row(menu_button(locale)))
 
     groups = (card.signs, card.before, card.during, card.after, card.forbidden, card.contacts)
     shown = [len(group) for group in groups]
@@ -452,6 +477,7 @@ def render_question(
         )
     else:
         tail = ""
+    rows.append(rich_row(menu_button(locale)))
     html = (
         _header(_art_of_threat(slug), f"{premium('test', '📝')} {_esc(t(locale, 'quiz.heading'))}")
         + f"<h2>{premium('hourglass', '⏳')} {_esc(t(locale, 'quiz.title', index=index, total=total))}</h2>"
@@ -486,13 +512,7 @@ def render_result(
                 icon=("refresh", "🔄"),
             )
         ),
-        rich_row(
-            rich_button(
-                t(locale, "button.menu"),
-                data=cb_menu(),
-                icon=("menu", "🏘"),
-            )
-        ),
+        rich_row(menu_button(locale)),
     ]
     html = (
         _header(
@@ -565,15 +585,7 @@ def search_screen(
                 )
             )
         )
-    rows.append(
-        rich_row(
-            rich_button(
-                t(locale, "button.menu"),
-                data=cb_menu(),
-                icon=("menu", "🏘"),
-            )
-        )
-    )
+    rows.append(rich_row(menu_button(locale)))
     clean = " ".join(query.split())
     if visible:
         body = f"<p>{_esc(t(locale, 'search.found', n=found))}</p>"

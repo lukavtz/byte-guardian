@@ -29,14 +29,16 @@ from app.services.callbacks import (
     cb_menu,
     cb_random,
     cb_search_hint,
+    cb_sections,
+    cb_settings,
     parse_cb,
 )
 from app.services.i18n import ENABLED_LOCALES, resolve_locale, t
 from app.services.settings import set_chat_mode
 from app.services.user_locale import get_locale, locale_state, set_locale
 from app.ui.delivery import show
-from app.ui.emoji import custom_id, premium
-from app.ui.keyboards import PAGE_SIZE, button, markup, paired, rich_button, rich_row
+from app.ui.emoji import premium
+from app.ui.keyboards import PAGE_SIZE, menu_button, rich_button, rich_row
 from app.ui.render import (
     RichScreen,
     render_card,
@@ -44,6 +46,7 @@ from app.ui.render import (
     render_chat,
     render_menu,
     render_not_found,
+    render_sections,
 )
 
 logger = logging.getLogger(__name__)
@@ -112,7 +115,7 @@ def is_admin_id(settings: Settings | None, user_id: int | None) -> bool:
 
 
 def settings_screen(locale: str, opted_in: bool) -> RichScreen:
-    """Toggles stay neutral; the primary is the way back into the bot.
+    """Toggles stay neutral; the menu button is the one way back.
 
     The state shown comes from the caller's read of the DB, never from the
     button that was tapped.
@@ -120,18 +123,26 @@ def settings_screen(locale: str, opted_in: bool) -> RichScreen:
     toggle = OPT_IN_OFF if opted_in else OPT_IN_ON
     label = t(locale, "settings.broadcast.disable" if opted_in else "settings.broadcast.enable")
     status = t(locale, "settings.broadcast.on" if opted_in else "settings.broadcast.off")
-    rows: list[list] = [
-        [button(t(locale, "button.language"), cb_lang_menu(), icon_custom_emoji_id=custom_id("lang"))],
-        [button(label, toggle, icon_custom_emoji_id=custom_id("broadcast"))],
-        [button(t(locale, "button.menu"), cb_menu(), "primary", icon_custom_emoji_id=custom_id("menu"))],
+    rows = [
+        rich_row(
+            rich_button(
+                t(locale, "button.language"),
+                data=cb_lang_menu(),
+                icon=("lang", "🌐"),
+            )
+        ),
+        rich_row(
+            rich_button(label, data=toggle, icon=("broadcast", "📣"))
+        ),
+        rich_row(menu_button(locale)),
     ]
     html = (
-        f"<h1>{premium('admin', '🛠')} {t(locale, 'settings.title')}</h1>"
+        f"<h1>{premium('gear', '⚙')} {t(locale, 'settings.title')}</h1>"
         f"<p>{premium('lang', '🌐')} {t(locale, 'settings.language')}: "
         f"<b>{LANGUAGE_NAMES.get(locale, LANGUAGE_NAMES['ru'])}</b></p>"
         f"<p>{premium('broadcast', '📣')} {t(locale, 'settings.broadcasts')}: <b>{status}</b></p>"
     )
-    return RichScreen(html, markup(rows))
+    return RichScreen(html + "\n".join(rows))
 
 
 HELP_COMMANDS = (("start", "menu", "🏘"), ("help", "help", "💬"), ("settings", "lang", "🌐"))
@@ -149,29 +160,29 @@ def help_screen(locale: str) -> RichScreen:
         f"<h2>{premium('menu', '🏘')} {t(locale, 'help.title')}</h2>"
         f"<p>{lines}</p>"
     )
-    rows = rich_row(
-        rich_button(t(locale, "button.menu"), data=cb_menu(), icon=("menu", "🏘"))
-    )
-    return RichScreen(html + rows)
+    return RichScreen(html + rich_row(menu_button(locale)))
 
 
 def language_screen(locale: str) -> RichScreen:
     languages = [
-        button(
+        rich_button(
             LANGUAGE_NAMES[code],
-            cb_lang(code),
-            "success" if code == locale else None,
-            icon_custom_emoji_id=custom_id("lang"),
+            data=cb_lang(code),
+            style="success" if code == locale else None,
+            icon=("lang", "🌐"),
         )
         for code in ENABLED_LOCALES
     ]
-    rows: list[list] = paired(languages)
-    rows.append([button(t(locale, "button.menu"), cb_menu(), icon_custom_emoji_id=custom_id("menu"))])
+    rows = [
+        rich_row(*languages[index : index + 2])
+        for index in range(0, len(languages), 2)
+    ]
+    rows.append(rich_row(menu_button(locale)))
     html = (
         f"<h1>{premium('lang', '🌐')} {t(locale, 'settings.language')}</h1>"
         f"<p>{t(locale, 'language.hint')}</p>"
     )
-    return RichScreen(html, markup(rows))
+    return RichScreen(html + "\n".join(rows))
 
 
 def _is_private(query: CallbackQuery) -> bool:
@@ -194,6 +205,11 @@ async def menu_screen(repo: ContentRepository, locale: str, is_admin: bool = Fal
     # The search/language row is part of the rich message, like every other
     # button: nothing is appended to a keyboard underneath it.
     return render_menu(repo.categories(), locale, is_admin)
+
+
+def sections_screen(repo: ContentRepository, locale: str) -> RichScreen:
+    """The eight sections, one tap behind «Разделы»."""
+    return render_sections(repo.categories(), locale)
 
 
 async def category_screen(
@@ -266,6 +282,32 @@ async def on_menu(
     locale = await user_locale(session_factory, query.from_user)
     admin = is_admin_id(settings, query.from_user.id if query.from_user else None)
     await _redraw(query, bot, await menu_screen(repo, locale, admin))
+
+
+@router.callback_query(F.data == cb_sections())
+async def on_sections(
+    query: CallbackQuery,
+    bot: Bot,
+    repo: ContentRepository,
+    session_factory: async_sessionmaker[AsyncSession],
+) -> None:
+    await query.answer()
+    locale = await user_locale(session_factory, query.from_user)
+    await _redraw(query, bot, sections_screen(repo, locale))
+
+
+@router.callback_query(F.data == cb_settings())
+async def on_settings(
+    query: CallbackQuery,
+    bot: Bot,
+    session_factory: async_sessionmaker[AsyncSession],
+) -> None:
+    await query.answer()
+    user = query.from_user
+    if user is None:
+        return
+    locale = await user_locale(session_factory, user)
+    await _redraw(query, bot, settings_screen(locale, await broadcast_opted_in(session_factory, user.id)))
 
 
 @router.callback_query(F.data.startswith("b1:cat:"))
@@ -411,10 +453,9 @@ async def on_search_hint(
 ) -> None:
     await query.answer()
     locale = await user_locale(session_factory, query.from_user)
-    rows = rich_row(
-        rich_button(t(locale, "button.menu"), data=cb_menu(), icon=("menu", "🏘"))
+    screen = RichScreen(
+        f"<p>{t(locale, 'menu.search_hint')}</p>" + rich_row(menu_button(locale))
     )
-    screen = RichScreen(f"<p>{t(locale, 'menu.search_hint')}</p>" + rows)
     await _redraw(query, bot, screen)
 
 
