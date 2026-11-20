@@ -49,7 +49,8 @@ BUTTON_WORDS = 8
 WORD = re.compile(r"\w+")
 SEVERITIES = {1: "low", 2: "medium", 3: "high"}
 ART = "https://raw.githubusercontent.com/lukavtz/byte-guardian/main/assets/art"
-ARTS = frozenset({"fire", "terror", "tech", "nature", "medical", "chem", "rad", "cyber", "menu"})
+BANNER = "https://raw.githubusercontent.com/lukavtz/byte-guardian/main/assets/banner.jpg"
+ARTS = frozenset({"fire", "terror", "tech", "nature", "medical", "chem", "rad", "cyber"})
 
 
 @dataclass(frozen=True, slots=True)
@@ -139,7 +140,10 @@ def _badge(card: CardView, locale: str) -> str:
 
 
 def _art(slug: str) -> str:
-    """One picture above the heading; an unknown section borrows the hero."""
+    """One picture above the heading: the brand banner for the menu, else the
+    section art; an unknown section borrows the hero."""
+    if slug == "menu":
+        return f'<img src="{BANNER}"/>'
     return f'<img src="{ART}/{slug if slug in ARTS else "hero"}.png"/>'
 
 

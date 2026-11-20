@@ -270,9 +270,10 @@ def test_category_artwork_matches_the_section(slug: str) -> None:
     assert f'<img src="{ART}/{slug}.png"/>' in screen.html
 
 
-def test_menu_uses_its_own_banner() -> None:
+def test_menu_uses_the_brand_banner() -> None:
     html = render_menu([_category()], LOCALE).html
-    assert f'<img src="{ART}/menu.png"/>' in html
+    assert 'src="https://raw.githubusercontent.com/lukavtz/byte-guardian/main/assets/banner.jpg"' in html
+    assert "menu.png" not in html
     assert f'<img src="{ART}/hero.png"/>' not in html
 
 
