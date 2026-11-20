@@ -18,6 +18,9 @@ import httpx
 
 DDG_URL = "https://html.duckduckgo.com/html/"
 WIKI_URL = "https://ru.wikipedia.org/w/api.php"
+# DuckDuckGo answers datacenter IPs with a 202 challenge, so the same SERP is
+# fetched through Jina Reader (keyless) before falling back to Wikipedia.
+JINA_URL = "https://r.jina.ai/"
 USER_AGENT = "ByteBot/1.0 (+https://github.com/lukavtz/byte-guardian) python-httpx/0.28"
 TIMEOUT_SECONDS = 6.0
 CACHE_TTL = 600.0
@@ -149,6 +152,36 @@ async def _duckduckgo(client: httpx.AsyncClient, query: str, limit: int) -> list
     return results
 
 
+_MD_HEAD_RE = re.compile(r"^## \[(?P<title>.+?)\]\((?P<url>[^)\s]+)\)\s*$", re.MULTILINE)
+_MD_PARA_RE = re.compile(r"^\[(?P<text>[^\]]{20,})\]\((?P<url>[^)\s]+)\)\s*$", re.MULTILINE)
+
+
+def _parse_markdown(text: str, limit: int) -> list[WebResult]:
+    """Jina renders each hit as ``## [title](url)`` plus bracket paragraphs."""
+    parts = _MD_HEAD_RE.split(text)
+    results: list[WebResult] = []
+    seen: set[str] = set()
+    for index in range(1, len(parts) - 2, 3):
+        title = parts[index].replace("**", "").strip()
+        url = _target(unescape(parts[index + 1]))
+        if not title or not url or url in seen:
+            continue
+        snippets = [m.group("text") for m in _MD_PARA_RE.finditer(parts[index + 2])]
+        snippet = " ".join(snippets[-1].replace("**", "").split()) if snippets else ""
+        seen.add(url)
+        results.append(WebResult(title=title, url=url, snippet=snippet))
+        if len(results) >= limit:
+            break
+    return results
+
+
+async def _relay(client: httpx.AsyncClient, query: str, limit: int) -> list[WebResult]:
+    target = str(httpx.URL(DDG_URL, params={"q": query}))
+    response = await client.get(JINA_URL + target, headers={"User-Agent": USER_AGENT})
+    response.raise_for_status()
+    return _parse_markdown(response.text, limit)
+
+
 async def _wikipedia(client: httpx.AsyncClient, query: str, limit: int) -> list[WebResult]:
     response = await client.get(
         WIKI_URL,
@@ -212,7 +245,10 @@ async def search_web(
     timeout: float = TIMEOUT_SECONDS,  # noqa: ASYNC109 - an httpx budget, not a cancel scope
     client: httpx.AsyncClient | None = None,
 ) -> list[WebResult]:
-    """Up to ``limit`` results, official Russian sources first; never raises."""
+    """Up to ``limit`` results, official Russian sources first; never raises.
+
+    Order: DuckDuckGo direct, the same SERP through Jina Reader, Wikipedia ru.
+    """
     key = query.strip().casefold()
     if not key:
         return []
@@ -228,6 +264,8 @@ async def search_web(
         )
     try:
         results = await _duckduckgo(client, query, limit)
+        if not results:
+            results = await _relay(client, query, limit)
         if not results:
             results = await _wikipedia(client, query, limit)
     except (httpx.HTTPError, ValueError):

@@ -41,17 +41,36 @@ WIKI_JSON = {
     }
 }
 
+JINA_MARKDOWN = """Title: пожар мчс at DuckDuckGo
+
+Markdown Content:
+## [МЧС России](https://duckduckgo.com/l/?uddg=https%3A%2F%2Fmchs.gov.ru%2F&rut=abc)
+
+[![Image 1](https://external-content.duckduckgo.com/ip3/mchs.gov.ru.ico)](https://duckduckgo.com/l/?uddg=https%3A%2F%2Fmchs.gov.ru%2F&rut=abc)[mchs.gov.ru](https://duckduckgo.com/l/?uddg=https%3A%2F%2Fmchs.gov.ru%2F&rut=abc)
+
+[Министерство по делам гражданской обороны, чрезвычайным ситуациям и ликвидации последствий стихийных бедствий.](https://duckduckgo.com/l/?uddg=https%3A%2F%2Fmchs.gov.ru%2F&rut=abc)
+
+## [Пожарная безопасность](https://duckduckgo.com/l/?uddg=https%3A%2F%2Fexample.org%2Ffire&rut=def)
+
+[Первое описание, которое должно быть проигнорировано как слишком короткое.](https://duckduckgo.com/l/?uddg=https%3A%2F%2Fexample.org%2Ffire&rut=def)
+
+[Правила поведения при пожаре: звоните 101 и покиньте помещение.](https://duckduckgo.com/l/?uddg=https%3A%2F%2Fexample.org%2Ffire&rut=def)
+"""
+
 
 def _client_with(
     ddg: httpx.Response,
     wiki: httpx.Response | None = None,
     calls: list[str] | None = None,
+    relay: httpx.Response | None = None,
 ) -> httpx.AsyncClient:
     def handler(request: httpx.Request) -> httpx.Response:
         if calls is not None:
             calls.append(str(request.url))
         if "duckduckgo.com" in request.url.host:
             return ddg
+        if "jina.ai" in request.url.host:
+            return relay if relay is not None else httpx.Response(200, text="Markdown Content:\n")
         return wiki if wiki is not None else httpx.Response(200, json={"query": {"search": []}})
 
     return httpx.AsyncClient(transport=httpx.MockTransport(handler), timeout=2.0)
@@ -116,6 +135,21 @@ async def test_falls_back_to_wikipedia_when_ddg_is_empty() -> None:
     assert results[0].url == "https://ru.wikipedia.org/wiki/%D0%9F%D0%BE%D0%B6%D0%B0%D1%80"
     assert "<span" not in results[0].snippet
     assert results[0].snippet.startswith("Пожар — неконтролируемый")
+
+
+async def test_falls_back_to_jina_relay_before_wikipedia() -> None:
+    calls: list[str] = []
+    async with _client_with(
+        httpx.Response(202, text="anomaly"),
+        calls=calls,
+        relay=httpx.Response(200, text=JINA_MARKDOWN),
+    ) as client:
+        results = await search_web("пожар мчс", limit=3, client=client)
+
+    assert [item.url for item in results] == ["https://mchs.gov.ru/", "https://example.org/fire"]
+    assert results[0].title == "МЧС России"
+    assert results[1].snippet == "Правила поведения при пожаре: звоните 101 и покиньте помещение."
+    assert [url for url in calls if "wikipedia" in url] == []
 
 
 async def test_malformed_html_and_broken_fallback_return_nothing() -> None:
