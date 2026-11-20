@@ -61,6 +61,8 @@ jobs:
               "${{ steps.preflight.outputs.user }}@$ALTARE_HOST" \
               'bash -s' <<'REMOTE'
           set -eu
+          export PATH="$HOME/.local/bin:/usr/local/bin:$PATH"
+          command -v uv >/dev/null || { echo "uv not on PATH" >&2; exit 1; }
           cd /opt/bytebot
           before=$(git rev-parse HEAD)
           git pull --ff-only
