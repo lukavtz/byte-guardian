@@ -54,7 +54,7 @@
             "104"
           ],
           "source": "ГУ МЧС России по Краснодарскому краю · https://23.mchs.gov.ru/deyatelnost/press-centr/novosti/5784714",
-          "quick": "Позвоните 104 / Позвоните 112",
+          "quick": "Перекройте газовый кран перед плитой или на вводе",
           "mistakes": [
             "Зажигать спички, курить и пользоваться зажигалкой",
             "Включать свет и электроприборы, звонить в дверь",
@@ -105,7 +105,7 @@
             "112",
             "104"
           ],
-          "quick": "Call 104 / Call 112",
+          "quick": "Shut off the gas valve in front of the stove or at the inlet",
           "mistakes": [
             "Lighting matches, smoking, or using a lighter",
             "Turning on lights or appliances, ringing the doorbell",
@@ -157,7 +157,7 @@
             "104"
           ],
           "source": "俄罗斯紧急情况部克拉斯诺达尔边疆区总局 · https://23.mchs.gov.ru/deyatelnost/press-centr/novosti/5784714",
-          "quick": "拨打104 / 拨打112",
+          "quick": "关闭灶前或入户处的燃气阀门",
           "mistakes": [
             "点火柴、吸烟或使用打火机",
             "开灯或使用电器，按门铃",
@@ -208,7 +208,7 @@
             "104"
           ],
           "source": "Краснодар крае буенча Россия МЧСы баш идарәсе · https://23.mchs.gov.ru/deyatelnost/press-centr/novosti/5784714",
-          "quick": "104 телефонына шалтыратыгыз / 112 телефонына шалтыратыгыз",
+          "quick": "Плита алдындагы яки кертүдәге газ кранын ябыгыз",
           "mistakes": [
             "Шырпы кабызу, тәмәке тарту һәм зажигалка куллану",
             "Яктылык һәм электр приборларын кабызу, ишек звоногын басу",
@@ -420,7 +420,7 @@
             "103"
           ],
           "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/udar-elektrotokom-v-bytovyh-usloviyah_8",
-          "quick": "Позвоните 101 / Позвоните 112",
+          "quick": "Обесточьте помещение автоматом, если щиток сухой и доступен",
           "mistakes": [
             "Тушить водой электропроводку под напряжением",
             "Хватать пострадавшего руками до отключения тока",
@@ -471,7 +471,7 @@
             "112",
             "103"
           ],
-          "quick": "Call 101 / Call 112",
+          "quick": "Cut power with the breaker if the panel is dry and accessible",
           "mistakes": [
             "Extinguish live wiring with water",
             "Grab the victim with your hands before the power is off",
@@ -523,7 +523,7 @@
             "103"
           ],
           "source": "俄罗斯紧急情况部 · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/udar-elektrotokom-v-bytovyh-usloviyah_8",
-          "quick": "拨打101 / 拨打112",
+          "quick": "配电箱干燥且可接近时用断路器切断电源",
           "mistakes": [
             "用水扑灭带电的线路",
             "断电前用手拉伤者",
@@ -574,7 +574,7 @@
             "103"
           ],
           "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/udar-elektrotokom-v-bytovyh-usloviyah_8",
-          "quick": "101 телефонына шалтыратыгыз / 112 телефонына шалтыратыгыз",
+          "quick": "Щит коры һәм кул җитәрлек булса, бүлмәне автомат белән токтан аерыгыз",
           "mistakes": [
             "Ток астындагы чыбыкларны су белән сүндерү",
             "Ток сүндерелгәнче зыян күрүчене кул белән тоту",
@@ -786,7 +786,7 @@
             "Диспетчер лифта"
           ],
           "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/bezopasnost-v-lifte_6",
-          "quick": "Позвоните 112",
+          "quick": "Нажмите кнопку вызова диспетчера и держите связь",
           "mistakes": [
             "Открывать двери руками и пытаться выйти между этажами",
             "Вылезать через люк или спускаться по тросу",
@@ -837,7 +837,7 @@
             "112",
             "Elevator dispatcher"
           ],
-          "quick": "Call 112",
+          "quick": "Press the dispatcher call button and stay in contact",
           "mistakes": [
             "Opening the doors by hand and trying to exit between floors",
             "Climbing out through the hatch or climbing down the cable",
@@ -889,7 +889,7 @@
             "电梯调度"
           ],
           "source": "俄罗斯紧急情况部 · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/bezopasnost-v-lifte_6",
-          "quick": "拨打112",
+          "quick": "按调度通话按钮并保持联系",
           "mistakes": [
             "徒手开门，试图在楼层之间出去",
             "从检修口爬出或沿缆绳爬下",
@@ -941,7 +941,7 @@
             "Лифт диспетчеры"
           ],
           "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/bezopasnost-v-lifte_6",
-          "quick": "112 телефонына шалтыратыгыз",
+          "quick": "Диспетчер чакыру төймәсенә басыгыз һәм бәйләнешне тотыгыз",
           "mistakes": [
             "Ишекләрне кул белән ачу һәм катлар арасында чыгарга маташу",
             "Люк аша чыгу яки аркан буйлап төшү",
@@ -1153,7 +1153,7 @@
             "112"
           ],
           "source": "ГУ МЧС России по Республике Тыва · https://17.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pravila-povedeniya-pri-razlichnyh-chs/chs-tehnogennogo-haraktera/pravila-povedeniya-pri-obrushenii-zdaniya",
-          "quick": "Позвоните 112",
+          "quick": "Выйдите на улицу по лестнице, не пользуйтесь лифтом",
           "mistakes": [
             "Пользоваться лифтом при трещинах и обрушении",
             "Зажигать спички из-за возможной утечки газа",
@@ -1204,7 +1204,7 @@
           "contacts": [
             "112"
           ],
-          "quick": "Call 112",
+          "quick": "Leave the building by the stairs, do not use the elevator",
           "mistakes": [
             "Using the elevator when there are cracks or a collapse",
             "Lighting matches because of a possible gas leak",
@@ -1255,7 +1255,7 @@
             "112"
           ],
           "source": "俄罗斯紧急情况部图瓦共和国总局 · https://17.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pravila-povedeniya-pri-razlichnyh-chs/chs-tehnogennogo-haraktera/pravila-povedeniya-pri-obrushenii-zdaniya",
-          "quick": "拨打112",
+          "quick": "走楼梯离开建筑物，不要乘电梯",
           "mistakes": [
             "有裂缝或发生倒塌时乘电梯",
             "因可能燃气泄漏而点火柴",
@@ -1306,7 +1306,7 @@
             "112"
           ],
           "source": "Тыва Республикасы буенча Россия МЧСы баш идарәсе · https://17.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pravila-povedeniya-pri-razlichnyh-chs/chs-tehnogennogo-haraktera/pravila-povedeniya-pri-obrushenii-zdaniya",
-          "quick": "112 телефонына шалтыратыгыз",
+          "quick": "Баскычтан урамга чыгыгыз, лифт белән файдаланмагыз",
           "mistakes": [
             "Ярыклар һәм җимерелү вакытында лифт куллану",
             "Газ агуы мөмкин булганлыктан шырпы кабызу",
@@ -1519,7 +1519,7 @@
             "103"
           ],
           "source": "ГУ МЧС России по Республике Тыва · https://17.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pravila-povedeniya-pri-razlichnyh-chs/chs-tehnogennogo-haraktera/pravila-povedeniya-pri-transportnyh-avariyah",
-          "quick": "Позвоните 112",
+          "quick": "Покиньте салон через двери или аварийный выход",
           "mistakes": [
             "Прыгать из движущегося транспорта",
             "Трогать оборванные провода и токоведущие части",
@@ -1571,7 +1571,7 @@
             "112",
             "103"
           ],
-          "quick": "Call 112",
+          "quick": "Leave the cabin through the doors or an emergency exit",
           "mistakes": [
             "Jumping out of moving transport",
             "Touching fallen wires and live parts",
@@ -1623,7 +1623,7 @@
             "103"
           ],
           "source": "俄罗斯紧急情况部图瓦共和国总局 · https://17.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pravila-povedeniya-pri-razlichnyh-chs/chs-tehnogennogo-haraktera/pravila-povedeniya-pri-transportnyh-avariyah",
-          "quick": "拨打112",
+          "quick": "经车门或紧急出口离开车厢",
           "mistakes": [
             "从行驶中的交通工具跳下",
             "触碰断落的电线和带电部件",
@@ -1675,7 +1675,7 @@
             "103"
           ],
           "source": "Тыва Республикасы буенча Россия МЧСы баш идарәсе · https://17.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pravila-povedeniya-pri-razlichnyh-chs/chs-tehnogennogo-haraktera/pravila-povedeniya-pri-transportnyh-avariyah",
-          "quick": "112 телефонына шалтыратыгыз",
+          "quick": "Салоннан ишекләр яки авария чыгу юлы аша чыгыгыз",
           "mistakes": [
             "Йөреп барган транспорттан сикерү",
             "Өзелгән чыбыкларга һәм ток үткәрүче өлешләргә кагылу",
@@ -1888,7 +1888,7 @@
             "103"
           ],
           "source": "ГУ МЧС России по Республике Марий Эл · https://12.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/bezopasnost-v-tehnogennoy-srede-v-gorode/pravila-bezopasnosti-pri-himicheskoy-avarii",
-          "quick": "Позвоните 112",
+          "quick": "Закройте окна и двери, отключите приборы и газ",
           "mistakes": [
             "Выходить на улицу без защиты дыхания при сигнале",
             "Спускаться в подвал при выбросе хлора",
@@ -1940,7 +1940,7 @@
             "112",
             "103"
           ],
-          "quick": "Call 112",
+          "quick": "Close windows and doors, switch off appliances and gas",
           "mistakes": [
             "Going outside without breathing protection when the signal sounds",
             "Going down to the basement during a chlorine release",
@@ -1992,7 +1992,7 @@
             "103"
           ],
           "source": "俄罗斯紧急情况部马里埃尔共和国总局 · https://12.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/bezopasnost-v-tehnogennoy-srede-v-gorode/pravila-bezopasnosti-pri-himicheskoy-avarii",
-          "quick": "拨打112",
+          "quick": "关闭门窗，关闭电器和燃气",
           "mistakes": [
             "信号响起时不加呼吸防护就外出",
             "氯气泄漏时下到地下室",
@@ -2044,7 +2044,7 @@
             "103"
           ],
           "source": "Мари Эл Республикасы буенча Россия МЧСы баш идарәсе · https://12.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/bezopasnost-v-tehnogennoy-srede-v-gorode/pravila-bezopasnosti-pri-himicheskoy-avarii",
-          "quick": "112 телефонына шалтыратыгыз",
+          "quick": "Тәрәзә һәм ишекләрне ябыгыз, приборларны һәм газны сүндерегез",
           "mistakes": [
             "Сигнал вакытында сулышны сакламыйча урамга чыгу",
             "Хлор чыгуында подвалга төшү",
@@ -2256,7 +2256,7 @@
             "Диспетчер управляющей компании"
           ],
           "source": "ГУ МЧС России по Республике Бурятия · https://03.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/chs-tehnogennogo-haraktera/avarii-na-kommunalnyh-sistemah-zhizneobespecheniya",
-          "quick": "Позвоните 112",
+          "quick": "Перекройте ввод воды в квартиру или дом",
           "mistakes": [
             "Входить в затопленный подвал",
             "Трогать провода и электроприборы в воде",
@@ -2307,7 +2307,7 @@
             "112",
             "Building management dispatcher"
           ],
-          "quick": "Call 112",
+          "quick": "Shut off the water supply to your apartment or house",
           "mistakes": [
             "Entering a flooded basement",
             "Touching wires or electrical appliances in water",
@@ -2359,7 +2359,7 @@
             "物业调度"
           ],
           "source": "俄罗斯紧急情况部布里亚特共和国总局 · https://03.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/chs-tehnogennogo-haraktera/avarii-na-kommunalnyh-sistemah-zhizneobespecheniya",
-          "quick": "拨打112",
+          "quick": "关闭公寓或住宅的供水",
           "mistakes": [
             "进入积水的地下室",
             "触碰水中的电线或电器",
@@ -2411,7 +2411,7 @@
             "Идарә компаниясе диспетчеры"
           ],
           "source": "Бурятия Республикасы буенча Россия МЧСы баш идарәсе · https://03.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/chs-tehnogennogo-haraktera/avarii-na-kommunalnyh-sistemah-zhizneobespecheniya",
-          "quick": "112 телефонына шалтыратыгыз",
+          "quick": "Фатирга яки йортка су кертүне ябыгыз",
           "mistakes": [
             "Су баскан подвалга керү",
             "Судагы чыбыкларга һәм электр приборларына кагылу",
@@ -2623,7 +2623,7 @@
             "112"
           ],
           "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pozhar-v-obshchestvennom-meste-ofise_6",
-          "quick": "Позвоните 101 / Позвоните 112",
+          "quick": "Идите к ближайшему эвакуационному выходу, не пользуйтесь лифтом",
           "mistakes": [
             "Пользоваться лифтом при пожаре",
             "Спасать вещи и оборудование вместо выхода",
@@ -2674,7 +2674,7 @@
             "101",
             "112"
           ],
-          "quick": "Call 101 / Call 112",
+          "quick": "Go to the nearest evacuation exit, do not use the elevator",
           "mistakes": [
             "Using the elevator during a fire",
             "Saving belongings and equipment instead of leaving",
@@ -2726,7 +2726,7 @@
             "112"
           ],
           "source": "俄罗斯紧急情况部 · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pozhar-v-obshchestvennom-meste-ofise_6",
-          "quick": "拨打101 / 拨打112",
+          "quick": "前往最近的疏散出口，不要乘电梯",
           "mistakes": [
             "火灾时乘电梯",
             "为了抢救物品和设备而不撤离",
@@ -2777,7 +2777,7 @@
             "112"
           ],
           "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pozhar-v-obshchestvennom-meste-ofise_6",
-          "quick": "101 телефонына шалтыратыгыз / 112 телефонына шалтыратыгыз",
+          "quick": "Якындагы эвакуация чыгу юлына барыгыз, лифт кулланмагыз",
           "mistakes": [
             "Янгын вакытында лифт куллану",
             "Чыгу урынына әйбер һәм җиһаз коткару",

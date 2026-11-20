@@ -54,7 +54,7 @@
             "112"
           ],
           "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pozhar-v-kvartire_4 · ГУ МЧС России по Тульской области · https://71.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pozharnaya-bezopasnost/kak-vesti-sebya-pri-pozhare-v-mnogokvartirnom-dome",
-          "quick": "Позвоните 101 / Позвоните 112",
+          "quick": "Сообщите по 101 или 112 адрес, этаж и что горит",
           "mistakes": [
             "Не тушите водой включённые электроприборы",
             "Не открывайте окна: приток воздуха усилит огонь",
@@ -109,7 +109,7 @@
             "101",
             "112"
           ],
-          "quick": "Call 101 / Call 112",
+          "quick": "Call 101 or 112 and give the address, floor, and what is burning",
           "mistakes": [
             "Do not pour water on electrical appliances that are switched on",
             "Do not open windows: incoming air will feed the fire",
@@ -164,7 +164,7 @@
             "112"
           ],
           "source": "俄罗斯紧急情况部 · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pozhar-v-kvartire_4 · 俄罗斯紧急情况部图拉州总局 · https://71.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pozharnaya-bezopasnost/kak-vesti-sebya-pri-pozhare-v-mnogokvartirnom-dome",
-          "quick": "拨打101 / 拨打112",
+          "quick": "拨打101或112，说明地址、楼层和燃烧物",
           "mistakes": [
             "不要向通电的电器泼水",
             "不要开窗，进入的空气会助燃",
@@ -219,7 +219,7 @@
             "112"
           ],
           "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pozhar-v-kvartire_4 · Тула өлкәсе буенча Россия МЧСы баш идарәсе · https://71.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pozharnaya-bezopasnost/kak-vesti-sebya-pri-pozhare-v-mnogokvartirnom-dome",
-          "quick": "101 телефонына шалтыратыгыз / 112 телефонына шалтыратыгыз",
+          "quick": "101 яки 112 телефонына адрес, кат һәм нәрсә януын әйтегез",
           "mistakes": [
             "Кабынган электр приборларын су белән сүндермәгез",
             "Тәрәзәләрне ачмагыз: һава агымы утны көчәйтә",
@@ -435,7 +435,7 @@
             "112"
           ],
           "source": "МЧС России · https://31.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/rekomendacii-pri-gorenii-v-sosednih-pomeshcheniyah",
-          "quick": "Позвоните 101 / Позвоните 112",
+          "quick": "Позвоните по 101 или 112 и назовите подъезд и этаж",
           "mistakes": [
             "Не пользуйтесь лифтом при пожаре",
             "Не открывайте дверь, если она или ручка горячая",
@@ -486,7 +486,7 @@
             "101",
             "112"
           ],
-          "quick": "Call 101 / Call 112",
+          "quick": "Call 101 or 112 and give the entrance number and floor",
           "mistakes": [
             "Do not use the elevator during a fire",
             "Do not open the door if it or the handle is hot",
@@ -537,7 +537,7 @@
             "112"
           ],
           "source": "俄罗斯紧急情况部 · https://31.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/rekomendacii-pri-gorenii-v-sosednih-pomeshcheniyah",
-          "quick": "拨打101 / 拨打112",
+          "quick": "拨打101或112，说明门牌号和楼层",
           "mistakes": [
             "火灾时不要乘电梯",
             "门或门把手发烫时不要开门",
@@ -588,7 +588,7 @@
             "112"
           ],
           "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://31.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/rekomendacii-pri-gorenii-v-sosednih-pomeshcheniyah",
-          "quick": "101 телефонына шалтыратыгыз / 112 телефонына шалтыратыгыз",
+          "quick": "101 яки 112 телефонына шалтыратыгыз һәм подъезд белән катны әйтегез",
           "mistakes": [
             "Янгын вакытында лифт кулланмагыз",
             "Ишек яки тоткыч кайнар булса, ишекне ачмагыз",
@@ -799,7 +799,7 @@
             "112"
           ],
           "source": "МЧС России · https://57.mchs.gov.ru/deyatelnost/deyatelnost/ugarnyy-gaz-kak-izbezhat-otravleniya-pravila-bezopasnosti",
-          "quick": "Позвоните 103 / Позвоните 112",
+          "quick": "Вынесите человека на свежий воздух и расстегните одежду",
           "mistakes": [
             "Не оставайтесь в помещении, даже если стало легче",
             "Не оставляйте пострадавшего без сознания одного",
@@ -849,7 +849,7 @@
             "103",
             "112"
           ],
-          "quick": "Call 103 / Call 112",
+          "quick": "Carry the person into fresh air and loosen their clothing",
           "mistakes": [
             "Do not stay in the room, even if you feel better",
             "Do not leave an unconscious person alone",
@@ -899,7 +899,7 @@
             "112"
           ],
           "source": "俄罗斯紧急情况部 · https://57.mchs.gov.ru/deyatelnost/deyatelnost/ugarnyy-gaz-kak-izbezhat-otravleniya-pravila-bezopasnosti",
-          "quick": "拨打103 / 拨打112",
+          "quick": "把人转移到新鲜空气中，松开衣物",
           "mistakes": [
             "即使感觉好转也不要留在房间里",
             "不要把失去意识的人单独留下",
@@ -949,7 +949,7 @@
             "112"
           ],
           "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://57.mchs.gov.ru/deyatelnost/deyatelnost/ugarnyy-gaz-kak-izbezhat-otravleniya-pravila-bezopasnosti",
-          "quick": "103 телефонына шалтыратыгыз / 112 телефонына шалтыратыгыз",
+          "quick": "Кешене саф һавага чыгарыгыз һәм киемен чишегез",
           "mistakes": [
             "Җиңеләйгән булса да, бинада калмагыз",
             "Һушсыз зыян күрүчене ялгыз калдырмагыз",
@@ -1161,7 +1161,7 @@
             "112"
           ],
           "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pozhar-v-kvartire_4",
-          "quick": "Позвоните 101 / Позвоните 112",
+          "quick": "Обесточьте квартиру автоматом, если он доступен",
           "mistakes": [
             "Не тушите водой включённые приборы",
             "Не трогайте провод голыми руками",
@@ -1212,7 +1212,7 @@
             "101",
             "112"
           ],
-          "quick": "Call 101 / Call 112",
+          "quick": "Cut power to the apartment at the breaker, if you can reach it",
           "mistakes": [
             "Do not pour water on appliances that are on",
             "Do not touch a wire with bare hands",
@@ -1263,7 +1263,7 @@
             "112"
           ],
           "source": "俄罗斯紧急情况部 · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pozhar-v-kvartire_4",
-          "quick": "拨打101 / 拨打112",
+          "quick": "能安全接近时在断路器处切断公寓电源",
           "mistakes": [
             "不要向通电的电器泼水",
             "不要徒手接触电线",
@@ -1314,7 +1314,7 @@
             "112"
           ],
           "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pozhar-v-kvartire_4",
-          "quick": "101 телефонына шалтыратыгыз / 112 телефонына шалтыратыгыз",
+          "quick": "Мөмкин булса, фатирны автомат белән токтан аерыгыз",
           "mistakes": [
             "Кабынган приборларны су белән сүндермәгез",
             "Чыбыкка ялан кул белән кагылмагыз",
@@ -1526,7 +1526,7 @@
             "112"
           ],
           "source": "МЧС России · https://02.mchs.gov.ru/deyatelnost/press-centr/novosti/4150633",
-          "quick": "Позвоните 101 / Позвоните 112",
+          "quick": "Выключите нагрев, если можете подойти безопасно",
           "mistakes": [
             "Не лейте воду в горящее масло",
             "Не несите горящую сковороду через комнату",
@@ -1577,7 +1577,7 @@
             "101",
             "112"
           ],
-          "quick": "Call 101 / Call 112",
+          "quick": "Turn off the heat if you can reach it safely",
           "mistakes": [
             "Do not pour water on burning oil",
             "Do not carry a burning pan through the room",
@@ -1628,7 +1628,7 @@
             "112"
           ],
           "source": "俄罗斯紧急情况部 · https://02.mchs.gov.ru/deyatelnost/press-centr/novosti/4150633",
-          "quick": "拨打101 / 拨打112",
+          "quick": "能安全接近时关火",
           "mistakes": [
             "不要向燃烧的油泼水",
             "不要端着着火的锅穿过房间",
@@ -1679,7 +1679,7 @@
             "112"
           ],
           "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://02.mchs.gov.ru/deyatelnost/press-centr/novosti/4150633",
-          "quick": "101 телефонына шалтыратыгыз / 112 телефонына шалтыратыгыз",
+          "quick": "Куркынычсыз якын килергә мөмкин булса, кыздыруны сүндерегез",
           "mistakes": [
             "Янучы майга су салмагыз",
             "Янучы табаны бүлмә аша күчермәгез",
@@ -1890,7 +1890,7 @@
             "112"
           ],
           "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/prirodnye-pozhary_6",
-          "quick": "Позвоните 101 / Позвоните 112",
+          "quick": "Выходите перпендикулярно движению огня — к дороге, просеке или воде",
           "mistakes": [
             "Не бросайте в лесу окурки и горящие спички",
             "Не оставайтесь в густом лесу — выходите на открытое место",
@@ -1940,7 +1940,7 @@
             "101",
             "112"
           ],
-          "quick": "Call 101 / Call 112",
+          "quick": "Move perpendicular to the direction of the fire, toward a road, firebreak, or body of water",
           "mistakes": [
             "Do not throw cigarette butts or burning matches in the forest",
             "Do not stay in dense forest, go out to open ground",
@@ -1990,7 +1990,7 @@
             "112"
           ],
           "source": "俄罗斯紧急情况部 · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/prirodnye-pozhary_6",
-          "quick": "拨打101 / 拨打112",
+          "quick": "沿与火头垂直的方向移动，前往道路、防火带或水域",
           "mistakes": [
             "不要在森林中丢弃烟头或燃烧的火柴",
             "不要在密林中停留，要走到开阔地",
@@ -2040,7 +2040,7 @@
             "112"
           ],
           "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/prirodnye-pozhary_6",
-          "quick": "101 телефонына шалтыратыгыз / 112 телефонына шалтыратыгыз",
+          "quick": "Ут хәрәкәтенә аркылы — юлга, кисем урынына яки суга чыгыгыз",
           "mistakes": [
             "Урманда тәмәке төпчекләре һәм кабынган шырпы ташламагыз",
             "Куе урманда калмагыз — ачык урынга чыгыгыз",
@@ -2252,7 +2252,7 @@
             "112"
           ],
           "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pozhar-v-avtomobile_7",
-          "quick": "Позвоните 101 / Позвоните 112",
+          "quick": "Остановитесь, заглушите двигатель и выведите людей",
           "mistakes": [
             "Не лейте воду на горящее топливо",
             "Не садитесь в горящий автомобиль за документами",
@@ -2303,7 +2303,7 @@
             "101",
             "112"
           ],
-          "quick": "Call 101 / Call 112",
+          "quick": "Stop, shut off the engine, move people away",
           "mistakes": [
             "Do not pour water on burning fuel",
             "Do not enter a burning car for documents",
@@ -2354,7 +2354,7 @@
             "112"
           ],
           "source": "俄罗斯紧急情况部 · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pozhar-v-avtomobile_7",
-          "quick": "拨打101 / 拨打112",
+          "quick": "停车、关闭发动机，把人员撤离",
           "mistakes": [
             "不要向燃烧的燃油泼水",
             "不要为了证件进入燃烧的车内",
@@ -2405,7 +2405,7 @@
             "112"
           ],
           "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pozhar-v-avtomobile_7",
-          "quick": "101 телефонына шалтыратыгыз / 112 телефонына шалтыратыгыз",
+          "quick": "Туктагыз, двигательне сүндерегез һәм кешеләрне чыгарыгыз",
           "mistakes": [
             "Янучы ягулыкка су салмагыз",
             "Документлар өчен янучы машинага утырмагыз",

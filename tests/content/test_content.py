@@ -216,3 +216,48 @@ def test_aliases_hit_expected_category(alias: str) -> None:
     slugs = aliases["ru"].get(alias, aliases["en"].get(alias))
     assert slugs, f"{alias}: not found"
     assert all(slug.startswith("fire-") for slug in slugs), f"{alias}: non-fire slugs {slugs}"
+
+
+# "Quick" must carry one decisive, immediately doable action — not only a
+# phone number. A call-only quick is one made entirely of numbers, call
+# verbs, and separators in any of the four shipped locales.
+CALL_WORDS = frozenset(
+    {
+        "позвоните", "звоните", "вызовите", "звонить",
+        "call", "dial", "phone",
+        "拨打", "拨",
+        "шалтыратыгыз", "чакырыгыз", "телефонына", "номер",
+    }
+)
+MAX_CALL_ONLY_SHARE = 0.30
+MIN_QUICK_WORDS = 6
+URL_IN_QUICK = re.compile(r"https?://|www\.", re.IGNORECASE)
+
+
+def _quick_entries() -> list[tuple[str, str]]:
+    """Every localized quick, labelled slug/locale, with its text."""
+    return [
+        (f"{slug}/{locale}", text["quick"])
+        for slug, threat in _threats()
+        for locale, text in threat["texts"].items()
+        if "quick" in text
+    ]
+
+
+def _is_call_only(quick: str) -> bool:
+    tokens = re.findall(r"[^\W\d_]+|\d+", quick, flags=re.UNICODE)
+    return not [t for t in tokens if not (t.isdigit() or t.casefold() in CALL_WORDS)]
+
+
+def test_quick_carries_an_action_not_only_a_number() -> None:
+    entries = _quick_entries()
+    assert entries, "no quick entries found"
+    share = sum(_is_call_only(quick) for _, quick in entries) / len(entries)
+    assert share < MAX_CALL_ONLY_SHARE, f"{share:.1%} of quicks are call-only (limit <30%)"
+
+
+def test_quick_is_long_enough_and_has_no_url() -> None:
+    for label, quick in _quick_entries():
+        length = len(quick.replace(" ", "")) if label.endswith("/zh") else len(quick.split())
+        assert length >= MIN_QUICK_WORDS, f"{label}: quick has {length} units ({quick!r})"
+        assert not URL_IN_QUICK.search(quick), f"{label}: quick contains a URL ({quick!r})"

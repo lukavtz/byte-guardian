@@ -52,7 +52,7 @@
             "112"
           ],
           "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/krovotecheniya_8",
-          "quick": "Позвоните 112",
+          "quick": "Прижмите рану чистой салфеткой или тканью и давите сильно",
           "mistakes": [
             "Не извлекайте инородные предметы из раны",
             "Не накладывайте жгут ниже раны",
@@ -101,7 +101,7 @@
           "contacts": [
             "112"
           ],
-          "quick": "Call 112",
+          "quick": "Press on the wound with a clean wipe or cloth and apply firm pressure",
           "mistakes": [
             "Do not remove foreign objects from the wound",
             "Do not apply a tourniquet below the wound",
@@ -150,7 +150,7 @@
             "112"
           ],
           "source": "俄罗斯紧急情况部 · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/krovotecheniya_8",
-          "quick": "拨打112",
+          "quick": "用清洁纸巾或布料按压伤口，持续用力",
           "mistakes": [
             "不要取出伤口中的异物",
             "不要在伤口下方扎止血带",
@@ -199,7 +199,7 @@
             "112"
           ],
           "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/krovotecheniya_8",
-          "quick": "112 телефонына шалтыратыгыз",
+          "quick": "Яраны чиста салфетка яки тукыма белән басып, көчле басыгыз",
           "mistakes": [
             "Ярадан чит әйберләрне алып чыгармагыз",
             "Жгутны ярадан түбәнрәк салмагыз",
@@ -409,7 +409,7 @@
             "112"
           ],
           "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/serdechno-legochnaya-reanimaciya-slr_3",
-          "quick": "Позвоните 112",
+          "quick": "Поставьте руки на центр грудной клетки и давите прямыми руками весом тела",
           "mistakes": [
             "Не тратьте время на поиск пульса, если дыхания нет",
             "Не прерывайте компрессии дольше чем на 10 секунд",
@@ -458,7 +458,7 @@
           "contacts": [
             "112"
           ],
-          "quick": "Call 112",
+          "quick": "Place your hands on the center of the chest and press with straight arms, using your body weight",
           "mistakes": [
             "Do not waste time searching for a pulse if there is no breathing",
             "Do not pause compressions for longer than 10 seconds",
@@ -507,7 +507,7 @@
             "112"
           ],
           "source": "俄罗斯紧急情况部 · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/serdechno-legochnaya-reanimaciya-slr_3",
-          "quick": "拨打112",
+          "quick": "双手放在胸部中央，手臂伸直，用身体重量按压",
           "mistakes": [
             "没有呼吸时不要浪费时间摸脉",
             "按压中断不要超过10秒",
@@ -556,7 +556,7 @@
             "112"
           ],
           "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/serdechno-legochnaya-reanimaciya-slr_3",
-          "quick": "112 телефонына шалтыратыгыз",
+          "quick": "Кулларны күкрәк куышлыгы уртасына куеп, тура куллар һәм тән авырлыгы белән басыгыз",
           "mistakes": [
             "Сулыш юк икән, пульс эзләүгә вакыт сарыф итмәгез",
             "Басуны 10 секундтан озак өзмәгез",
@@ -766,7 +766,7 @@
             "112"
           ],
           "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/termicheskiy-ozhog_2",
-          "quick": "Позвоните 112",
+          "quick": "Охлаждайте ожог прохладной водой не менее 20 минут",
           "mistakes": [
             "Не наносите масло, крем и зубную пасту",
             "Не вскрывайте пузыри",
@@ -815,7 +815,7 @@
           "contacts": [
             "112"
           ],
-          "quick": "Call 112",
+          "quick": "Cool the burn with cool water for at least 20 minutes",
           "mistakes": [
             "Do not apply oil, cream, or toothpaste",
             "Do not burst blisters",
@@ -864,7 +864,7 @@
             "112"
           ],
           "source": "俄罗斯紧急情况部 · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/termicheskiy-ozhog_2",
-          "quick": "拨打112",
+          "quick": "用凉水冷却灼伤处至少20分钟",
           "mistakes": [
             "不要涂油、药膏或牙膏",
             "不要挑破水泡",
@@ -913,7 +913,7 @@
             "112"
           ],
           "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/termicheskiy-ozhog_2",
-          "quick": "112 телефонына шалтыратыгыз",
+          "quick": "Пешүне ким дигәндә 20 минут салкынча су белән суытыгыз",
           "mistakes": [
             "Май, крем һәм теш пастасы сыламагыз",
             "Куыкчыкларны тишмәгез",
@@ -1124,7 +1124,7 @@
             "112"
           ],
           "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pervaya-pomoshch-pri-obmorozhenii_0",
-          "quick": "Позвоните 112",
+          "quick": "Наложите на повреждённые участки теплоизолирующую повязку",
           "mistakes": [
             "Не растирайте снегом, спиртом или жёсткой тканью",
             "Не опускайте участок в горячую воду",
@@ -1174,7 +1174,7 @@
           "contacts": [
             "112"
           ],
-          "quick": "Call 112",
+          "quick": "Apply an insulating bandage to the affected areas",
           "mistakes": [
             "Do not rub with snow, alcohol, or rough cloth",
             "Do not put the area in hot water",
@@ -1224,7 +1224,7 @@
             "112"
           ],
           "source": "俄罗斯紧急情况部 · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pervaya-pomoshch-pri-obmorozhenii_0",
-          "quick": "拨打112",
+          "quick": "在冻伤部位做保温包扎",
           "mistakes": [
             "不要用雪、酒精或粗布揉搓",
             "不要把部位放进热水",
@@ -1274,7 +1274,7 @@
             "112"
           ],
           "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pervaya-pomoshch-pri-obmorozhenii_0",
-          "quick": "112 телефонына шалтыратыгыз",
+          "quick": "Зыянланган участокларга җылылык изоляцияли торган бәйләвеч салыгыз",
           "mistakes": [
             "Кар, спирт яки каты тукыма белән ышкымагыз",
             "Участокны кайнар суга төшермәгез",
@@ -1484,7 +1484,7 @@
             "112"
           ],
           "source": "Минздрав России · https://static-0.minzdrav.gov.ru/system/attachments/attaches/000/080/129/original/%D0%A3%D1%87%D0%B5%D0%B1%D0%BD%D0%BE%D0%B5_%D0%BF%D0%BE%D1%81%D0%BE%D0%B1%D0%B8%D0%B5_%D0%B4%D0%BB%D1%8F_%D0%BF%D1%80%D0%B5%D0%BF%D0%BE%D0%B4%D0%B0%D0%B2%D0%B0%D1%82%D0%B5%D0%BB%D0%B5%D0%B9.pdf",
-          "quick": "Позвоните 112",
+          "quick": "Если дыхания нет, сделайте 5 вдохов, затем 30 компрессий",
           "mistakes": [
             "Не тратьте время на попытки вылить воду из лёгких",
             "Не оставляйте пострадавшего без наблюдения",
@@ -1533,7 +1533,7 @@
           "contacts": [
             "112"
           ],
-          "quick": "Call 112",
+          "quick": "If there is no breathing, give 5 rescue breaths, then 30 compressions",
           "mistakes": [
             "Do not waste time trying to drain water from the lungs",
             "Do not leave the person unattended",
@@ -1582,7 +1582,7 @@
             "112"
           ],
           "source": "俄罗斯卫生部 · https://static-0.minzdrav.gov.ru/system/attachments/attaches/000/080/129/original/%D0%A3%D1%87%D0%B5%D0%B1%D0%BD%D0%BE%D0%B5_%D0%BF%D0%BE%D1%81%D0%BE%D0%B1%D0%B8%D0%B5_%D0%B4%D0%BB%D1%8F_%D0%BF%D1%80%D0%B5%D0%BF%D0%BE%D0%B4%D0%B0%D0%B2%D0%B0%D1%82%D0%B5%D0%BB%D0%B5%D0%B9.pdf",
-          "quick": "拨打112",
+          "quick": "没有呼吸时先做5次人工呼吸，再做30次按压",
           "mistakes": [
             "不要浪费时间试图把水从肺里倒出",
             "不要把患者单独留下",
@@ -1631,7 +1631,7 @@
             "112"
           ],
           "source": "Россия Сәламәтлек саклау министрлыгы · https://static-0.minzdrav.gov.ru/system/attachments/attaches/000/080/129/original/%D0%A3%D1%87%D0%B5%D0%B1%D0%BD%D0%BE%D0%B5_%D0%BF%D0%BE%D1%81%D0%BE%D0%B1%D0%B8%D0%B5_%D0%B4%D0%BB%D1%8F_%D0%BF%D1%80%D0%B5%D0%BF%D0%BE%D0%B4%D0%B0%D0%B2%D0%B0%D1%82%D0%B5%D0%BB%D0%B5%D0%B9.pdf",
-          "quick": "112 телефонына шалтыратыгыз",
+          "quick": "Сулыш юк икән, 5 сулыш, аннары 30 басу ясагыз",
           "mistakes": [
             "Үпкәдән су чыгарырга маташып вакыт сарыф итмәгез",
             "Зыян күрүчене күзәтүсез калдырмагыз",
@@ -1841,7 +1841,7 @@
             "112"
           ],
           "source": "МЧС России · https://71.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pozharnaya-bezopasnost/otravlenie-ugarnym-gazom",
-          "quick": "Позвоните 112",
+          "quick": "Расстегните тесную одежду и обеспечьте доступ воздуха",
           "mistakes": [
             "Не оставайтесь в загазованном помещении",
             "Не зажигайте огонь и не включайте электроприборы",
@@ -1890,7 +1890,7 @@
           "contacts": [
             "112"
           ],
-          "quick": "Call 112",
+          "quick": "Loosen tight clothing and make sure air can reach the person",
           "mistakes": [
             "Do not stay in a room with gas",
             "Do not light a fire or turn on electrical appliances",
@@ -1939,7 +1939,7 @@
             "112"
           ],
           "source": "俄罗斯紧急情况部 · https://71.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pozharnaya-bezopasnost/otravlenie-ugarnym-gazom",
-          "quick": "拨打112",
+          "quick": "松开紧身衣物，保证空气流通",
           "mistakes": [
             "不要留在有燃气的房间里",
             "不要点火或开启电器",
@@ -1988,7 +1988,7 @@
             "112"
           ],
           "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://71.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/pozharnaya-bezopasnost/otravlenie-ugarnym-gazom",
-          "quick": "112 телефонына шалтыратыгыз",
+          "quick": "Кысык киемне чишегез һәм һава керүен тәэмин итегез",
           "mistakes": [
             "Газ тулган бинада калмагыз",
             "Ут кабызмагыз һәм электр приборларын кабызмагыз",
@@ -2198,7 +2198,7 @@
             "112"
           ],
           "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/travmy-konechnostey-immobilizaciya_0",
-          "quick": "Позвоните 112",
+          "quick": "Зафиксируйте конечность в том положении, в котором она находится",
           "mistakes": [
             "Не вправляйте кость самостоятельно",
             "Не массируйте место перелома",
@@ -2247,7 +2247,7 @@
           "contacts": [
             "112"
           ],
-          "quick": "Call 112",
+          "quick": "Immobilize the limb in the position it is in",
           "mistakes": [
             "Do not set the bone yourself",
             "Do not massage the fracture site",
@@ -2296,7 +2296,7 @@
             "112"
           ],
           "source": "俄罗斯紧急情况部 · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/travmy-konechnostey-immobilizaciya_0",
-          "quick": "拨打112",
+          "quick": "按肢体现有姿势固定",
           "mistakes": [
             "不要自行复位骨头",
             "不要按摩骨折处",
@@ -2345,7 +2345,7 @@
             "112"
           ],
           "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/travmy-konechnostey-immobilizaciya_0",
-          "quick": "112 телефонына шалтыратыгыз",
+          "quick": "Очлыкны ул нинди торышта булса, шул торышта беркетегез",
           "mistakes": [
             "Сөякне үзегез урынына салмагыз",
             "Сыну урынын массажламагыз",
@@ -2554,7 +2554,7 @@
             "112"
           ],
           "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/optimalnoe-polozhenie-tela-postradavshego_9",
-          "quick": "Позвоните 112",
+          "quick": "Придайте пострадавшему устойчивое боковое положение и следите за дыханием",
           "mistakes": [
             "Не поднимайте человека резко на ноги",
             "Не давайте пить до полного пробуждения",
@@ -2602,7 +2602,7 @@
           "contacts": [
             "112"
           ],
-          "quick": "Call 112",
+          "quick": "Place the person in the recovery position",
           "mistakes": [
             "Do not pull the person sharply to their feet",
             "Do not give anything to drink until fully awake",
@@ -2650,7 +2650,7 @@
             "112"
           ],
           "source": "俄罗斯紧急情况部 · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/optimalnoe-polozhenie-tela-postradavshego_9",
-          "quick": "拨打112",
+          "quick": "把患者放成恢复体位",
           "mistakes": [
             "不要猛地把患者拉起来",
             "完全清醒前不要给任何饮品",
@@ -2698,7 +2698,7 @@
             "112"
           ],
           "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/optimalnoe-polozhenie-tela-postradavshego_9",
-          "quick": "112 телефонына шалтыратыгыз",
+          "quick": "Зыян күрүчене тотрыклы ян яткызу торышына китерегез",
           "mistakes": [
             "Кешене кинәт аякка бастырмагыз",
             "Тулысынча уянмаганчы эчертмәгез",

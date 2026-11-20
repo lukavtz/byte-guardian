@@ -55,7 +55,7 @@
             "ЕДДС города"
           ],
           "source": "МЧС России · https://41.mchs.gov.ru/deyatelnost/poleznaya-informaciya/dopolnitelnye-stranicy/staticheskie-stranicy/kompleksnaya-sistema-ekstrennogo-opoveshcheniya-naseleniya/prakticheskie-meropriyatiya/pamyatki-po-deystviyam-naseleniya/pamyatka-po-deystviyam-naseleniya-pri-poluchenii-signala-ekstrennogo-opoveshcheniya-o-radiacionnoy-opasnosti",
-          "quick": "Позвоните 112",
+          "quick": "Зайдите в здание, снимите верхнюю одежду и обувь в пакет",
           "mistakes": [
             "Не выходите на улицу и не отпускайте детей гулять",
             "Не открывайте окна для проветривания",
@@ -107,7 +107,7 @@
             "112",
             "City emergency dispatch service"
           ],
-          "quick": "Call 112",
+          "quick": "Go indoors, put outer clothing and shoes in a bag",
           "mistakes": [
             "Do not go outside and do not let children go out to play",
             "Do not open windows for ventilation",
@@ -159,7 +159,7 @@
             "城市紧急调度服务"
           ],
           "source": "俄罗斯紧急情况部 · https://41.mchs.gov.ru/deyatelnost/poleznaya-informaciya/dopolnitelnye-stranicy/staticheskie-stranicy/kompleksnaya-sistema-ekstrennogo-opoveshcheniya-naseleniya/prakticheskie-meropriyatiya/pamyatki-po-deystviyam-naseleniya/pamyatka-po-deystviyam-naseleniya-pri-poluchenii-signala-ekstrennogo-opoveshcheniya-o-radiacionnoy-opasnosti",
-          "quick": "拨打112",
+          "quick": "进入室内，把外衣和鞋放进袋子",
           "mistakes": [
             "不要外出，不要让孩子出去玩",
             "不要开窗通风",
@@ -211,7 +211,7 @@
             "Шәһәр Бердәм дежур-диспетчер хезмәте"
           ],
           "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://41.mchs.gov.ru/deyatelnost/poleznaya-informaciya/dopolnitelnye-stranicy/staticheskie-stranicy/kompleksnaya-sistema-ekstrennogo-opoveshcheniya-naseleniya/prakticheskie-meropriyatiya/pamyatki-po-deystviyam-naseleniya/pamyatka-po-deystviyam-naseleniya-pri-poluchenii-signala-ekstrennogo-opoveshcheniya-o-radiacionnoy-opasnosti",
-          "quick": "112 телефонына шалтыратыгыз",
+          "quick": "Бинага керегез, өске кием һәм аяк киемен пакетка салыгыз",
           "mistakes": [
             "Урамга чыкмагыз һәм балаларны йөрергә җибәрмәгез",
             "Җилләтү өчен тәрәзәләрне ачмагыз",
@@ -419,7 +419,7 @@
             "Скорая помощь 103"
           ],
           "source": "МЧС России · https://mchs.gov.ru/ministerstvo/o-ministerstve/terminy-mchs-rossii/term/3015 · ГУ МЧС России по Камчатскому краю · https://41.mchs.gov.ru/deyatelnost/poleznaya-informaciya/dopolnitelnye-stranicy/staticheskie-stranicy/kompleksnaya-sistema-ekstrennogo-opoveshcheniya-naseleniya/prakticheskie-meropriyatiya/pamyatki-po-deystviyam-naseleniya/pamyatka-po-deystviyam-naseleniya-pri-poluchenii-signala-ekstrennogo-opoveshcheniya-o-radiacionnoy-opasnosti",
-          "quick": "Позвоните 112",
+          "quick": "Примите таблетку 0,125 г (взрослым и детям от 2 лет) только после официального сообщения властей",
           "mistakes": [
             "Не откладывайте приём: в первые часы защита максимальна",
             "Не храните таблетки дольше срока годности"
@@ -469,7 +469,7 @@
             "112",
             "Ambulance 103"
           ],
-          "quick": "Call 112",
+          "quick": "Take a 0.125 g tablet (for adults and children from 2 years) only after an official announcement by authorities",
           "mistakes": [
             "Do not delay taking it: protection is highest in the first hours",
             "Do not keep tablets beyond their expiration date"
@@ -519,7 +519,7 @@
             "救护车103"
           ],
           "source": "俄罗斯紧急情况部 · https://mchs.gov.ru/ministerstvo/o-ministerstve/terminy-mchs-rossii/term/3015 · 俄罗斯紧急情况部堪察加边疆区总局 · https://41.mchs.gov.ru/deyatelnost/poleznaya-informaciya/dopolnitelnye-stranicy/staticheskie-stranicy/kompleksnaya-sistema-ekstrennogo-opoveshcheniya-naseleniya/prakticheskie-meropriyatiya/pamyatki-po-deystviyam-naseleniya/pamyatka-po-deystviyam-naseleniya-pri-poluchenii-signala-ekstrennogo-opoveshcheniya-o-radiacionnoy-opasnosti",
-          "quick": "拨打112",
+          "quick": "仅在官方正式通知后服用0.125克片剂（成人和2岁以上儿童）",
           "mistakes": [
             "不要拖延服用：最初几小时防护效果最好",
             "不要使用超过有效期的片剂"
@@ -569,7 +569,7 @@
             "Ашыгыч ярдәм 103"
           ],
           "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://mchs.gov.ru/ministerstvo/o-ministerstve/terminy-mchs-rossii/term/3015 · Камчатка крае буенча Россия МЧСы баш идарәсе · https://41.mchs.gov.ru/deyatelnost/poleznaya-informaciya/dopolnitelnye-stranicy/staticheskie-stranicy/kompleksnaya-sistema-ekstrennogo-opoveshcheniya-naseleniya/prakticheskie-meropriyatiya/pamyatki-po-deystviyam-naseleniya/pamyatka-po-deystviyam-naseleniya-pri-poluchenii-signala-ekstrennogo-opoveshcheniya-o-radiacionnoy-opasnosti",
-          "quick": "112 телефонына шалтыратыгыз",
+          "quick": "0,125 г таблетканы (өлкәннәргә һәм 2 яшьтән балаларга) тик хакимиятнең рәсми хәбәреннән соң кабул итегез",
           "mistakes": [
             "Кабул итүне кичектермәгез: беренче сәгатьләрдә саклау иң югары",
             "Таблеткаларны файдалану вакытыннан озак сакламагыз"
@@ -783,7 +783,7 @@
             "ЕДДС города"
           ],
           "source": "МЧС России · https://73.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/deystviya-naseleniya-pri-radiacionnoy-avarii-i-radioaktivnom-zagryaznenii-mestnosti",
-          "quick": "Позвоните 112",
+          "quick": "Наденьте плотную одежду, головной убор и перчатки",
           "mistakes": [
             "Не возвращайтесь домой до разрешения",
             "Не берите с собой загрязнённые вещи и игрушки",
@@ -833,7 +833,7 @@
             "112",
             "City emergency dispatch service"
           ],
-          "quick": "Call 112",
+          "quick": "Put on thick clothing, a hat and gloves",
           "mistakes": [
             "Do not return home until permission is given",
             "Do not take contaminated items or toys with you",
@@ -883,7 +883,7 @@
             "城市紧急调度服务"
           ],
           "source": "俄罗斯紧急情况部 · https://73.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/deystviya-naseleniya-pri-radiacionnoy-avarii-i-radioaktivnom-zagryaznenii-mestnosti",
-          "quick": "拨打112",
+          "quick": "穿厚衣物，戴帽子和手套",
           "mistakes": [
             "未获许可不要回家",
             "不要携带受污染的物品或玩具",
@@ -933,7 +933,7 @@
             "Шәһәр Бердәм дежур-диспетчер хезмәте"
           ],
           "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://73.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/deystviya-naseleniya-pri-radiacionnoy-avarii-i-radioaktivnom-zagryaznenii-mestnosti",
-          "quick": "112 телефонына шалтыратыгыз",
+          "quick": "Тыгыз кием, баш киеме һәм бияләй киегез",
           "mistakes": [
             "Рөхсәтсез өйгә кайтмагыз",
             "Пычранган әйберләрне һәм уенчыкларны үзегез белән алмагыз",
@@ -1142,7 +1142,7 @@
             "ЕДДС города"
           ],
           "source": "МЧС России · https://73.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/deystviya-naseleniya-pri-radiacionnoy-avarii-i-radioaktivnom-zagryaznenii-mestnosti",
-          "quick": "Позвоните 112",
+          "quick": "Снимите верхнюю одежду и обувь у входа",
           "mistakes": [
             "Не вытряхивайте одежду в квартире",
             "Не стирайте загрязнённые вещи в общей машине",
@@ -1190,7 +1190,7 @@
             "112",
             "City emergency dispatch service"
           ],
-          "quick": "Call 112",
+          "quick": "Remove outer clothing and footwear at the entrance",
           "mistakes": [
             "Do not shake out clothing inside your home",
             "Do not wash contaminated items in a shared washing machine",
@@ -1238,7 +1238,7 @@
             "城市紧急调度服务"
           ],
           "source": "俄罗斯紧急情况部 · https://73.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/deystviya-naseleniya-pri-radiacionnoy-avarii-i-radioaktivnom-zagryaznenii-mestnosti",
-          "quick": "拨打112",
+          "quick": "在门口脱下外衣和鞋",
           "mistakes": [
             "不要在室内抖打衣物",
             "不要在共用洗衣机里清洗受污染物品",
@@ -1286,7 +1286,7 @@
             "Шәһәр Бердәм дежур-диспетчер хезмәте"
           ],
           "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://73.mchs.gov.ru/deyatelnost/poleznaya-informaciya/rekomendacii-naseleniyu/deystviya-naseleniya-pri-radiacionnoy-avarii-i-radioaktivnom-zagryaznenii-mestnosti",
-          "quick": "112 телефонына шалтыратыгыз",
+          "quick": "Керү янында өске кием һәм аяк киемен салыгыз",
           "mistakes": [
             "Киемне фатирда селкетмәгез",
             "Пычранган әйберләрне уртак машинада юмагыз",
@@ -1495,7 +1495,7 @@
             "Роспотребнадзор"
           ],
           "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pravila-povedeniya-naseleniya-na-radiaktivno-zagryaznennoy-territorii_2",
-          "quick": "Позвоните 112",
+          "quick": "Пейте бутилированную воду или воду из проверенных источников",
           "mistakes": [
             "Не ешьте продукты, лежавшие открытыми",
             "Не пейте воду из крана без разрешения служб",
@@ -1543,7 +1543,7 @@
             "112",
             "Rospotrebnadzor"
           ],
-          "quick": "Call 112",
+          "quick": "Drink bottled water or water from tested sources",
           "mistakes": [
             "Do not eat food that was left uncovered",
             "Do not drink tap water without permission from the services",
@@ -1591,7 +1591,7 @@
             "俄罗斯消费者权益保护局"
           ],
           "source": "俄罗斯紧急情况部 · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pravila-povedeniya-naseleniya-na-radiaktivno-zagryaznennoy-territorii_2",
-          "quick": "拨打112",
+          "quick": "饮用瓶装水或经过检测的水源的水",
           "mistakes": [
             "不要吃未遮盖的食物",
             "未经服务部门许可不要饮用自来水",
@@ -1639,7 +1639,7 @@
             "Роспотребнадзор"
           ],
           "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pravila-povedeniya-naseleniya-na-radiaktivno-zagryaznennoy-territorii_2",
-          "quick": "112 телефонына шалтыратыгыз",
+          "quick": "Шешә суы яки тикшерелгән чыганаклардан су эчегез",
           "mistakes": [
             "Ачык торган ризыкларны ашамагыз",
             "Хезмәтләр рөхсәтеннән башка кран суын эчмәгез",
@@ -1847,7 +1847,7 @@
             "ЕДДС города"
           ],
           "source": "МЧС России · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pravila-povedeniya-naseleniya-na-radiaktivno-zagryaznennoy-territorii_2",
-          "quick": "Позвоните 112",
+          "quick": "Сравните показания с обычным фоном вашей местности",
           "mistakes": [
             "Не принимайте таблетки по одним показаниям прибора",
             "Не выдавайте непроверенные цифры за прогноз",
@@ -1894,7 +1894,7 @@
             "112",
             "City emergency dispatch service"
           ],
-          "quick": "Call 112",
+          "quick": "Compare readings with the usual background in your area",
           "mistakes": [
             "Do not take pills based on device readings alone",
             "Do not present unverified figures as a forecast",
@@ -1942,7 +1942,7 @@
             "城市紧急调度服务"
           ],
           "source": "俄罗斯紧急情况部 · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pravila-povedeniya-naseleniya-na-radiaktivno-zagryaznennoy-territorii_2",
-          "quick": "拨打112",
+          "quick": "把读数与你所在地区的通常本底比较",
           "mistakes": [
             "不要仅凭设备读数服药",
             "不要把未经核实的数字当作预报发布",
@@ -1989,7 +1989,7 @@
             "Шәһәр Бердәм дежур-диспетчер хезмәте"
           ],
           "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://mchs.gov.ru/deyatelnost/bezopasnost-grazhdan/pravila-povedeniya-naseleniya-na-radiaktivno-zagryaznennoy-territorii_2",
-          "quick": "112 телефонына шалтыратыгыз",
+          "quick": "Күрсәткечләрне җирлегезнең гадәти фоны белән чагыштырыгыз",
           "mistakes": [
             "Прибор күрсәткечләре буенча гына таблетка кабул итмәгез",
             "Тикшерелмәгән саннарны фараз итеп бирмәгез",
@@ -2198,7 +2198,7 @@
             "ЕДДС города"
           ],
           "source": "МЧС России · https://41.mchs.gov.ru/deyatelnost/poleznaya-informaciya/dopolnitelnye-stranicy/staticheskie-stranicy/kompleksnaya-sistema-ekstrennogo-opoveshcheniya-naseleniya/prakticheskie-meropriyatiya/pamyatki-po-deystviyam-naseleniya/pamyatka-po-deystviyam-naseleniya-pri-poluchenii-signala-ekstrennogo-opoveshcheniya-o-radiacionnoy-opasnosti",
-          "quick": "Позвоните 112",
+          "quick": "Зайдите в здание и закройте окна, двери и вентиляцию",
           "mistakes": [
             "Не выходите на балкон и не открывайте окна",
             "Не пользуйтесь вытяжкой и кондиционером",
@@ -2246,7 +2246,7 @@
             "112",
             "City emergency dispatch service"
           ],
-          "quick": "Call 112",
+          "quick": "Go indoors and close windows, doors, and vents",
           "mistakes": [
             "Do not go out on the balcony or open windows",
             "Do not use extractor fans or air conditioners",
@@ -2294,7 +2294,7 @@
             "城市紧急调度服务"
           ],
           "source": "俄罗斯紧急情况部 · https://41.mchs.gov.ru/deyatelnost/poleznaya-informaciya/dopolnitelnye-stranicy/staticheskie-stranicy/kompleksnaya-sistema-ekstrennogo-opoveshcheniya-naseleniya/prakticheskie-meropriyatiya/pamyatki-po-deystviyam-naseleniya/pamyatka-po-deystviyam-naseleniya-pri-poluchenii-signala-ekstrennogo-opoveshcheniya-o-radiacionnoy-opasnosti",
-          "quick": "拨打112",
+          "quick": "进入室内，关闭窗户、门和通风口",
           "mistakes": [
             "不要到阳台上，也不要开窗",
             "不要使用排风扇或空调",
@@ -2342,7 +2342,7 @@
             "Шәһәр Бердәм дежур-диспетчер хезмәте"
           ],
           "source": "Россия Гадәттән тыш хәлләр министрлыгы · https://41.mchs.gov.ru/deyatelnost/poleznaya-informaciya/dopolnitelnye-stranicy/staticheskie-stranicy/kompleksnaya-sistema-ekstrennogo-opoveshcheniya-naseleniya/prakticheskie-meropriyatiya/pamyatki-po-deystviyam-naseleniya/pamyatka-po-deystviyam-naseleniya-pri-poluchenii-signala-ekstrennogo-opoveshcheniya-o-radiacionnoy-opasnosti",
-          "quick": "112 телефонына шалтыратыгыз",
+          "quick": "Бинага керегез һәм тәрәзә, ишек, вентиляцияне ябыгыз",
           "mistakes": [
             "Балконга чыкмагыз һәм тәрәзәләрне ачмагыз",
             "Вытяжка һәм кондиционер кулланмагыз",

@@ -52,7 +52,7 @@
             "102 — полиция"
           ],
           "source": "Минцифры России · https://www.gosuslugi.ru/help/faq/personal_data/504351",
-          "quick": "Позвоните 102",
+          "quick": "Не переходите по ссылке: откройте сайт вручную и проверьте уведомления там",
           "mistakes": [
             "Переходить по ссылкам из неожиданных писем и сообщений",
             "Сообщать коды из СМС и пароли даже «сотруднику поддержки»",
@@ -101,7 +101,7 @@
             "8 800 100-70-10 — Gosuslugi support",
             "102 — police"
           ],
-          "quick": "Call 102",
+          "quick": "Do not follow the link: open the site manually and check your notifications there",
           "mistakes": [
             "Following links in unexpected emails and messages",
             "Sharing SMS codes and passwords, even with a support agent",
@@ -150,7 +150,7 @@
             "102 — 警察"
           ],
           "source": "俄罗斯数字发展部 · https://www.gosuslugi.ru/help/faq/personal_data/504351",
-          "quick": "拨打102",
+          "quick": "不要点链接：手动打开网站并在那里查看通知",
           "mistakes": [
             "点击意外邮件和消息中的链接",
             "把短信验证码和密码告诉任何人，即使对方自称客服",
@@ -199,7 +199,7 @@
             "102 — полиция"
           ],
           "source": "Россия Цифрлаштыру министрлыгы · https://www.gosuslugi.ru/help/faq/personal_data/504351",
-          "quick": "102 телефонына шалтыратыгыз",
+          "quick": "Сылтама буенча күчмәгез: сайтны кулдан ачыгыз һәм хәбәрләрне шунда тикшерегез",
           "mistakes": [
             "Көтелмәгән хатлардан һәм хәбәрләрдән сылтамаларга күчү",
             "СМС кодларын һәм парольләрне хәтта «ярдәм хезмәте хезмәткәренә» дә әйтү",
@@ -408,7 +408,7 @@
             "102 — полиция"
           ],
           "source": "Минцифры России · https://www.gosuslugi.ru/help/faq/personal_data/100465",
-          "quick": "Позвоните 102",
+          "quick": "Завершите все сеансы и отключите чужие устройства",
           "mistakes": [
             "Использовать один пароль для почты, банка и соцсетей",
             "Отключать дополнительное подтверждение входа ради удобства",
@@ -456,7 +456,7 @@
             "8 800 100-70-10 — Gosuslugi support",
             "102 — police"
           ],
-          "quick": "Call 102",
+          "quick": "End all sessions and sign out unknown devices",
           "mistakes": [
             "Use one password for email, banking, and social media",
             "Turn off extra login verification for convenience",
@@ -504,7 +504,7 @@
             "102 — 警察"
           ],
           "source": "俄罗斯数字发展部 · https://www.gosuslugi.ru/help/faq/personal_data/100465",
-          "quick": "拨打102",
+          "quick": "结束所有会话，退出未知设备",
           "mistakes": [
             "邮箱、银行和社交账号使用同一个密码",
             "为了省事关掉额外的登录验证",
@@ -552,7 +552,7 @@
             "102 — полиция"
           ],
           "source": "Россия Цифрлаштыру министрлыгы · https://www.gosuslugi.ru/help/faq/personal_data/100465",
-          "quick": "102 телефонына шалтыратыгыз",
+          "quick": "Барлык сеансларны тәмамлагыз һәм чит җайланмаларны өзегез",
           "mistakes": [
             "Почта, банк һәм социаль челтәрләр өчен бер пароль куллану",
             "Уңайлылык өчен керүнең өстәмә раславын сүндерү",
@@ -761,7 +761,7 @@
             "102 — полиция"
           ],
           "source": "Банк России · https://www.cbr.ru/information_security/pmp",
-          "quick": "Позвоните 102",
+          "quick": "Положите трубку и позвоните в банк по номеру с карты или сайта",
           "mistakes": [
             "Переводить деньги на «безопасный» или «специальный» счёт",
             "Называть коды из СМС и CVV незнакомым людям",
@@ -809,7 +809,7 @@
             "8 800 300-30-00 — Bank of Russia",
             "102 — police"
           ],
-          "quick": "Call 102",
+          "quick": "Hang up and call your bank using the number on your card or its website",
           "mistakes": [
             "Transfer money to a safe or special account",
             "Give SMS codes or CVV to strangers",
@@ -857,7 +857,7 @@
             "102 — 警察"
           ],
           "source": "俄罗斯银行 · https://www.cbr.ru/information_security/pmp",
-          "quick": "拨打102",
+          "quick": "挂断电话，用银行卡或银行网站上的号码回拨银行",
           "mistakes": [
             "向“安全账户”或“专用账户”转账",
             "把短信验证码或CVV码告诉陌生人",
@@ -905,7 +905,7 @@
             "102 — полиция"
           ],
           "source": "Россия Банкы · https://www.cbr.ru/information_security/pmp",
-          "quick": "102 телефонына шалтыратыгыз",
+          "quick": "Трубканы салыгыз һәм банкка картадагы яки сайттагы номер буенча шалтыратыгыз",
           "mistakes": [
             "Акчаны «куркынычсыз» яки «махсус» счетка күчерү",
             "СМС кодларын һәм CVVны таныш булмаган кешеләргә әйтү",
@@ -1114,7 +1114,7 @@
             "8 800 300-30-00 — Банк России"
           ],
           "source": "Минцифры России · https://www.gosuslugi.ru/help/faq/personal_data/210509",
-          "quick": "Позвоните 102",
+          "quick": "Не запускайте подозрительный файл и не давайте ему права администратора",
           "mistakes": [
             "Открывать вложения от незнакомых отправителей",
             "Отключать антивирус ради установки программы",
@@ -1162,7 +1162,7 @@
             "102 — police",
             "8 800 300-30-00 — Bank of Russia"
           ],
-          "quick": "Call 102",
+          "quick": "Do not run the suspicious file and do not give it administrator rights",
           "mistakes": [
             "Open attachments from unknown senders",
             "Disable the antivirus to install a program",
@@ -1210,7 +1210,7 @@
             "8 800 300-30-00 — 俄罗斯银行"
           ],
           "source": "俄罗斯数字发展部 · https://www.gosuslugi.ru/help/faq/personal_data/210509",
-          "quick": "拨打102",
+          "quick": "不要运行可疑文件，不要给它管理员权限",
           "mistakes": [
             "打开陌生发件人的附件",
             "为了安装程序而关闭杀毒软件",
@@ -1258,7 +1258,7 @@
             "8 800 300-30-00 — Россия Банкы"
           ],
           "source": "Россия Цифрлаштыру министрлыгы · https://www.gosuslugi.ru/help/faq/personal_data/210509",
-          "quick": "102 телефонына шалтыратыгыз",
+          "quick": "Шикле файлны эшләтмәгез һәм аңа администратор хокукы бирмәгез",
           "mistakes": [
             "Таныш булмаган җибәрүчеләрдән кушымталарны ачу",
             "Программа урнаштыру өчен антивирусны сүндерү",
@@ -1468,7 +1468,7 @@
             "102 — полиция"
           ],
           "source": "Минцифры России · https://www.gosuslugi.ru/scammer_protection",
-          "quick": "Позвоните 102",
+          "quick": "Смените пароль в сервисе, где произошла утечка, и включите дополнительное подтверждение входа",
           "mistakes": [
             "Публиковать фото документов и карт в соцсетях и чатах",
             "Хранить пароли и коды в открытых заметках",
@@ -1517,7 +1517,7 @@
             "8 800 300-30-00 — Bank of Russia",
             "102 — police"
           ],
-          "quick": "Call 102",
+          "quick": "Change your password in the service where the leak happened and enable extra login verification",
           "mistakes": [
             "Posting photos of documents and cards on social media and in chats",
             "Keeping passwords and codes in plain notes",
@@ -1566,7 +1566,7 @@
             "102 — 警察"
           ],
           "source": "俄罗斯数字发展部 · https://www.gosuslugi.ru/scammer_protection",
-          "quick": "拨打102",
+          "quick": "在发生泄露的服务中修改密码并开启额外的登录验证",
           "mistakes": [
             "在社交网络和聊天中发布证件和银行卡照片",
             "把密码和验证码记在明文笔记中",
@@ -1615,7 +1615,7 @@
             "102 — полиция"
           ],
           "source": "Россия Цифрлаштыру министрлыгы · https://www.gosuslugi.ru/scammer_protection",
-          "quick": "102 телефонына шалтыратыгыз",
+          "quick": "Мәгълүмат чыккан сервисда парольне алыштырыгыз һәм керүнең өстәмә раславын кабызыгыз",
           "mistakes": [
             "Документлар һәм карта фотоларын социаль челтәрләрдә һәм чатларда бастыру",
             "Парольләрне һәм кодларны ачык язмаларда саклау",
@@ -1823,7 +1823,7 @@
             "102 — полиция"
           ],
           "source": "Минцифры России · https://www.gosuslugi.ru/help/faq/personal_data/210509",
-          "quick": "Позвоните 102",
+          "quick": "Не входите в банк и на Госуслуги через публичную сеть",
           "mistakes": [
             "Входить в банк через открытую сеть",
             "Подключаться к сети с подозрительным названием",
@@ -1870,7 +1870,7 @@
             "8 800 300-30-00 — Bank of Russia",
             "102 — police"
           ],
-          "quick": "Call 102",
+          "quick": "Do not log into your bank or Gosuslugi over a public network",
           "mistakes": [
             "Logging into your bank over an open network",
             "Connecting to a network with a suspicious name",
@@ -1917,7 +1917,7 @@
             "102 — 警察"
           ],
           "source": "俄罗斯数字发展部 · https://www.gosuslugi.ru/help/faq/personal_data/210509",
-          "quick": "拨打102",
+          "quick": "不要在公共网络上登录银行或国家服务门户",
           "mistakes": [
             "在开放网络上登录银行",
             "连接名称可疑的网络",
@@ -1964,7 +1964,7 @@
             "102 — полиция"
           ],
           "source": "Россия Цифрлаштыру министрлыгы · https://www.gosuslugi.ru/help/faq/personal_data/210509",
-          "quick": "102 телефонына шалтыратыгыз",
+          "quick": "Җәмәгать челтәре аша банкка һәм Госуслугига кермәгез",
           "mistakes": [
             "Ачык челтәр аша банкка керү",
             "Шикле исемле челтәргә кушылу",
@@ -2173,7 +2173,7 @@
             "102 — полиция"
           ],
           "source": "Банк России · https://www.cbr.ru/information_security/pmp/15082024",
-          "quick": "Позвоните 102",
+          "quick": "Прервите разговор и перезвоните человеку по известному вам номеру",
           "mistakes": [
             "Переводить деньги по просьбе из одного звонка",
             "Верить голосу и видео без проверки другим каналом",
@@ -2221,7 +2221,7 @@
             "8 800 300-30-00 — Bank of Russia",
             "102 — police"
           ],
-          "quick": "Call 102",
+          "quick": "End the call and phone the person back at a number you know",
           "mistakes": [
             "Transfer money on the strength of a single call",
             "Trust a voice or video without checking another way",
@@ -2269,7 +2269,7 @@
             "102 — 警察"
           ],
           "source": "俄罗斯银行 · https://www.cbr.ru/information_security/pmp/15082024",
-          "quick": "拨打102",
+          "quick": "结束通话，用你知道的号码回电本人",
           "mistakes": [
             "仅凭一次通话就转账",
             "不经其他方式核实就相信声音或视频",
@@ -2317,7 +2317,7 @@
             "102 — полиция"
           ],
           "source": "Россия Банкы · https://www.cbr.ru/information_security/pmp/15082024",
-          "quick": "102 телефонына шалтыратыгыз",
+          "quick": "Сөйләшүне туктатыгыз һәм кешегә сез белгән номер буенча кире шалтыратыгыз",
           "mistakes": [
             "Бер шалтыратудагы үтенеч буенча акча күчерү",
             "Тавышка һәм видеога башка каналда тикшермичә ышану",
