@@ -2,6 +2,7 @@
 
 - [DESIGN.md](DESIGN.md) — экраны, навигация и правила интерфейса.
 - [PLAN.md](PLAN.md) — история реализации по шагам.
+- [adr/](adr/) — архитектурные решения, включая [0002-card-enrichment.md](adr/0002-card-enrichment.md).
 - [BRAND.md](BRAND.md) — цвета, типографика, эмодзи и голос бренда.
 - [BRAND-RESEARCH.md](BRAND-RESEARCH.md) — источники фирменного стиля ТИСБИ.
 - [RUN.md](RUN.md) — локальный запуск, деплой и эксплуатация.
