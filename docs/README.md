@@ -9,3 +9,4 @@
 - [BOTFATHER.md](BOTFATHER.md) — тексты и картинка для карточки бота.
 - [SKILLS](../app/skills/README.md) — формат и загрузка skill-файлов.
 - [ASSETS](../assets/README.md) — что лежит в каждой папке `assets/`.
+- [SECURITY-AUDIT-2026-11-20.md](SECURITY-AUDIT-2026-11-20.md) — аудит чата и админки.
