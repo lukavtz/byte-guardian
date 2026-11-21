@@ -7,7 +7,7 @@ from typing import Any
 
 import pytest
 
-from app.handlers.nav import pin_initial_locale
+from app.handlers.nav import start_locale
 from app.services.user_locale import get_locale, set_locale
 
 
@@ -91,29 +91,33 @@ def _user(user_id: int = 7, language_code: str | None = None) -> SimpleNamespace
 
 
 @pytest.mark.asyncio
-async def test_start_never_overwrites_an_explicit_choice() -> None:
+async def test_start_keeps_an_explicit_choice() -> None:
     db = FakeDB({7: "ru"})
     await set_locale(db.factory(), 7, "ru")
 
-    assert await pin_initial_locale(db.factory(), _user(language_code="en")) == "ru"
+    assert await start_locale(db.factory(), _user(language_code="en")) == ("ru", True)
     assert db.locales[7] == "ru"
 
 
 @pytest.mark.asyncio
-async def test_start_pins_the_telegram_language_once() -> None:
+async def test_start_preselects_the_telegram_language_without_writing() -> None:
     db = FakeDB()
 
-    assert await pin_initial_locale(db.factory(), _user(language_code="en")) == "en"
-    assert db.locales[7] == "en" and db.chosen[7] is True
-
-    assert await pin_initial_locale(db.factory(), _user(language_code="ru")) == "en"
-    assert db.locales[7] == "en"
+    assert await start_locale(db.factory(), _user(language_code="en")) == ("en", False)
+    assert db.locales == {} and db.chosen == {}
 
 
 @pytest.mark.asyncio
-async def test_start_seeds_over_a_stored_default_that_was_not_chosen() -> None:
+async def test_start_ignores_a_stored_default_that_was_not_chosen() -> None:
     db = FakeDB({7: "ru"})
     db.chosen[7] = False
 
-    assert await pin_initial_locale(db.factory(), _user(language_code="tt")) == "tt"
-    assert db.locales[7] == "tt"
+    assert await start_locale(db.factory(), _user(language_code="tt")) == ("tt", False)
+    assert db.locales[7] == "ru"
+
+
+@pytest.mark.asyncio
+async def test_start_without_a_user_falls_back_to_russian() -> None:
+    db = FakeDB()
+
+    assert await start_locale(db.factory(), None) == ("ru", False)

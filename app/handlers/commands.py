@@ -20,8 +20,9 @@ from app.handlers.nav import (
     help_screen,
     is_admin_id,
     menu_screen,
-    pin_initial_locale,
+    onboarding_screen,
     settings_screen,
+    start_locale,
     user_locale,
 )
 from app.services.broadcast import set_opt_in
@@ -71,7 +72,12 @@ async def start(
 ) -> None:
     if not await _private_only(message, bot, session_factory):
         return
-    locale = await pin_initial_locale(session_factory, message.from_user)
+    locale, chosen = await start_locale(session_factory, message.from_user)
+    if not chosen:
+        # The first /start asks the one question that must come before the
+        # menu; a deep link is kept for after the tap, not in a table.
+        await show(bot, message.chat.id, onboarding_screen(locale))
+        return
     slug = _card_from_payload(command.args or "")
     screen = (
         card_screen(

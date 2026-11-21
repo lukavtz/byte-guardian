@@ -9,7 +9,8 @@ from urllib.parse import parse_qs, urlparse
 import pytest
 
 from app.content.types import CardView, CategoryView, QuizView, SourceCitation, ThreatView
-from app.services.callbacks import parse_cb
+from app.services.callbacks import cb_onb, parse_cb
+from app.services.i18n import ENABLED_LOCALES
 from app.ui import emoji as emoji_mod
 from app.ui.emoji import (
     DEFAULT_IDS,
@@ -35,6 +36,7 @@ from app.ui.render import (
     render_chat,
     render_menu,
     render_not_found,
+    render_onboarding,
     render_question,
     render_result,
     render_sections,
@@ -138,8 +140,16 @@ def _utf16_len(text: str) -> int:
     return len(text.encode("utf-16-le")) // 2
 
 
+LANGUAGE_NAMES = {"ru": "Русский", "en": "English", "zh": "中文", "tt": "Татарча"}
+
+
+def _onboarding(locale: str = LOCALE) -> RichScreen:
+    return render_onboarding(locale, LANGUAGE_NAMES)
+
+
 def _screens() -> list[RichScreen]:
     return [
+        _onboarding(),
         render_menu([_category()], LOCALE),
         render_chat(LOCALE),
         render_category(_category(), [_threat()], LOCALE, 1, 1),
@@ -968,6 +978,45 @@ def test_navigation_screens_keep_only_the_menu_emphasized() -> None:
         assert [(button["data"], button["style"]) for button in emphasized] == [
             ("b1:menu", "success")
         ]
+
+
+def test_onboarding_leads_with_the_banner_and_a_warm_heading() -> None:
+    html = _onboarding().html
+    assert html.startswith(_img_src(BANNER))
+    assert html.index("<img") < html.index("<h1>") < html.index("<hr/>")
+    text = strip_premium(re.sub(r"<[^>]+>", "\n", html))
+    assert "Привет, я Байт" in text
+    assert "На каком языке" in text
+    assert "Карточек" not in text and "раздел" not in text.lower()
+
+
+def test_onboarding_offers_four_languages_two_by_two() -> None:
+    rows = _rows(_onboarding().html)
+    assert len(rows) == 2
+    assert all(len(row) == 2 for row in rows)
+    labels = [button["label"] for row in rows for button in row]
+    assert labels == [f"🌐 {LANGUAGE_NAMES[code]}" for code in ENABLED_LOCALES]
+    assert [button["data"] for row in rows for button in row] == [
+        cb_onb(code) for code in ENABLED_LOCALES
+    ]
+
+
+def test_onboarding_emphasizes_only_the_preselected_language() -> None:
+    for locale in ENABLED_LOCALES:
+        html = _onboarding(locale).html
+        primary = _primary(html)
+        assert [button["data"] for button in primary] == [cb_onb(locale)]
+        assert [button["style"] for button in _emphasized(html)] == ["primary"]
+
+
+def test_onboarding_has_no_keyboard_and_no_menu_row() -> None:
+    screen = _onboarding()
+    assert screen.keyboard is None
+    assert not any(data == "b1:menu" for data in _data(screen.html))
+
+
+def test_onboarding_fits_the_rich_limit() -> None:
+    assert _utf16_len(_onboarding().html) < 4000
 
 
 def test_quiz_styles_per_screen() -> None:

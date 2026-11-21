@@ -46,6 +46,7 @@ from app.ui.render import (
     render_language,
     render_menu,
     render_not_found,
+    render_onboarding,
     render_sections,
 )
 
@@ -76,23 +77,22 @@ async def user_locale(
     )
 
 
-async def pin_initial_locale(
+async def start_locale(
     session_factory: async_sessionmaker[AsyncSession], user: object | None
-) -> str:
-    """Seed the Telegram language once, never over an explicit choice.
+) -> tuple[str, bool]:
+    """The language ``/start`` opens in, and whether the user already chose one.
 
-    ``locale_chosen`` marks a language the user picked in the UI, so a later
-    ``/start`` after a Telegram language change leaves it alone.
+    Before the picker the Telegram language preselects the answer; the column
+    is written only when a language button is tapped, so an ignored picker
+    still shows up on the next ``/start``.
     """
     if user is None:
-        return resolve_locale(None)
+        return resolve_locale(None), False
     user_id = int(getattr(user, "id", 0))
     stored, chosen = await locale_state(session_factory, user_id)
     if chosen and stored:
-        return stored
-    locale = resolve_locale(getattr(user, "language_code", None))
-    await set_locale(session_factory, user_id, locale)
-    return locale
+        return stored, True
+    return resolve_locale(getattr(user, "language_code", None)), False
 
 
 async def broadcast_opted_in(
@@ -165,6 +165,11 @@ def help_screen(locale: str) -> RichScreen:
 
 def language_screen(locale: str) -> RichScreen:
     return render_language(locale, LANGUAGE_NAMES)
+
+
+def onboarding_screen(locale: str) -> RichScreen:
+    """The first-start picker: same four names, its own screen and callback."""
+    return render_onboarding(locale, LANGUAGE_NAMES)
 
 
 def _is_private(query: CallbackQuery) -> bool:
@@ -363,6 +368,30 @@ async def on_random(
         else None
     )
     await _redraw(query, bot, screen or render_not_found(locale))
+
+
+@router.callback_query(F.data.startswith("b1:onb:"))
+async def on_onboarding_lang(
+    query: CallbackQuery,
+    bot: Bot,
+    repo: ContentRepository,
+    session_factory: async_sessionmaker[AsyncSession],
+    settings: Settings | None = None,
+) -> None:
+    """A language tap on the first-start picker: save it and step into the menu."""
+    await query.answer()
+    callback = parse_cb(query.data)
+    if callback is None or callback.action != "onb" or callback.arg not in ENABLED_LOCALES:
+        return
+    user = query.from_user
+    if user is None:
+        return
+    await save_locale(session_factory, user.id, callback.arg)
+    await _redraw(
+        query,
+        bot,
+        await menu_screen(repo, callback.arg, is_admin_id(settings, user.id)),
+    )
 
 
 @router.callback_query(F.data.startswith("b1:lang:"))

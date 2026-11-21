@@ -12,6 +12,7 @@ Screens are stateless: everything needed to redraw arrives in the callback.
     b1:quiz:<slug>:<qid>:<option>:<seed>
     b1:quiz_next:<slug>:<qid>:<seed>
     b1:lang:<code>
+    b1:onb:<code>
     b1:lang_menu
     b1:search_hint
     b1:admin
@@ -55,6 +56,7 @@ ACTIONS = frozenset(
         "quiz",
         "quiz_next",
         "lang",
+        "onb",
         "lang_menu",
         "search_hint",
         "admin",
@@ -192,6 +194,11 @@ def cb_quiz_next(slug: str, qid: str, seed: str) -> str:
 
 def cb_lang(code: str) -> str:
     return _pack("lang", _lang(code))
+
+
+def cb_onb(code: str) -> str:
+    """A language tap on the first-start picker: save it, then open the menu."""
+    return _pack("onb", _lang(code))
 
 
 def cb_lang_menu() -> str:
@@ -411,7 +418,7 @@ def parse_cb(data: str | None) -> Callback | None:
             return None
         return Callback(action, arg=args[0], page=page)
 
-    if action in ("lang", "ask", "game"):
+    if action in ("lang", "onb", "ask", "game"):
         return Callback(action, arg=args[0]) if len(args) == 1 and args[0] else None
 
     if action == "bc":

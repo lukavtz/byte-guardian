@@ -33,6 +33,7 @@ from app.services.callbacks import (
     cb_chat_exit,
     cb_game,
     cb_lang,
+    cb_onb,
     cb_quiz,
     cb_quiz_next,
     cb_random,
@@ -247,6 +248,35 @@ def render_sections(categories: list[CategoryView], locale: str) -> RichScreen:
     rows.append(rich_row(menu_button(locale)))
     heading = f"{premium('catalog', '📂')} {_esc(t(locale, 'button.sections'))}"
     html = _header("hero", heading, f"<p>{_esc(t(locale, 'sections.lead'))}</p>")
+    return RichScreen(html + "\n".join(rows))
+
+
+def render_onboarding(locale: str, names: Mapping[str, str]) -> RichScreen:
+    """First start: the banner, who the bot is, and the one question worth asking.
+
+    The language picked in Telegram comes preselected, but nothing is stored
+    until a button is tapped: the choice is the callback, not a guess.
+    """
+    languages = [
+        rich_button(
+            names[code],
+            data=cb_onb(code),
+            style="primary" if code == locale else None,
+            icon=("lang", "🌐"),
+        )
+        for code in ENABLED_LOCALES
+    ]
+    rows = [
+        rich_row(*languages[index : index + 2])
+        for index in range(0, len(languages), 2)
+    ]
+    html = (
+        f"{_img(BANNER)}"
+        f"<h1>{premium('duck', '🐻')} {_esc(t(locale, 'onboarding.greeting'))}</h1>"
+        f"<p>{_esc(t(locale, 'onboarding.about.1'))}<br/>"
+        f"{_esc(t(locale, 'onboarding.about.2'))}</p><hr/>"
+        f"<p><b>{premium('lang', '🌐')} {_esc(t(locale, 'onboarding.question'))}</b></p>"
+    )
     return RichScreen(html + "\n".join(rows))
 
 
