@@ -54,6 +54,8 @@ SEVERITIES = {1: "low", 2: "medium", 3: "high"}
 ART = "https://raw.githubusercontent.com/lukavtz/byte-guardian/main/assets/art"
 # The menu opens with the same banner the README shows, straight from assets/.
 BANNER = "https://raw.githubusercontent.com/lukavtz/byte-guardian/main/assets/brand/banner.jpg"
+# Sections open with Byte himself: the approved portrait, not borrowed art.
+BYTE = "https://raw.githubusercontent.com/lukavtz/byte-guardian/main/assets/brand/byte.jpg"
 EXT = "jpg"
 
 
@@ -61,7 +63,7 @@ EXT = "jpg"
 # Hash the deployed art bytes so any art change makes every image a fresh URL.
 def _art_version(root: Path) -> str:
     art = root / "assets" / "art"
-    files = sorted(art.glob("*.jpg")) + sorted((root / "assets" / "brand").glob("banner.jpg"))
+    files = sorted(art.glob("*.jpg")) + sorted((root / "assets" / "brand").glob("*.jpg"))
     digest = hashlib.sha256()
     for path in files:
         digest.update(path.name.encode())
@@ -261,7 +263,7 @@ def render_sections(categories: list[CategoryView], locale: str) -> RichScreen:
     ]
     rows.append(rich_row(menu_button(locale)))
     heading = f"{premium('catalog', '📂')} {_esc(t(locale, 'button.sections'))}"
-    html = _header("hero", heading, f"<p>{_esc(t(locale, 'sections.lead'))}</p>")
+    html = f"{_img(BYTE)}<h1>{heading}</h1><p>{_esc(t(locale, 'sections.lead'))}</p><hr/>"
     return RichScreen(html + "\n".join(rows))
 
 

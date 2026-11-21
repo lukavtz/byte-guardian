@@ -27,6 +27,7 @@ from app.ui.render import (
     ART,
     ART_VERSION,
     BANNER,
+    BYTE,
     CARD_CAP,
     EXT,
     RichScreen,
@@ -543,6 +544,16 @@ def test_sections_screen_lists_eight_sections_then_a_menu_button() -> None:
     assert len(menu) == 1
     assert menu[0]["label"] == "🏠 Меню" and menu[0]["style"] == "success"
     assert _rows(screen.html)[-1][-1]["data"] == "b1:menu"
+
+
+def test_sections_screen_opens_with_the_approved_byte_portrait() -> None:
+    """Sections lead with Byte himself (assets/brand/byte.jpg), never the hero."""
+    html = render_sections([_category()], LOCALE).html
+    assert _img_src(BYTE) in html
+    assert "assets/brand/byte.jpg" in BYTE
+    assert "hero.jpg" not in html
+    assert html.index("<img ") < html.index("<h1>")
+    assert "Разделы" in strip_premium(html)
 
 
 def test_every_screen_but_the_menu_and_chat_ends_with_one_success_menu_button() -> None:
