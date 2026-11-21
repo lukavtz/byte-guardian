@@ -14,6 +14,8 @@ from typing import Any
 
 import httpx
 from aiogram.types import Message
+from redis.asyncio import Redis
+from redis.exceptions import RedisError
 
 from app.config import Settings
 from app.content.repository import ContentRepository
@@ -41,6 +43,8 @@ CHAT_WINDOW = 60.0
 GROUP_LIMIT = 1
 GROUP_WINDOW = 10.0
 MAX_BUCKETS = 10_000
+RATE_NAMESPACE = "rl:ask"
+RATE_REDIS_ERROR = "RATE_REDIS_ERROR"
 
 TEMPERATURE = 0.3
 MAX_TOKENS = 700
@@ -483,15 +487,69 @@ class _Bucket:
 
 
 class RateLimiter:
-    """In-memory token buckets: 5/min user, 20/min chat, 1/10 s in a group."""
+    """Token buckets: 5/min user, 20/min chat, 1/10 s group.
 
-    def __init__(self, clock: Callable[[], float] = time.monotonic) -> None:
+    With a Redis client the buckets are shared fixed-window counters, so a
+    restart or a second replica keeps the same budget. Memory token buckets
+    are used only when Redis is absent or failing.
+    """
+
+    def __init__(
+        self,
+        clock: Callable[[], float] = time.monotonic,
+        *,
+        redis: Redis | None = None,
+        wall_clock: Callable[[], float] = time.time,
+        namespace: str = RATE_NAMESPACE,
+    ) -> None:
         self._clock = clock
+        self._redis = redis
+        self._wall_clock = wall_clock
+        self._namespace = namespace
+        self._redis_down = False
         self._users: dict[int, _Bucket] = {}
         self._chats: dict[int, _Bucket] = {}
         self._groups: dict[int, _Bucket] = {}
 
-    def allow(self, *, user_id: int, chat_id: int, group: bool) -> bool:
+    async def allow(self, *, user_id: int, chat_id: int, group: bool) -> bool:
+        if self._redis is not None:
+            try:
+                allowed = await self._allow_redis(user_id, chat_id, group)
+            except (RedisError, OSError) as exc:
+                if not self._redis_down:
+                    logger.warning("%s: %s; using memory fallback", RATE_REDIS_ERROR, type(exc).__name__)
+                self._redis_down = True
+            else:
+                self._redis_down = False
+                return allowed
+        return self._allow_memory(user_id, chat_id, group)
+
+    async def _allow_redis(self, user_id: int, chat_id: int, group: bool) -> bool:
+        assert self._redis is not None
+        now = self._wall_clock()
+        scopes = [
+            (f"{self._namespace}:user:{user_id}", USER_LIMIT, USER_WINDOW),
+            (f"{self._namespace}:chat:{chat_id}", CHAT_LIMIT, CHAT_WINDOW),
+        ]
+        if group:
+            scopes.append((f"{self._namespace}:group:{chat_id}", GROUP_LIMIT, GROUP_WINDOW))
+        keys = [f"{prefix}:{int(now // window)}" for prefix, _, window in scopes]
+        # ponytail: single Redis node; add hash tags and one Lua check if clustering.
+        async with self._redis.pipeline(transaction=True) as pipe:
+            for key, (_, _, window) in zip(keys, scopes, strict=True):
+                pipe.incr(key)
+                pipe.expire(key, max(1, int(window)))
+            counts = await pipe.execute()
+        if all(int(count) <= limit for count, (_, limit, _) in zip(counts[::2], scopes, strict=True)):
+            return True
+        # Refund every increment of this rejected call so it costs no budget.
+        async with self._redis.pipeline(transaction=True) as pipe:
+            for key in keys:
+                pipe.decr(key)
+            await pipe.execute()
+        return False
+
+    def _allow_memory(self, user_id: int, chat_id: int, group: bool) -> bool:
         now = self._clock()
         buckets = [
             self._users.setdefault(user_id, _Bucket(USER_LIMIT, USER_WINDOW, now)),
