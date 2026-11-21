@@ -20,11 +20,11 @@ from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from html import escape
 from pathlib import Path
-from urllib.parse import quote, urlencode
+from urllib.parse import quote, urlencode, urlparse
 
 from aiogram.types import InlineKeyboardMarkup
 
-from app.content.types import CardView, CategoryView, QuizView, ThreatView
+from app.content.types import CardView, CategoryView, QuizView, SourceCitation, ThreatView
 from app.services.callbacks import (
     cb_admin,
     cb_card,
@@ -92,6 +92,18 @@ def _no_links(value: object) -> str:
     text = LINK.sub("", str(value))
     text = re.sub(r"\(\s*\)", "", text)
     return re.sub(r"\s{2,}", " ", text).strip(" ·,;—()-")
+
+
+def _citations(citations: tuple[SourceCitation, ...]) -> list[str]:
+    """Clickable source names: https only, two at most, the org is the label.
+
+    The address stays in the attribute, so the footer reads as organizations.
+    """
+    return [
+        f'<a href="{escape(cite.url, quote=True)}">{_esc(cite.org)}</a>'
+        for cite in citations
+        if urlparse(cite.url).scheme == "https"
+    ][:2]
 
 
 def _utf16(text: str) -> int:
@@ -349,6 +361,15 @@ def _card_html(card: CardView, locale: str, shown: list[int], summary: str | Non
     quick = card.quick or (card.contacts[0] if card.contacts else "")
     numbers = " · ".join(item for item in contacts if item and item != "…")
     emergency = f"<p><b>{premium('warning', '⚠️')} {_esc(numbers)}</b></p>" if numbers else ""
+    mistakes = (
+        f"<b>{premium('cancel', '❌')} {_esc(t(locale, 'card.mistakes'))}</b>"
+        f"<br/>{_items(card.mistakes, 3)}"
+        if card.mistakes
+        else ""
+    )
+    # Subscribed seeds carry citations; the plain source line is the fallback.
+    sources = _citations(card.citations) or ([_esc(source)] if source else [])
+    updated = f"{_esc(t(locale, 'card.updated'))} {_esc(card.updated)}" if card.updated else ""
     return (
         _card_header(
             f"{premium(card.category_slug, _esc(card.icon))} {_esc(card.title)}",
@@ -359,14 +380,20 @@ def _card_html(card: CardView, locale: str, shown: list[int], summary: str | Non
         + _section("card.quick", _esc(quick), locale, ("warning", "⚠️"))
         + _section("card.signs", signs, locale, ("eyes", "👀"))
         + _details("card.during", during, locale, opened=True, icon=("fire", "🔥"))
-        + _details("card.details_more", before + after + forbidden, locale, icon=("catalog", "📂"))
+        + _details(
+            "card.details_more",
+            before + after + forbidden + mistakes,
+            locale,
+            icon=("catalog", "📂"),
+        )
         + (f"<p>… {_esc(t(locale, 'card.truncated'))}</p>" if truncated else "")
         + "<footer>"
         + " · ".join(
             [
                 f"{premium('duck', '🦆')} {_esc(brand)}",
                 *contacts,
-                *([_esc(source)] if source else []),
+                *sources,
+                *([updated] if updated else []),
             ]
         )
         + "</footer>"

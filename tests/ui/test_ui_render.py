@@ -8,7 +8,7 @@ from urllib.parse import parse_qs, urlparse
 
 import pytest
 
-from app.content.types import CardView, CategoryView, QuizView, ThreatView
+from app.content.types import CardView, CategoryView, QuizView, SourceCitation, ThreatView
 from app.services.callbacks import parse_cb
 from app.ui import emoji as emoji_mod
 from app.ui.emoji import (
@@ -786,6 +786,78 @@ def test_card_footer_names_sources_without_links() -> None:
     assert "http" not in footer
     assert "mchs.gov.ru" not in footer
     assert "МЧС России" in footer and "101" in footer
+
+
+def test_card_footer_links_at_most_two_citations_by_org() -> None:
+    card = dataclasses.replace(
+        _card(),
+        source="",
+        citations=(
+            SourceCitation(org="МЧС России", url="https://mchs.gov.ru/fire"),
+            SourceCitation(org="Роспотребнадзор", url="https://rospotrebnadzor.ru/a"),
+            SourceCitation(org="Третий", url="https://example.org/x"),
+        ),
+    )
+    html = render_card(card, LOCALE, page=1, has_quiz=False).html
+    footer = html[html.rindex("<footer>") : html.rindex("</footer>")]
+
+    assert footer.count("<a ") == 2
+    assert '<a href="https://mchs.gov.ru/fire">МЧС России</a>' in footer
+    assert '<a href="https://rospotrebnadzor.ru/a">Роспотребнадзор</a>' in footer
+    assert "example.org" not in footer
+    # The address lives in the attribute only: the visible text stays clean.
+    assert "https://" not in re.sub(r'<a href="[^"]*">', "", footer)
+    assert "101" in footer
+
+
+def test_card_footer_skips_non_https_citations() -> None:
+    card = dataclasses.replace(
+        _card(),
+        source="",
+        citations=(
+            SourceCitation(org="Небезопасно", url="http://mchs.gov.ru/fire"),
+            SourceCitation(org="Скрипт", url="javascript:alert(1)"),
+        ),
+    )
+    html = render_card(card, LOCALE, page=1, has_quiz=False).html
+    footer = html[html.rindex("<footer>") : html.rindex("</footer>")]
+
+    assert "<a " not in footer
+    assert "http://" not in footer
+    assert "javascript:" not in footer
+
+
+def test_card_collapses_common_mistakes_inside_details() -> None:
+    card = dataclasses.replace(
+        _card(),
+        mistakes=("Открыть окна", "Спуститься в лифте", "Третья ошибка", "Четвёртая"),
+    )
+    html = render_card(card, LOCALE, page=1, has_quiz=True).html
+
+    assert len(_closed_details(html)) <= 2
+    assert "Частые ошибки" in html
+    assert "• Открыть окна" in html
+    assert "• Третья ошибка" in html
+    assert "Четвёртая" not in html
+    body = _closed_details(html)[-1].group("body")
+    assert "Частые ошибки" in body
+
+
+def test_card_without_mistakes_has_no_mistakes_block() -> None:
+    html = render_card(_card(), LOCALE, page=1, has_quiz=True).html
+    assert "Частые ошибки" not in html
+
+
+def test_card_footer_shows_the_update_date_once() -> None:
+    card = dataclasses.replace(_card(), updated="2026-11-20")
+    html = render_card(card, LOCALE, page=1, has_quiz=False).html
+    footer = strip_premium(html[html.rindex("<footer>") : html.rindex("</footer>")])
+
+    assert html.count("Обновлено") == 1
+    assert footer.endswith("Обновлено 2026-11-20")
+    assert strip_premium(render_card(_card(), LOCALE, page=1, has_quiz=False).html).count(
+        "Обновлено"
+    ) == 0
 
 
 def test_card_buttons_are_quiz_back_and_share() -> None:
