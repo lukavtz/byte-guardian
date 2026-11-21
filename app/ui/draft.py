@@ -17,7 +17,7 @@ from aiogram import Bot
 from aiogram.exceptions import TelegramBadRequest, TelegramRetryAfter
 from aiogram.types import InlineKeyboardMarkup, InputRichMessage
 
-from app.services.llm import draft_html, strip_html
+from app.services.llm import draft_html, rich_html, strip_html
 from app.ui.delivery import show
 from app.ui.render import RichScreen
 
@@ -92,15 +92,15 @@ class DraftSink:
         if self._finished:
             return
         self._finished = True
-        html = strip_html(text) or "…"
+        plain = strip_html(text) or "…"
         try:
-            await show(self._bot, self._chat_id, RichScreen(html, markup))
+            await show(self._bot, self._chat_id, RichScreen(rich_html(text) or "…", markup))
         except Exception:
             # The draft is chrome; the answer is not. One plain send instead.
             logger.warning("draft answer failed; sending plain text", exc_info=True)
             with suppress(Exception):
                 await self._bot.send_message(
-                    chat_id=self._chat_id, text=html, reply_markup=markup
+                    chat_id=self._chat_id, text=plain, reply_markup=markup
                 )
         finally:
             with suppress(Exception):

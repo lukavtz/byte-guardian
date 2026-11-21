@@ -99,7 +99,7 @@ def draft_html(text: str, *, complete: bool) -> str:
         cut = max(value.rfind("\n"), value.rfind(" "), value.rfind(">"))
         if cut > 0:
             value = value[:cut].rstrip()
-    rendered = strip_html(markdown_to_html(value))
+    rendered = rich_html(markdown_to_html(value))
     if len(rendered) > DRAFT_CHARS:
         rendered = rendered[: DRAFT_CHARS - 1].rstrip() + "…"
     return rendered
@@ -423,7 +423,7 @@ class _Cleaner(HTMLParser):
             return
         if tag in VOID_TAGS:
             if self.visible < TEXT_LIMIT:
-                self.parts.append("<br/>")
+                self.parts.append("\n")
                 self.visible += 1
         elif tag in ALLOWED_TAGS:
             self.parts.append(f"<{tag}>")
@@ -457,8 +457,8 @@ class _Cleaner(HTMLParser):
             self.done = True
             return
         chunk = data[:room]
-        # Raw newlines collapse in a rich message; a break keeps the paragraph.
-        self.parts.append(escape(chunk, quote=False).replace("\n", "<br/>"))
+        # `sendMessage` HTML has no `<br/>`: a newline is the break it accepts.
+        self.parts.append(escape(chunk, quote=False))
         self.visible += len(chunk)
         if len(data) > room:
             self._ellipsis()
@@ -471,11 +471,20 @@ class _Cleaner(HTMLParser):
 
 
 def strip_html(text: str) -> str:
-    """Keep b/i/u/s/code, turn line breaks into `<br/>`, escape the rest, cap 1800 chars."""
+    """Keep b/i/u/s/code, escape the rest, cap 1800 chars.
+
+    Breaks stay literal `\\n`: `sendMessage` HTML has no `<br/>`, so a raw
+    newline is the only form Bot API accepts in a final answer.
+    """
     cleaner = _Cleaner()
     cleaner.feed(markdown_to_html(text or ""))
     cleaner.close()
     return "".join(cleaner.parts).strip()
+
+
+def rich_html(text: str) -> str:
+    """`strip_html` for a rich message, where a raw newline collapses."""
+    return strip_html(text).replace("\n", "<br/>")
 
 
 class _Bucket:

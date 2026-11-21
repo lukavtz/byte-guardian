@@ -36,6 +36,7 @@ def test_draft_html_cuts_a_partial_word_and_unfinished_tag() -> None:
 
 def test_draft_html_keeps_a_complete_answer_and_caps_it() -> None:
     assert service.draft_html("<b>Готово</b>", complete=True) == "<b>Готово</b>"
+    assert service.draft_html("Один.\n\nДва.", complete=True) == "Один.<br/><br/>Два."
     capped = service.draft_html("а" * 4000, complete=False)
     assert len(capped) <= 3500
     assert capped.endswith("…")
@@ -161,12 +162,14 @@ async def test_draft_finish_sanitizes_and_sends_exactly_once(monkeypatch: pytest
     monkeypatch.setattr(ui_draft, "show", shown)
     sink = ui_draft.DraftSink(bot, chat_id=1, draft_id=42, clock=_Clock())  # type: ignore[arg-type]
 
-    await sink.finish('<b onclick="x">Ответ</b>', None)
+    await sink.finish('<b onclick="x">Ответ</b>\n\nДва', None)
     await sink.finish("второй раз", None)
 
     shown.assert_awaited_once()
     screen = shown.await_args.args[2]
     assert "onclick" not in screen.html
+    # A rich message collapses raw newlines, so its breaks are `<br/>`.
+    assert screen.html == "<b>Ответ</b><br/><br/>Два"
     assert bot.send_message_draft.await_count == 1
 
 
@@ -175,8 +178,8 @@ async def test_draft_finish_falls_back_when_the_rich_send_fails(monkeypatch: pyt
     monkeypatch.setattr(ui_draft, "show", AsyncMock(side_effect=RuntimeError("refused")))
     sink = ui_draft.DraftSink(bot, chat_id=1, draft_id=42, clock=_Clock())  # type: ignore[arg-type]
 
-    await sink.finish("Ответ", None)
+    await sink.finish("Один.\nДва", None)
 
     bot.send_message.assert_awaited_once()
-    assert bot.send_message.await_args.kwargs["text"] == "Ответ"
+    assert bot.send_message.await_args.kwargs["text"] == "Один.\nДва"
     bot.send_message_draft.assert_awaited_once()

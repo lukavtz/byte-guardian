@@ -194,8 +194,13 @@ def test_strip_answer_urls_and_draft_cut() -> None:
 
 
 def test_paragraph_break_survives_the_sanitizer() -> None:
-    assert service.strip_html("Один.\n\nДва.") == "Один.<br/><br/>Два."
-    assert service.strip_html("Шаг.<br>Ещё шаг.") == "Шаг.<br/>Ещё шаг."
+    assert service.strip_html("Один.\n\nДва.") == "Один.\n\nДва."
+    assert service.strip_html("Шаг.<br>Ещё шаг.") == "Шаг.\nЕщё шаг."
+    assert "<br" not in service.strip_html("Шаг.<br/>Ещё\nшаг.")
+
+
+def test_rich_html_keeps_breaks_for_rich_messages() -> None:
+    assert service.rich_html("Один.\n\nДва.") == "Один.<br/><br/>Два."
 
 
 def test_answer_cap_is_eighteen_hundred_chars() -> None:
@@ -318,7 +323,26 @@ async def test_paragraphs_survive_the_delivery(monkeypatch: pytest.MonkeyPatch) 
     await _respond(message, "что делать при запахе газа?")
 
     sent = message.answer.await_args.args[0]
-    assert "Не паникуй.<br/><br/>Два." in sent
+    assert "Не паникуй.\n\nДва." in sent
+    assert "<br" not in sent
+
+
+async def test_send_gets_html_the_bot_api_accepts(monkeypatch: pytest.MonkeyPatch) -> None:
+    # `sendMessage` HTML has no `<br/>`; a literal newline is the only break.
+    body = "<b>Шаг.</b>\n\n• Перекройте газ"
+    monkeypatch.setattr(service, "client_for", lambda settings: _ok(body))
+    sent: list[str] = []
+
+    async def fake_send(message, text, *, group, markup=None):
+        sent.append(text)
+
+    monkeypatch.setattr(handlers, "_send", fake_send)
+    message = _message("что делать при запахе газа?")
+    await _respond(message, "что делать при запахе газа?")
+
+    (text,) = sent
+    assert text == "<b>Шаг.</b>\n\n• Перекройте газ"
+    assert "<br" not in text
 
 
 async def test_chat_mode_replies_with_one_styled_exit_button(monkeypatch: pytest.MonkeyPatch) -> None:
