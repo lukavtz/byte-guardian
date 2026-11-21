@@ -54,8 +54,6 @@ SEVERITIES = {1: "low", 2: "medium", 3: "high"}
 ART = "https://raw.githubusercontent.com/lukavtz/byte-guardian/main/assets/art"
 # The menu opens with the same banner the README shows, straight from assets/.
 BANNER = "https://raw.githubusercontent.com/lukavtz/byte-guardian/main/assets/brand/banner.jpg"
-# Sections open with Byte himself: the approved portrait, not borrowed art.
-BYTE = "https://raw.githubusercontent.com/lukavtz/byte-guardian/main/assets/brand/byte.jpg"
 EXT = "jpg"
 
 
@@ -263,7 +261,10 @@ def render_sections(categories: list[CategoryView], locale: str) -> RichScreen:
     ]
     rows.append(rich_row(menu_button(locale)))
     heading = f"{premium('catalog', '📂')} {_esc(t(locale, 'button.sections'))}"
-    html = f"{_img(BYTE)}<h1>{heading}</h1><p>{_esc(t(locale, 'sections.lead'))}</p><hr/>"
+    html = (
+        f"{_img(f'{ART}/spheres.jpg')}<h1>{heading}</h1>"
+        f"<p>{_esc(t(locale, 'sections.lead'))}</p><hr/>"
+    )
     return RichScreen(html + "\n".join(rows))
 
 
