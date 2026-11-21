@@ -169,6 +169,20 @@ def _header(slug: str, heading: str, lead: str = "") -> str:
     return f"{_art(slug)}<h1>{heading}</h1>{lead}<hr/>"
 
 
+# Language code -> (emoji name, fallback). Only `tt` has a pinned id, so the
+# other three stay plain characters and never borrow the globe.
+FLAGS: dict[str, tuple[str, str]] = {
+    "ru": ("flag_ru", "🇷🇺"),
+    "en": ("flag_en", "🇬🇧"),
+    "zh": ("flag_zh", "🇨🇳"),
+    "tt": ("flag_tt", "🏳️"),
+}
+
+
+def _flag(code: str) -> tuple[str, str]:
+    return FLAGS.get(code, ("lang", "🌐"))
+
+
 def _card_header(heading: str, lead: str) -> str:
     """Cards open with text: no oversized art before the first answer."""
     return f"<h1>{heading}</h1>{lead}"
@@ -262,7 +276,7 @@ def render_onboarding(locale: str, names: Mapping[str, str]) -> RichScreen:
             names[code],
             data=cb_onb(code),
             style="primary" if code == locale else None,
-            icon=("lang", "🌐"),
+            icon=_flag(code),
         )
         for code in ENABLED_LOCALES
     ]
@@ -702,6 +716,6 @@ def search_screen(
     else:
         body = f"<p>{_esc(t(locale, 'search.empty'))}</p><p>{_esc(t(locale, 'search.hint'))}</p>"
     quote = f"<p><code>{_esc(clean)}</code></p>" if clean else ""
-    html = _header("hero", f"{premium('search', '🔍')} {_esc(t(locale, 'search.title'))}")
+    html = f"<h1>{premium('search', '🔍')} {_esc(t(locale, 'search.title'))}</h1><hr/>"
     html += quote + body
     return RichScreen(html + "\n".join(rows))

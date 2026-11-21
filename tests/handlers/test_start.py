@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
@@ -194,6 +195,21 @@ async def test_picking_a_language_saves_it_and_opens_the_menu() -> None:
     assert t("en", "onboarding.question") not in html
     datas = [item.callback_data for item in _buttons(bot.edited[0])]
     assert nav.cb_sections() in datas
+
+
+@pytest.mark.asyncio
+async def test_first_start_buttons_carry_distinct_language_flags() -> None:
+    bot = FakeBot()
+    html = await _first_start(bot, FakeDB())
+
+    labels = re.findall(r"<tg-button[^>]*>(.*?)</tg-button>", html, re.DOTALL)
+    assert len(labels) == 4
+    flags = [re.sub(r"<[^>]+>", "", label).split(" ", 1)[0] for label in labels]
+    assert flags == ["🇷🇺", "🇬🇧", "🇨🇳", "🏳️"]
+    assert len(set(flags)) == 4
+    for plain in labels[:3]:
+        assert "<tg-emoji" not in plain
+    assert 'emoji-id="5220113606724557083"' in labels[3]
 
 
 @pytest.mark.asyncio

@@ -144,6 +144,9 @@ ICONS: dict[str, str] = {
 
 # name -> custom emoji id, resolved through the one pack.
 DEFAULT_IDS: dict[str, str] = {name: PACK_IDS[char] for name, char in ICONS.items()}
+# The Tatarstan flag has no glyph in `PACK`; it comes from `TatarstanEmoji`,
+# the one deliberate cross-pack id. Clients without it fall back to 🏳️.
+DEFAULT_IDS["flag_tt"] = "5220113606724557083"
 
 # What each name draws. The alternative text is what a client without custom
 # emoji support shows, so it has to be the character the reader expects.

@@ -191,9 +191,13 @@ def test_vetted_defaults_are_installed() -> None:
     assert DEFAULT_IDS["admin"] == PACK_IDS["🛠"]
 
 
-def test_every_default_id_comes_from_the_one_pack() -> None:
+FLAG_TT_ID = "5220113606724557083"
+
+
+def test_every_default_id_comes_from_the_one_pack_except_the_tatarstan_flag() -> None:
     pack_ids = set(PACK_IDS.values())
-    assert set(DEFAULT_IDS.values()) <= pack_ids
+    assert set(DEFAULT_IDS.values()) - {FLAG_TT_ID} <= pack_ids
+    assert DEFAULT_IDS["flag_tt"] == FLAG_TT_ID
     assert set(FALLBACKS.values()) == set(ICONS.values()) <= set(PACK_IDS)
     assert {"fire", "terror", "tech", "nature", "medical", "chem", "rad", "cyber"} <= set(
         DEFAULT_IDS
@@ -204,10 +208,12 @@ def test_no_screen_shows_a_bare_emoji_or_a_foreign_id(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(emoji_mod, "CUSTOM", dict(DEFAULT_IDS))
-    pack_ids = set(PACK_IDS.values())
+    allowed_ids = set(PACK_IDS.values()) | {FLAG_TT_ID}
+    allowed_plain = set("🇷🇺🇬🇧🇨🇳🏳️")
     for screen in _screens():
-        assert set(re.findall(r'emoji-id="(\d+)"', screen.html)) <= pack_ids
-        assert not BARE_EMOJI.findall(re.sub(r"<tg-emoji\b[^>]*>.*?</tg-emoji>", "", screen.html, flags=re.DOTALL))
+        assert set(re.findall(r'emoji-id="(\d+)"', screen.html)) <= allowed_ids
+        outside = re.sub(r"<tg-emoji\b[^>]*>.*?</tg-emoji>", "", screen.html, flags=re.DOTALL)
+        assert not [char for char in BARE_EMOJI.findall(outside) if char not in allowed_plain]
 
 
 def test_unknown_name_keeps_its_plain_character(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -445,10 +451,19 @@ def test_menu_banner_is_the_readme_banner() -> None:
     assert "assets/brand/banner.jpg" in (root / "README.md").read_text(encoding="utf-8")
 
 
-def test_unknown_section_falls_back_to_the_hero() -> None:
-    assert _img_src(f"{ART}/hero.jpg") in search_screen("x", [], LOCALE).html
+def test_search_is_text_only_and_unknown_section_falls_back_to_the_hero() -> None:
+    assert "<img" not in search_screen("x", [], LOCALE).html
     unknown = render_category(_category(slug="space"), [_threat()], LOCALE, 1, 1)
     assert _img_src(f"{ART}/hero.jpg") in unknown.html
+
+
+def test_only_search_dropped_its_art() -> None:
+    assert "<img" not in search_screen("пожар", [_threat()], LOCALE).html
+    assert _img_src(BANNER) in render_menu([_category()], LOCALE).html
+    assert _img_src(f"{ART}/chat.jpg") in render_chat(LOCALE).html
+    assert _img_src(f"{ART}/fire.jpg") in render_category(
+        _category(), [_threat()], LOCALE, 1, 1
+    ).html
 
 
 def test_card_and_quiz_use_the_category_artwork() -> None:
@@ -995,10 +1010,40 @@ def test_onboarding_offers_four_languages_two_by_two() -> None:
     assert len(rows) == 2
     assert all(len(row) == 2 for row in rows)
     labels = [button["label"] for row in rows for button in row]
-    assert labels == [f"🌐 {LANGUAGE_NAMES[code]}" for code in ENABLED_LOCALES]
+    assert labels == [
+        "🇷🇺 Русский",
+        "🇬🇧 English",
+        "🇨🇳 中文",
+        "🏳️ Татарча",
+    ]
     assert [button["data"] for row in rows for button in row] == [
         cb_onb(code) for code in ENABLED_LOCALES
     ]
+
+
+def test_onboarding_gives_every_language_its_own_flag() -> None:
+    html = _onboarding().html
+    labels = [button["label"] for row in _rows(html) for button in row]
+    flags = [label.split(" ", 1)[0] for label in labels]
+    assert len(set(flags)) == 4, flags
+    assert flags == ["🇷🇺", "🇬🇧", "🇨🇳", "🏳️"]
+
+
+def test_plain_languages_never_borrow_a_custom_emoji_id() -> None:
+    raw = BUTTON.findall(_onboarding().html)
+    assert len(raw) == 4
+    for (_, label), code in zip(raw, ENABLED_LOCALES, strict=True):
+        if code in {"ru", "en", "zh"}:
+            assert "<tg-emoji" not in label, code
+            assert "🌐" not in label, code
+
+
+def test_tatarstan_flag_uses_its_premium_pack_id() -> None:
+    raw = BUTTON.findall(_onboarding("tt").html)
+    _, label = raw[3]
+    assert 'emoji-id="5220113606724557083"' in label
+    assert "🏳️" in label
+    assert "🌐" not in label
 
 
 def test_onboarding_emphasizes_only_the_preselected_language() -> None:
