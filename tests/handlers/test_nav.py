@@ -463,6 +463,42 @@ async def test_language_menu_opens_four_languages() -> None:
 
 
 @pytest.mark.asyncio
+async def test_language_menu_labels_carry_distinct_flags() -> None:
+    bot = FakeBot()
+    await nav.on_lang_menu(_query(cb_lang_menu()), bot, FakeDB().factory())
+
+    labels = [item.text for item in _buttons(bot.edited[0])]
+    flags = [
+        label.split(" ", 1)[0]
+        for label in labels
+        if label.endswith(("Русский", "English", "中文", "Татарча"))
+    ]
+    assert flags == ["🇷🇺", "🇺🇸", "🇨🇳", "🏳️"]
+
+
+def test_language_screen_plain_flags_have_no_custom_emoji_id() -> None:
+    buttons = _screen_buttons(nav.language_screen("ru"))
+    for item in buttons[:3]:
+        assert item.icon_custom_emoji_id is None, item.text
+        assert "🌐" not in item.text
+    assert buttons[3].icon_custom_emoji_id == "5220113606724557083"
+    assert buttons[3].text.endswith("Татарча")
+
+
+@pytest.mark.asyncio
+async def test_settings_screen_reaches_the_language_screen() -> None:
+    bot = FakeBot()
+    await commands.settings_command(_message(text="/settings"), bot, FakeDB({7: True}).factory())
+
+    datas = [item.callback_data for item in _buttons(bot.sent[0]) if item.callback_data]
+    assert cb_lang_menu() in datas
+
+    await nav.on_lang_menu(_query(cb_lang_menu()), bot, FakeDB({7: True}).factory())
+    labels = [item.text for item in _buttons(bot.edited[0])]
+    assert labels == [item.text for item in _screen_buttons(nav.language_screen("ru"))]
+
+
+@pytest.mark.asyncio
 async def test_search_hint_is_private_only() -> None:
     bot = FakeBot()
     query = _query(cb_search_hint(), chat_type="group")

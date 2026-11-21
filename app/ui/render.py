@@ -173,7 +173,7 @@ def _header(slug: str, heading: str, lead: str = "") -> str:
 # other three stay plain characters and never borrow the globe.
 FLAGS: dict[str, tuple[str, str]] = {
     "ru": ("flag_ru", "🇷🇺"),
-    "en": ("flag_en", "🇬🇧"),
+    "en": ("flag_en", "🇺🇸"),
     "zh": ("flag_zh", "🇨🇳"),
     "tt": ("flag_tt", "🏳️"),
 }
@@ -301,7 +301,7 @@ def render_language(locale: str, names: Mapping[str, str]) -> RichScreen:
             names[code],
             data=cb_lang(code),
             style="success" if code == locale else None,
-            icon=("lang", "🌐"),
+            icon=_flag(code),
         )
         for code in ENABLED_LOCALES
     ]

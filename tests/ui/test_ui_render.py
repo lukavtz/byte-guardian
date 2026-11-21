@@ -9,7 +9,7 @@ from urllib.parse import parse_qs, urlparse
 import pytest
 
 from app.content.types import CardView, CategoryView, QuizView, SourceCitation, ThreatView
-from app.services.callbacks import cb_onb, parse_cb
+from app.services.callbacks import cb_lang, cb_onb, parse_cb
 from app.services.i18n import ENABLED_LOCALES
 from app.ui import emoji as emoji_mod
 from app.ui.emoji import (
@@ -34,6 +34,7 @@ from app.ui.render import (
     render_card,
     render_category,
     render_chat,
+    render_language,
     render_menu,
     render_not_found,
     render_onboarding,
@@ -147,9 +148,14 @@ def _onboarding(locale: str = LOCALE) -> RichScreen:
     return render_onboarding(locale, LANGUAGE_NAMES)
 
 
+def _language(locale: str = LOCALE) -> RichScreen:
+    return render_language(locale, LANGUAGE_NAMES)
+
+
 def _screens() -> list[RichScreen]:
     return [
         _onboarding(),
+        _language(),
         render_menu([_category()], LOCALE),
         render_chat(LOCALE),
         render_category(_category(), [_threat()], LOCALE, 1, 1),
@@ -209,7 +215,7 @@ def test_no_screen_shows_a_bare_emoji_or_a_foreign_id(
 ) -> None:
     monkeypatch.setattr(emoji_mod, "CUSTOM", dict(DEFAULT_IDS))
     allowed_ids = set(PACK_IDS.values()) | {FLAG_TT_ID}
-    allowed_plain = set("🇷🇺🇬🇧🇨🇳🏳️")
+    allowed_plain = set("🇷🇺🇺🇸🇨🇳🏳️")
     for screen in _screens():
         assert set(re.findall(r'emoji-id="(\d+)"', screen.html)) <= allowed_ids
         outside = re.sub(r"<tg-emoji\b[^>]*>.*?</tg-emoji>", "", screen.html, flags=re.DOTALL)
@@ -1012,7 +1018,7 @@ def test_onboarding_offers_four_languages_two_by_two() -> None:
     labels = [button["label"] for row in rows for button in row]
     assert labels == [
         "🇷🇺 Русский",
-        "🇬🇧 English",
+        "🇺🇸 English",
         "🇨🇳 中文",
         "🏳️ Татарча",
     ]
@@ -1026,7 +1032,7 @@ def test_onboarding_gives_every_language_its_own_flag() -> None:
     labels = [button["label"] for row in _rows(html) for button in row]
     flags = [label.split(" ", 1)[0] for label in labels]
     assert len(set(flags)) == 4, flags
-    assert flags == ["🇷🇺", "🇬🇧", "🇨🇳", "🏳️"]
+    assert flags == ["🇷🇺", "🇺🇸", "🇨🇳", "🏳️"]
 
 
 def test_plain_languages_never_borrow_a_custom_emoji_id() -> None:
@@ -1044,6 +1050,55 @@ def test_tatarstan_flag_uses_its_premium_pack_id() -> None:
     assert 'emoji-id="5220113606724557083"' in label
     assert "🏳️" in label
     assert "🌐" not in label
+
+
+def test_language_settings_give_every_language_its_own_flag() -> None:
+    html = _language().html
+    rows = _rows(html)
+    assert [len(row) for row in rows] == [2, 2, 1]
+    labels = [button["label"] for row in rows[:2] for button in row]
+    assert labels == ["🇷🇺 Русский", "🇺🇸 English", "🇨🇳 中文", "🏳️ Татарча"]
+    flags = [label.split(" ", 1)[0] for label in labels]
+    assert len(set(flags)) == 4, flags
+    assert [button["data"] for row in rows[:2] for button in row] == [
+        cb_lang(code) for code in ENABLED_LOCALES
+    ]
+
+
+def test_language_settings_plain_flags_never_borrow_a_custom_emoji_id() -> None:
+    raw = BUTTON.findall(_language().html)
+    assert len(raw) == len(ENABLED_LOCALES) + 1
+    for (_, label), code in zip(raw, ENABLED_LOCALES, strict=False):
+        if code in {"ru", "en", "zh"}:
+            assert "<tg-emoji" not in label, code
+            assert "🌐" not in label, code
+
+
+def test_language_settings_tatarstan_flag_uses_its_premium_pack_id() -> None:
+    raw = BUTTON.findall(_language("tt").html)
+    _, label = raw[3]
+    assert f'emoji-id="{FLAG_TT_ID}"' in label
+    assert "🏳️" in label
+    assert "🌐" not in label
+
+
+def test_language_settings_mark_only_the_current_locale_success() -> None:
+    for locale in ENABLED_LOCALES:
+        html = _language(locale).html
+        assert [button["style"] for button in _emphasized(html)] == [
+            "success",
+            "success",
+        ]
+        succeeded = [button for button in _emphasized(html) if button.get("style") == "success"]
+        assert [button["data"] for button in succeeded] == [cb_lang(locale), "b1:menu"]
+        assert _primary(html) == []
+
+
+def test_language_settings_end_with_one_menu_button() -> None:
+    rows = _rows(_language().html)
+    assert len(rows[-1]) == 1
+    assert rows[-1][0]["data"] == "b1:menu"
+    assert rows[-1][0]["style"] == "success"
 
 
 def test_onboarding_emphasizes_only_the_preselected_language() -> None:

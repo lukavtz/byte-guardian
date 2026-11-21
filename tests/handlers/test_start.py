@@ -205,7 +205,7 @@ async def test_first_start_buttons_carry_distinct_language_flags() -> None:
     labels = re.findall(r"<tg-button[^>]*>(.*?)</tg-button>", html, re.DOTALL)
     assert len(labels) == 4
     flags = [re.sub(r"<[^>]+>", "", label).split(" ", 1)[0] for label in labels]
-    assert flags == ["🇷🇺", "🇬🇧", "🇨🇳", "🏳️"]
+    assert flags == ["🇷🇺", "🇺🇸", "🇨🇳", "🏳️"]
     assert len(set(flags)) == 4
     for plain in labels[:3]:
         assert "<tg-emoji" not in plain
