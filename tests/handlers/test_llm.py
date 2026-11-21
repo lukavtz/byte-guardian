@@ -13,8 +13,8 @@ from app.content.types import CardView, ThreatView
 from app.handlers import llm as handlers
 from app.services import llm as service
 from app.services.conversation import ConversationStore, Turn
-from app.services.prompt import EMERGENCY_DIRECTIVE
-from app.services.settings import set_chat_mode
+from app.services.prompt import EMERGENCY_DIRECTIVE, SYSTEM_PROMPT
+from app.services.settings import chat_mode_on, set_chat_mode
 from app.services.web_search import WebResult
 
 
@@ -193,6 +193,26 @@ def test_strip_answer_urls_and_draft_cut() -> None:
     assert rendered.startswith("<b>Закрой газ")
 
 
+def test_paragraph_break_survives_the_sanitizer() -> None:
+    assert service.strip_html("Один.\n\nДва.") == "Один.<br/><br/>Два."
+    assert service.strip_html("Шаг.<br>Ещё шаг.") == "Шаг.<br/>Ещё шаг."
+
+
+def test_answer_cap_is_eighteen_hundred_chars() -> None:
+    rendered = service.strip_html("я" * 2500)
+    assert rendered.endswith("…")
+    assert len(rendered) == service.TEXT_LIMIT + 1
+
+
+def test_system_prompt_asks_for_paragraphs_and_plain_steps() -> None:
+    assert "2–5 коротких абзацев" in SYSTEM_PROMPT
+    assert "пустая строка" in SYSTEM_PROMPT
+    assert "1. 2. 3." in SYSTEM_PROMPT
+    assert "•" in SYSTEM_PROMPT
+    assert "markdown-таблиц" in SYSTEM_PROMPT
+    assert "без вступления" in SYSTEM_PROMPT
+
+
 # --- handler: model path --------------------------------------------------
 
 
@@ -270,6 +290,35 @@ async def test_missing_key_falls_back(monkeypatch: pytest.MonkeyPatch) -> None:
     message = _message("что делать при запахе газа?")
     await _respond(message, "что делать при запахе газа?", settings=_settings(llm_api_key=""))
     assert "поиска" in message.answer.await_args.args[0]
+
+
+async def test_private_text_without_chat_mode_goes_to_the_model(monkeypatch: pytest.MonkeyPatch) -> None:
+    db = FakeDB()
+    monkeypatch.setattr(service, "client_for", lambda settings: _ok("Привет! Я на связи."))
+    message = _message("Привет!")
+
+    await handlers.chat_text(
+        message,
+        bot=SimpleNamespace(id=999, send_chat_action=AsyncMock()),
+        settings=_settings(),
+        repo=_Repo([_card()]),
+        session_factory=db.factory(),  # type: ignore[arg-type]
+    )
+
+    message.answer.assert_awaited_once()
+    assert message.answer.await_args.args[0] == "Привет! Я на связи."
+    assert await chat_mode_on(db.factory(), 42) is True
+
+
+async def test_paragraphs_survive_the_delivery(monkeypatch: pytest.MonkeyPatch) -> None:
+    body = "Один. Не паникуй.\n\nДва. Звони 112."
+    monkeypatch.setattr(service, "client_for", lambda settings: _ok(body))
+    message = _message("что делать при запахе газа?")
+
+    await _respond(message, "что делать при запахе газа?")
+
+    sent = message.answer.await_args.args[0]
+    assert "Не паникуй.<br/><br/>Два." in sent
 
 
 async def test_chat_mode_replies_with_one_styled_exit_button(monkeypatch: pytest.MonkeyPatch) -> None:

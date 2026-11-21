@@ -32,7 +32,7 @@ RETRY_DELAY = 0.5
 RETRY_STATUS = frozenset({429, 500, 502, 503, 504})
 CARD_LIMIT = 3
 FIELD_LIMIT = 300
-TEXT_LIMIT = 1200
+TEXT_LIMIT = 1800
 ALLOWED_TAGS = frozenset({"b", "i", "u", "s", "code", "br"})
 VOID_TAGS = frozenset({"br"})
 
@@ -185,6 +185,7 @@ def build_messages(
     cards: list[CardView],
     web: str | None = None,
     history: Sequence[Turn] = (),
+    image: str | None = None,
 ) -> list[dict[str, Any]]:
     blocks = [_card_block(number, card) for number, card in enumerate(cards[:CARD_LIMIT], start=1)]
     user = f"Язык ответа: {locale}\nВопрос: {question.strip()}"
@@ -209,7 +210,19 @@ def build_messages(
         messages.append(
             {"role": turn.role, "content": f"<history>{turn.text}</history>"}
         )
-    messages.append({"role": "user", "content": user})
+    messages.append(
+        {
+            "role": "user",
+            "content": (
+                [
+                    {"type": "text", "text": user},
+                    {"type": "image_url", "image_url": {"url": image}},
+                ]
+                if image
+                else user
+            ),
+        }
+    )
     return messages
 
 
@@ -370,8 +383,8 @@ def _read_delta(payload: Any) -> str | None:
 
 
 def is_addressed(message: Message, bot_username: str | None, bot_id: int) -> bool:
-    """True when the text is aimed at the bot: /ask, @mention, or a reply to it."""
-    text = message.text or ""
+    """True when the text (or a media caption) is aimed at the bot."""
+    text = message.text or message.caption or ""
     ask = _ASK_RE.match(text)
     if ask:
         target = re.match(r"^/ask@([A-Za-z0-9_]+)", text, re.IGNORECASE)
@@ -410,7 +423,7 @@ class _Cleaner(HTMLParser):
             return
         if tag in VOID_TAGS:
             if self.visible < TEXT_LIMIT:
-                self.parts.append("\n")
+                self.parts.append("<br/>")
                 self.visible += 1
         elif tag in ALLOWED_TAGS:
             self.parts.append(f"<{tag}>")
@@ -444,7 +457,8 @@ class _Cleaner(HTMLParser):
             self.done = True
             return
         chunk = data[:room]
-        self.parts.append(escape(chunk, quote=False))
+        # Raw newlines collapse in a rich message; a break keeps the paragraph.
+        self.parts.append(escape(chunk, quote=False).replace("\n", "<br/>"))
         self.visible += len(chunk)
         if len(data) > room:
             self._ellipsis()
@@ -457,7 +471,7 @@ class _Cleaner(HTMLParser):
 
 
 def strip_html(text: str) -> str:
-    """Keep b/i/u/s/code, turn br into a newline, escape the rest, cap 1200 chars."""
+    """Keep b/i/u/s/code, turn line breaks into `<br/>`, escape the rest, cap 1800 chars."""
     cleaner = _Cleaner()
     cleaner.feed(markdown_to_html(text or ""))
     cleaner.close()

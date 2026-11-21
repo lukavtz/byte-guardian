@@ -32,7 +32,7 @@ from app.services.llm import (
     strip_html,
     strip_mention,
 )
-from app.services.settings import chat_mode_on
+from app.services.settings import set_chat_mode
 from app.services.user_locale import get_locale
 from app.services.web_search import WebResult, format_web_context, is_official, search_web
 from app.ui.delivery import show
@@ -233,18 +233,23 @@ async def _fallback(
     locale: str,
     group: bool,
     sink: DraftSink | StatusEditSink | None = None,
+    failure: str | None = None,
 ) -> None:
-    results = repository.search(question, locale, limit=5) if repository is not None else []
-    try:
-        await show(bot, message.chat.id, search_screen(question, results, locale))
-    except Exception:
-        logger.exception("failed to show search fallback")
+    # A media question has no searchable text of its own: one honest sentence
+    # beats a results screen built from a caption.
+    if failure is None:
+        results = repository.search(question, locale, limit=5) if repository is not None else []
+        try:
+            await show(bot, message.chat.id, search_screen(question, results, locale))
+        except Exception:
+            logger.exception("failed to show search fallback")
+    notice = failure or FALLBACK[locale]
     if sink is not None:
         # One final message even after a failed stream: the status is edited,
         # the draft is replaced, nothing new is stacked underneath.
-        await _finish_sink(sink, FALLBACK[locale], None)
+        await _finish_sink(sink, notice, None)
     else:
-        await _send(message, FALLBACK[locale], group=group)
+        await _send(message, notice, group=group)
 
 
 async def _complete(
@@ -314,6 +319,8 @@ async def respond(
     bot_username: str | None = None,
     session_factory: async_sessionmaker[AsyncSession] | None = None,
     chat: bool = False,
+    image: str | None = None,
+    failure_text: str | None = None,
 ) -> None:
     locale = await locale_of(message, session_factory)
     group = _is_group(message)
@@ -342,9 +349,12 @@ async def respond(
     web, web_results = await _web_context(question, cards)
     client = llm_service.client_for(settings)
     if client is None:
-        await _fallback(message, question, bot=bot, repository=repository, locale=locale, group=group)
+        await _fallback(
+            message, question, bot=bot, repository=repository,
+            locale=locale, group=group, failure=failure_text,
+        )
         return
-    messages = build_messages(question, locale, cards, web or None, history)
+    messages = build_messages(question, locale, cards, web or None, history, image=image)
     sink: DraftSink | StatusEditSink | None = None
     raw = ""
     try:
@@ -361,7 +371,7 @@ async def respond(
             if client is None:
                 await _fallback(
                     message, question, bot=bot, repository=repository,
-                    locale=locale, group=group, sink=sink,
+                    locale=locale, group=group, sink=sink, failure=failure_text,
                 )
                 return
             raw = await _complete(
@@ -373,7 +383,7 @@ async def respond(
         if not text:
             await _fallback(
                 message, question, bot=bot, repository=repository,
-                locale=locale, group=group, sink=sink,
+                locale=locale, group=group, sink=sink, failure=failure_text,
             )
             return
         markup = (
@@ -429,16 +439,15 @@ async def chat_text(
     repo: ContentRepository | None = None,
     session_factory: async_sessionmaker[AsyncSession] | None = None,
 ) -> None:
-    """Plain text in a private chat is a question only while chat mode is on.
+    """Every plain text in a private chat is a conversation with Byte.
 
-    This router is registered before `app.handlers.search`, so an idle chat
-    falls through to the search screen unchanged.
+    This router is registered before `app.handlers.search`, so text never
+    reaches the search screen behind the user's back. Search stays on its own
+    button. The first text also turns chat mode on, keeping «Выйти» meaningful.
     """
     user = message.from_user
-    if user is None or session_factory is None:
-        raise SkipHandler()
-    if not await chat_mode_on(session_factory, user.id):
-        raise SkipHandler()
+    if user is not None and session_factory is not None:
+        await set_chat_mode(session_factory, user.id, True)
     await respond(
         message,
         strip_mention(message.text or "", BOT_USERNAME),
