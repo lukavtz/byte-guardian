@@ -14,6 +14,7 @@ from app.config import Settings
 from app.content.repository import ContentRepository
 from app.content.seed import seed_content
 from app.db.session import SessionFactory, create_session_factory
+from app.handlers import llm as llm_handler
 from app.handlers import register_handlers
 from app.handlers.nav import menu_screen
 from app.middlewares.allowlist import AllowlistMiddleware
@@ -151,6 +152,8 @@ def create_dispatcher(settings: Settings, bot: Bot, redis: Redis | None) -> Disp
     dispatcher.message.outer_middleware(RateLimitMiddleware(redis))
     dispatcher.message.outer_middleware(AllowlistMiddleware(settings.admin_id_set))
     dispatcher.errors.register(handle_error)
+    # The ask budget is shared across replicas whenever Redis is configured.
+    llm_handler.LIMITER = llm_handler.RateLimiter(redis=redis)
 
     async def startup_content(**_kwargs: object) -> None:
         await initialize_content(repo, session_factory)

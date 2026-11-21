@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import re
 import time
-from collections import deque
+from collections import OrderedDict, deque
 from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Literal
@@ -63,7 +63,8 @@ class ConversationStore:
         self._ttl = max(0.0, ttl)
         self._max = max(1, max_conversations)
         self._clock = clock
-        self._data: dict[tuple[int, int], deque[Turn]] = {}
+        # Most recently active key last: eviction order follows the last Turn.at.
+        self._data: OrderedDict[tuple[int, int], deque[Turn]] = OrderedDict()
 
     def recent(self, *, chat_id: int, user_id: int, group: bool) -> tuple[Turn, ...]:
         key = (chat_id, user_id)
@@ -97,9 +98,11 @@ class ConversationStore:
             bucket = deque(maxlen=self._turns)
             self._data[key] = bucket
         bucket.append(Turn(role=role, text=cleaned, at=self._clock()))
-        if len(self._data) > self._max:
-            # ponytail: insertion-order eviction; one bot process in prod.
-            self._data.pop(next(iter(self._data)), None)
+        # Activity is what keeps a conversation: the least recently active one
+        # goes first, even when it was the first ever inserted.
+        self._data.move_to_end(key)
+        while len(self._data) > self._max:
+            self._data.popitem(last=False)
 
     def clear(self, *, chat_id: int, user_id: int) -> None:
         self._data.pop((chat_id, user_id), None)

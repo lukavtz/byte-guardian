@@ -6,8 +6,10 @@ import asyncio
 import logging
 import re
 from contextlib import suppress
+from typing import Any
 from urllib.parse import urlparse
 
+import httpx
 from aiogram import Bot, Dispatcher, F, Router
 from aiogram.dispatcher.event.bases import SkipHandler
 from aiogram.enums import ChatAction, ChatType
@@ -32,7 +34,7 @@ from app.services.llm import (
 )
 from app.services.settings import chat_mode_on
 from app.services.user_locale import get_locale
-from app.services.web_search import WebResult, format_web_context, search_web
+from app.services.web_search import WebResult, format_web_context, is_official, search_web
 from app.ui.delivery import show
 from app.ui.draft import DraftSink, StatusEditSink
 from app.ui.emoji import custom_id
@@ -54,7 +56,7 @@ WEB_QUESTION_RE = re.compile(
     r"\b(?:новост\w*|сейчас|курс\w*|закон\w*|2025|2026|где|сайт\w*|телефон\w*)\b",
     re.IGNORECASE,
 )
-SOURCE_RE = re.compile(r"Источник:\s*(https?://[^\s<>]+)", re.IGNORECASE)
+SOURCE_RE = re.compile(r"Источник:\s*(https://[^\s<>]+)", re.IGNORECASE)
 
 LIMITER = RateLimiter()
 
@@ -135,26 +137,32 @@ def _chat_keyboard(locale: str) -> InlineKeyboardMarkup:
     )
 
 
+def _citeable(url: str) -> bool:
+    """Buttons may only point at official https hosts, never at anything else."""
+    return urlparse(url).scheme.lower() == "https" and is_official(url)
+
+
 def _with_sources(
     markup: InlineKeyboardMarkup | None,
     sources: list[tuple[str, str]],
 ) -> InlineKeyboardMarkup | None:
     """Source links sit above the exit row; hosts stay readable on a phone."""
-    if not sources:
+    safe = [(host, url) for host, url in sources if _citeable(url)]
+    if not safe:
         return markup
-    row = [InlineKeyboardButton(text=host, url=url) for host, url in sources]
+    row = [InlineKeyboardButton(text=host, url=url) for host, url in safe]
     rows = [row] + (markup.inline_keyboard if markup is not None else [])
     return InlineKeyboardMarkup(inline_keyboard=rows)
 
 
 def _cited_sources(answer: str, results: list[WebResult]) -> list[tuple[str, str]]:
-    """Only URLs we actually retrieved may become buttons: no invented links."""
+    """Only retrieved official https URLs may become buttons: no invented links."""
     allowed = {item.url for item in results}
     picked: list[tuple[str, str]] = []
     seen: set[str] = set()
     for match in SOURCE_RE.findall(answer):
         url = match.rstrip(".,);»")
-        if url not in allowed or url in seen:
+        if url not in allowed or url in seen or not _citeable(url):
             continue
         seen.add(url)
         host = (urlparse(url).hostname or url).removeprefix("www.")
@@ -204,6 +212,18 @@ async def _keep_typing(bot: Bot, chat_id: int) -> None:
             return
 
 
+async def _finish_sink(
+    sink: DraftSink | StatusEditSink,
+    text: str,
+    markup: InlineKeyboardMarkup | None,
+) -> None:
+    """The last send is attempted once; a refusal is logged, never re-sent."""
+    try:
+        await sink.finish(text, markup)
+    except Exception:
+        logger.warning("answer delivery failed", exc_info=True)
+
+
 async def _fallback(
     message: Message,
     question: str,
@@ -212,13 +232,76 @@ async def _fallback(
     repository: ContentRepository | None,
     locale: str,
     group: bool,
+    sink: DraftSink | StatusEditSink | None = None,
 ) -> None:
     results = repository.search(question, locale, limit=5) if repository is not None else []
     try:
         await show(bot, message.chat.id, search_screen(question, results, locale))
     except Exception:
         logger.exception("failed to show search fallback")
-    await _send(message, FALLBACK[locale], group=group)
+    if sink is not None:
+        # One final message even after a failed stream: the status is edited,
+        # the draft is replaced, nothing new is stacked underneath.
+        await _finish_sink(sink, FALLBACK[locale], None)
+    else:
+        await _send(message, FALLBACK[locale], group=group)
+
+
+async def _complete(
+    client: httpx.AsyncClient,
+    messages: list[dict[str, Any]],
+    *,
+    model: str,
+    bot: Bot,
+    chat_id: int,
+) -> str:
+    """One non-stream completion; empty string when the model is unavailable."""
+    await _typing_ping(bot, chat_id)
+    typing = asyncio.create_task(_keep_typing(bot, chat_id))
+    try:
+        async with client:
+            return await llm_service.answer(client, messages, model)
+    except llm_service.LlmUnavailable:
+        return ""
+    finally:
+        typing.cancel()
+        with suppress(asyncio.CancelledError):
+            await typing
+
+
+async def _push(sink: DraftSink | StatusEditSink, text: str) -> None:
+    """Live chrome is best-effort: a refused draft never aborts the answer."""
+    try:
+        await sink.push(text)
+    except Exception:
+        logger.debug("stream sink failed", exc_info=True)
+
+
+async def _stream(
+    client: httpx.AsyncClient,
+    messages: list[dict[str, Any]],
+    *,
+    model: str,
+    sink: DraftSink | StatusEditSink,
+) -> str:
+    """Push deltas into the sink; a failed or empty stream yields "" (full path)."""
+    chunks: list[str] = []
+    iterator: Any = llm_service.stream_answer(client, messages, model)
+    try:
+        async with client:
+            first = await asyncio.wait_for(iterator.__anext__(), FIRST_TOKEN_TIMEOUT)
+            chunks.append(first)
+            await _push(sink, first)
+            async for chunk in iterator:
+                chunks.append(chunk)
+                await _push(sink, "".join(chunks))
+    except (TimeoutError, llm_service.LlmUnavailable, StopAsyncIteration):
+        chunks.clear()
+    finally:
+        # Release the model response even when the timeout cancelled it.
+        with suppress(Exception):
+            await iterator.aclose()
+    return "".join(chunks)
 
 
 async def respond(
@@ -239,7 +322,7 @@ async def respond(
         await _send(message, USAGE[locale], group=group, markup=_chat_keyboard(locale) if chat else None)
         return
     user = message.from_user
-    if not LIMITER.allow(
+    if not await LIMITER.allow(
         user_id=user.id if user else 0,
         chat_id=message.chat.id,
         group=group,
@@ -262,75 +345,60 @@ async def respond(
         await _fallback(message, question, bot=bot, repository=repository, locale=locale, group=group)
         return
     messages = build_messages(question, locale, cards, web or None, history)
-    raw = ""
-    streamed = False
     sink: DraftSink | StatusEditSink | None = None
-    if bool(getattr(settings, "llm_stream_enabled", True)):
-        sink = (
-            StatusEditSink(bot, message.chat.id)
-            if group
-            else DraftSink(bot, message.chat.id, int(getattr(message, "message_id", 0) or 1))
+    raw = ""
+    try:
+        if bool(getattr(settings, "llm_stream_enabled", True)):
+            sink = (
+                StatusEditSink(bot, message.chat.id)
+                if group
+                else DraftSink(bot, message.chat.id, int(getattr(message, "message_id", 0) or 1))
+            )
+            await _typing_ping(bot, message.chat.id)
+            raw = await _stream(client, messages, model=settings.llm_model, sink=sink)
+        if not raw:
+            client = llm_service.client_for(settings)
+            if client is None:
+                await _fallback(
+                    message, question, bot=bot, repository=repository,
+                    locale=locale, group=group, sink=sink,
+                )
+                return
+            raw = await _complete(
+                client, messages, model=settings.llm_model,
+                bot=bot, chat_id=message.chat.id,
+            )
+        answer = llm_service.strip_answer_urls(llm_service.strip_intro(raw))
+        text = strip_html(answer)
+        if not text:
+            await _fallback(
+                message, question, bot=bot, repository=repository,
+                locale=locale, group=group, sink=sink,
+            )
+            return
+        markup = (
+            _chat_keyboard(locale)
+            if chat
+            else _card_keyboard(cards[0] if cards else None, bot_username or BOT_USERNAME, locale)
         )
-        await _typing_ping(bot, message.chat.id)
-        chunks: list[str] = []
-        try:
-            async with client:
-                iterator = llm_service.stream_answer(client, messages, settings.llm_model)
-                first = await asyncio.wait_for(iterator.__anext__(), FIRST_TOKEN_TIMEOUT)
-                chunks.append(first)
-                await sink.push(first)
-                async for chunk in iterator:
-                    chunks.append(chunk)
-                    await sink.push("".join(chunks))
-            streamed = bool(chunks)
-        except (TimeoutError, llm_service.LlmUnavailable, StopAsyncIteration):
-            streamed = False
-        finally:
+        markup = _with_sources(markup, _cited_sources(raw, web_results))
+        if sink is not None:
+            # Streamed or not, the sink owns the one final message: the status
+            # is edited in place, the draft becomes the answer. Never both.
+            await _finish_sink(sink, answer, markup)
+        else:
+            await _send(message, text, group=group, markup=markup)
+        if remember:
+            clean = re.sub(r"<[^>]+>", "", text)
+            HISTORY.append(
+                chat_id=message.chat.id, user_id=user_id, group=group, role="user", text=question
+            )
+            HISTORY.append(
+                chat_id=message.chat.id, user_id=user_id, group=group, role="assistant", text=clean
+            )
+    finally:
+        if sink is not None:
             await sink.close()
-        if streamed:
-            raw = "".join(chunks)
-    if not streamed:
-        client = llm_service.client_for(settings)
-        if client is None:
-            await _fallback(message, question, bot=bot, repository=repository, locale=locale, group=group)
-            return
-        await _typing_ping(bot, message.chat.id)
-        typing = asyncio.create_task(_keep_typing(bot, message.chat.id))
-        failed = False
-        try:
-            async with client:
-                raw = await llm_service.answer(client, messages, settings.llm_model)
-        except llm_service.LlmUnavailable:
-            failed = True
-        finally:
-            typing.cancel()
-            with suppress(asyncio.CancelledError):
-                await typing
-        if failed:
-            await _fallback(message, question, bot=bot, repository=repository, locale=locale, group=group)
-            return
-    text = strip_html(llm_service.strip_answer_urls(llm_service.strip_intro(raw)))
-    if not text:
-        await _fallback(message, question, bot=bot, repository=repository, locale=locale, group=group)
-        return
-    markup = (
-        _chat_keyboard(locale)
-        if chat
-        else _card_keyboard(cards[0] if cards else None, bot_username or BOT_USERNAME, locale)
-    )
-    markup = _with_sources(markup, _cited_sources(raw, web_results))
-    if streamed and sink is not None:
-        await sink.finish(text, markup)
-    else:
-        await _send(message, text, group=group, markup=markup)
-    if remember:
-        clean = re.sub(r"<[^>]+>", "", text)
-        HISTORY.append(
-            chat_id=message.chat.id, user_id=user_id, group=group, role="user", text=question
-        )
-        HISTORY.append(
-            chat_id=message.chat.id, user_id=user_id, group=group, role="assistant", text=clean
-        )
 
 
 @router.message(Command("ask"))

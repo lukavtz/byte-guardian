@@ -139,3 +139,44 @@ async def test_status_sink_sanitizes_model_deltas_before_send_and_edit() -> None
     edit_text = bot.edit_message_text.await_args.kwargs["text"]
     assert edit_text == "<b>hi</b>!"
     assert "onclick" not in edit_text and "onerror" not in edit_text and "<img" not in edit_text
+
+
+async def test_status_finish_sanitizes_and_sends_exactly_once() -> None:
+    bot = _bot()
+    sink = ui_draft.StatusEditSink(bot, chat_id=1, clock=_Clock())  # type: ignore[arg-type]
+
+    await sink.push("Думаю")
+    await sink.finish('<b onclick="x">Готово</b><img src=x onerror=alert(1)>', None)
+    await sink.finish("позднее второе", None)
+    await sink.push("позднее третье")
+
+    assert bot.edit_message_text.await_count == 1
+    assert bot.edit_message_text.await_args.kwargs["text"] == "<b>Готово</b>"
+    assert bot.send_message.await_count == 1
+
+
+async def test_draft_finish_sanitizes_and_sends_exactly_once(monkeypatch: pytest.MonkeyPatch) -> None:
+    bot = _bot()
+    shown = AsyncMock(return_value=None)
+    monkeypatch.setattr(ui_draft, "show", shown)
+    sink = ui_draft.DraftSink(bot, chat_id=1, draft_id=42, clock=_Clock())  # type: ignore[arg-type]
+
+    await sink.finish('<b onclick="x">Ответ</b>', None)
+    await sink.finish("второй раз", None)
+
+    shown.assert_awaited_once()
+    screen = shown.await_args.args[2]
+    assert "onclick" not in screen.html
+    assert bot.send_message_draft.await_count == 1
+
+
+async def test_draft_finish_falls_back_when_the_rich_send_fails(monkeypatch: pytest.MonkeyPatch) -> None:
+    bot = _bot()
+    monkeypatch.setattr(ui_draft, "show", AsyncMock(side_effect=RuntimeError("refused")))
+    sink = ui_draft.DraftSink(bot, chat_id=1, draft_id=42, clock=_Clock())  # type: ignore[arg-type]
+
+    await sink.finish("Ответ", None)
+
+    bot.send_message.assert_awaited_once()
+    assert bot.send_message.await_args.kwargs["text"] == "Ответ"
+    bot.send_message_draft.assert_awaited_once()

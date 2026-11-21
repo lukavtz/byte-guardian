@@ -10,10 +10,11 @@ from __future__ import annotations
 import logging
 import time
 from collections.abc import Callable
+from contextlib import suppress
 from typing import Protocol
 
 from aiogram import Bot
-from aiogram.exceptions import TelegramRetryAfter
+from aiogram.exceptions import TelegramBadRequest, TelegramRetryAfter
 from aiogram.types import InlineKeyboardMarkup, InputRichMessage
 
 from app.services.llm import draft_html, strip_html
@@ -56,10 +57,11 @@ class DraftSink:
         self._disabled_until = 0.0
         self._failures = 0
         self._in_flight = False
+        self._finished = False
         self.disabled = False
 
     async def push(self, text: str) -> None:
-        if self.disabled or self._in_flight:
+        if self.disabled or self._in_flight or self._finished:
             return
         now = self._clock()
         if now < self._disabled_until or now - self._last < self._interval:
@@ -86,13 +88,25 @@ class DraftSink:
             self._in_flight = False
 
     async def finish(self, text: str, markup: InlineKeyboardMarkup | None) -> None:
-        await show(self._bot, self._chat_id, RichScreen(text, markup))
+        """Send the answer exactly once, then clear the ephemeral draft."""
+        if self._finished:
+            return
+        self._finished = True
+        html = strip_html(text) or "…"
         try:
-            await self._bot.send_message_draft(
-                chat_id=self._chat_id, draft_id=self._draft_id, text=""
-            )
+            await show(self._bot, self._chat_id, RichScreen(html, markup))
         except Exception:
-            logger.debug("draft clear failed", exc_info=True)
+            # The draft is chrome; the answer is not. One plain send instead.
+            logger.warning("draft answer failed; sending plain text", exc_info=True)
+            with suppress(Exception):
+                await self._bot.send_message(
+                    chat_id=self._chat_id, text=html, reply_markup=markup
+                )
+        finally:
+            with suppress(Exception):
+                await self._bot.send_message_draft(
+                    chat_id=self._chat_id, draft_id=self._draft_id, text=""
+                )
 
     async def close(self) -> None:
         return None
@@ -121,10 +135,11 @@ class StatusEditSink:
         self._last_raw = ""
         self._last_edit = -min_edit_gap
         self._failures = 0
+        self._finished = False
         self.disabled = False
 
     async def push(self, text: str) -> None:
-        if self.disabled:
+        if self.disabled or self._finished:
             return
         now = self._clock()
         if now - self._last < self._interval:
@@ -151,18 +166,34 @@ class StatusEditSink:
             self._fail()
 
     async def finish(self, text: str, markup: InlineKeyboardMarkup | None) -> None:
+        """Replace the status with the final answer exactly once.
+
+        The final text is model output like any delta, so it is sanitized here:
+        the contract holds for every caller, not just the handler.
+        """
+        if self._finished:
+            return
+        self._finished = True
+        safe = strip_html(text) or "…"
         if self._message_id is None:
-            await self._bot.send_message(chat_id=self._chat_id, text=text, reply_markup=markup)
+            with suppress(Exception):
+                await self._bot.send_message(chat_id=self._chat_id, text=safe, reply_markup=markup)
             return
         try:
             await self._bot.edit_message_text(
                 chat_id=self._chat_id,
                 message_id=self._message_id,
-                text=text,
+                text=safe,
                 reply_markup=markup,
             )
-        except Exception:
-            await self._bot.send_message(chat_id=self._chat_id, text=text, reply_markup=markup)
+        except Exception as error:
+            # An unchanged status is already the desired state. Anything else
+            # costs the message, never the answer.
+            if isinstance(error, TelegramBadRequest) and "message is not modified" in str(error):
+                return
+            logger.warning("status edit failed; sending the answer as a new message", exc_info=True)
+            with suppress(Exception):
+                await self._bot.send_message(chat_id=self._chat_id, text=safe, reply_markup=markup)
 
     async def close(self) -> None:
         return None

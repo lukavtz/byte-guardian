@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import json
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock
@@ -14,6 +15,7 @@ from app.services import llm as service
 from app.services.conversation import ConversationStore, Turn
 from app.services.prompt import EMERGENCY_DIRECTIVE
 from app.services.settings import set_chat_mode
+from app.services.web_search import WebResult
 
 
 def _card(slug: str = "chem-gas-leak", **overrides) -> CardView:
@@ -110,6 +112,32 @@ def _fresh_limiter(monkeypatch: pytest.MonkeyPatch) -> None:
     now = [0.0]
     monkeypatch.setattr(handlers, "LIMITER", service.RateLimiter(lambda: now[0]))
     monkeypatch.setattr(handlers, "HISTORY", ConversationStore())
+    _RecordingSink.instances.clear()
+    _RecordingSink.fail_finish = False
+
+
+class _RecordingSink:
+    """Stand-in for both answer sinks: records the one final delivery."""
+
+    instances: list[_RecordingSink] = []
+    fail_finish = False
+
+    def __init__(self, *_args: object, **_kwargs: object) -> None:
+        self.pushed: list[str] = []
+        self.finished: list[tuple[str, object]] = []
+        self.closed = False
+        _RecordingSink.instances.append(self)
+
+    async def push(self, text: str) -> None:
+        self.pushed.append(text)
+
+    async def finish(self, text: str, markup: object) -> None:
+        if _RecordingSink.fail_finish:
+            raise RuntimeError("finish refused")
+        self.finished.append((text, markup))
+
+    async def close(self) -> None:
+        self.closed = True
 
 
 async def _respond(message, question: str, *, settings=None, repository=None, bot=None):
@@ -280,3 +308,147 @@ async def test_question_never_logged(
     message = _message("секретный вопрос про газ")
     await _respond(message, "секретный вопрос про газ")
     assert "секретный" not in caplog.text
+
+
+# --- sources: https and official hosts only -------------------------------
+
+
+def test_source_buttons_accept_only_official_https() -> None:
+    markup = handlers._with_sources(
+        None,
+        [
+            ("evil.test", "https://evil.test/x"),
+            ("mchs.gov.ru", "http://mchs.gov.ru/x"),
+            ("mchs.gov.ru.evil.test", "https://mchs.gov.ru.evil.test/x"),
+            ("mchs.gov.ru", "https://mchs.gov.ru/news/1"),
+        ],
+    )
+    assert markup is not None
+    buttons = [item for row in markup.inline_keyboard for item in row]
+    assert [(item.text, item.url) for item in buttons] == [
+        ("mchs.gov.ru", "https://mchs.gov.ru/news/1")
+    ]
+
+
+def test_untrusted_citations_never_become_buttons() -> None:
+    results = [
+        WebResult(title="evil", url="https://evil.test/a", snippet=""),
+        WebResult(title="plain http", url="http://mchs.gov.ru/b", snippet=""),
+        WebResult(title="official", url="https://mchs.gov.ru/c", snippet=""),
+    ]
+    answer = (
+        "Источник: https://evil.test/a\n"
+        "Источник: http://mchs.gov.ru/b\n"
+        "Источник: https://mchs.gov.ru/c"
+    )
+    assert handlers._cited_sources(answer, results) == [
+        ("mchs.gov.ru", "https://mchs.gov.ru/c")
+    ]
+
+
+# --- stream robustness: one final message, one cleanup path ---------------
+
+
+def _no_web(monkeypatch: pytest.MonkeyPatch) -> None:
+    async def empty(*_args: object, **_kwargs: object) -> list[WebResult]:
+        return []
+
+    monkeypatch.setattr(handlers, "search_web", empty)
+
+
+def _stream_settings(**overrides: object) -> SimpleNamespace:
+    return _settings(llm_stream_enabled=True, **overrides)
+
+
+async def test_first_token_timeout_still_delivers_one_answer(monkeypatch: pytest.MonkeyPatch) -> None:
+    async def hang():
+        await asyncio.sleep(60)
+        yield "никогда"
+
+    _no_web(monkeypatch)
+    monkeypatch.setattr(handlers, "FIRST_TOKEN_TIMEOUT", 0.01)
+    monkeypatch.setattr(service, "stream_answer", lambda *_a, **_k: hang())
+    monkeypatch.setattr(service, "client_for", lambda settings: _ok("ответ"))
+    monkeypatch.setattr(handlers, "DraftSink", _RecordingSink)
+    message = _message()
+
+    await _respond(message, "вопрос", settings=_stream_settings())
+
+    sink = _RecordingSink.instances[0]
+    assert [text for text, _markup in sink.finished] == ["ответ"]
+    assert sink.closed
+    message.answer.assert_not_awaited()
+    message.reply.assert_not_awaited()
+
+
+async def test_empty_stream_falls_back_to_one_full_answer(monkeypatch: pytest.MonkeyPatch) -> None:
+    async def empty():
+        if False:
+            yield ""
+
+    _no_web(monkeypatch)
+    monkeypatch.setattr(service, "stream_answer", lambda *_a, **_k: empty())
+    monkeypatch.setattr(service, "client_for", lambda settings: _ok("ответ"))
+    monkeypatch.setattr(handlers, "DraftSink", _RecordingSink)
+    message = _message()
+
+    await _respond(message, "вопрос", settings=_stream_settings())
+
+    sink = _RecordingSink.instances[0]
+    assert [text for text, _markup in sink.finished] == ["ответ"]
+    assert sink.pushed == []
+    message.answer.assert_not_awaited()
+
+
+async def test_interrupted_stream_reuses_the_same_message(monkeypatch: pytest.MonkeyPatch) -> None:
+    async def cut():
+        yield "нача"
+        raise service.LlmUnavailable("cut")
+
+    _no_web(monkeypatch)
+    monkeypatch.setattr(service, "stream_answer", lambda *_a, **_k: cut())
+    monkeypatch.setattr(service, "client_for", lambda settings: _ok("ответ"))
+    monkeypatch.setattr(handlers, "DraftSink", _RecordingSink)
+    message = _message()
+
+    await _respond(message, "вопрос", settings=_stream_settings())
+
+    sink = _RecordingSink.instances[0]
+    assert sink.pushed == ["нача"]
+    assert [text for text, _markup in sink.finished] == ["ответ"]
+    message.answer.assert_not_awaited()
+
+
+async def test_finish_error_never_sends_a_second_answer(monkeypatch: pytest.MonkeyPatch) -> None:
+    async def stream():
+        yield "Готово"
+
+    _no_web(monkeypatch)
+    monkeypatch.setattr(service, "stream_answer", lambda *_a, **_k: stream())
+    monkeypatch.setattr(handlers, "DraftSink", _RecordingSink)
+    _RecordingSink.fail_finish = True
+    message = _message()
+
+    await _respond(message, "вопрос", settings=_stream_settings())
+
+    assert _RecordingSink.instances[0].closed
+    message.answer.assert_not_awaited()
+    message.reply.assert_not_awaited()
+
+
+async def test_stream_success_finishes_with_the_full_text(monkeypatch: pytest.MonkeyPatch) -> None:
+    async def stream():
+        yield "Пол"
+        yield "ный"
+
+    _no_web(monkeypatch)
+    monkeypatch.setattr(service, "stream_answer", lambda *_a, **_k: stream())
+    monkeypatch.setattr(handlers, "DraftSink", _RecordingSink)
+    message = _message()
+
+    await _respond(message, "вопрос", settings=_stream_settings())
+
+    sink = _RecordingSink.instances[0]
+    assert sink.pushed == ["Пол", "Полный"]
+    assert [text for text, _markup in sink.finished] == ["Полный"]
+    message.answer.assert_not_awaited()

@@ -73,3 +73,36 @@ def test_roles_are_preserved() -> None:
     store.append(chat_id=1, user_id=10, group=False, role="assistant", text="ответ")
     turns = store.recent(chat_id=1, user_id=10, group=False)
     assert [turn.role for turn in turns] == ["user", "assistant"]
+
+
+def test_eviction_follows_last_activity_not_first_seen() -> None:
+    now = [0.0]
+    store = ConversationStore(max_conversations=2, clock=lambda: now[0])
+    store.append(chat_id=1, user_id=1, group=False, role="user", text="первый")
+    now[0] = 5.0
+    store.append(chat_id=1, user_id=2, group=False, role="user", text="второй")
+    now[0] = 10.0
+    store.append(chat_id=1, user_id=1, group=False, role="user", text="живой")
+    now[0] = 15.0
+    store.append(chat_id=1, user_id=3, group=False, role="user", text="третий")
+
+    assert [turn.text for turn in store.recent(chat_id=1, user_id=1, group=False)] == [
+        "первый",
+        "живой",
+    ]
+    assert store.recent(chat_id=1, user_id=2, group=False) == ()
+    assert store.recent(chat_id=1, user_id=3, group=False)[0].text == "третий"
+
+
+def test_old_but_active_chat_survives_six_thousand_chats() -> None:
+    now = [0.0]
+    store = ConversationStore(clock=lambda: now[0])
+    store.append(chat_id=1, user_id=1, group=False, role="user", text="старт")
+    for index in range(1, 6_001):
+        now[0] = float(index)
+        store.append(chat_id=1, user_id=index + 1, group=False, role="user", text=f"u{index}")
+        if index % 100 == 0:
+            store.append(chat_id=1, user_id=1, group=False, role="user", text="живой")
+
+    assert store.recent(chat_id=1, user_id=1, group=False)[-1].text == "живой"
+    assert store.recent(chat_id=1, user_id=2, group=False) == ()
