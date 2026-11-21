@@ -33,6 +33,22 @@ _PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
 )
 
 _EXCEPTION_FORMATTER = logging.Formatter()
+# Credentials that are secret whole; DSNs are secret only in their password part.
+SECRET_NAMES = ("BOT_TOKEN", "LLM_API_KEY", "WEBHOOK_SECRET", "REDIS_PASSWORD")
+URL_SECRET_NAMES = ("DATABASE_URL", "REDIS_URL")
+
+_URL_PASSWORD = re.compile(r"^(?:[A-Za-z][A-Za-z0-9+.-]*://)?[^\s/@:]*:([^\s/@]+)@")
+
+# Known credential shapes: short or ambiguous strings stay untouched so ordinary
+# words such as "risk-assessment" or a bare "Bearer" are not rewritten.
+_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
+    (re.compile(r"\d{6,}:[A-Za-z0-9_-]{30,}"), REDACTED),
+    (re.compile(r"(?<![A-Za-z0-9])sk-[A-Za-z0-9_-]{16,}"), REDACTED),
+    (re.compile(r"(?i)(Bearer\s+)[A-Za-z0-9._~+/-]{16,}=*"), r"\1" + REDACTED),
+    (re.compile(r"(?i)([a-z][a-z0-9+.-]*://[^\s:/@]+:)[^\s/@]+(@)"), r"\1" + REDACTED + r"\2"),
+)
+
+_EXCEPTION_FORMATTER = logging.Formatter()
 
 
 def _secret_forms(secret: str) -> set[str]:
