@@ -77,6 +77,21 @@ jobs:
           cd /opt/bytebot
           before=$(git rev-parse HEAD)
           git pull --ff-only
+          changed=$(git diff --name-only "$before" HEAD)
+          docs_only=0
+          if [ -n "$changed" ]; then
+            docs_only=1
+            while IFS= read -r path; do
+              case "$path" in
+                docs/*|tests/*|*.md|.superpowers/*) ;;
+                *) docs_only=0; break ;;
+              esac
+            done <<< "$changed"
+          fi
+          if [ "$docs_only" = 1 ]; then
+            echo "docs/tests-only diff: prod restart skipped"
+            exit 0
+          fi
           if ! git diff --quiet "$before" HEAD -- uv.lock; then
             echo "uv.lock changed, syncing"
             /root/.local/bin/uv sync --frozen --no-dev
