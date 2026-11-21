@@ -225,7 +225,7 @@ def test_worst_case_callbacks_fit_telegram() -> None:
 
 @pytest.mark.asyncio
 async def test_start_payload_opens_card_as_one_rich_message() -> None:
-    db = FakeDB()
+    db = FakeDB(locales={7: "ru"})
     factory = fake = db.factory()
     repo = FakeRepo()
     bot = FakeBot()
@@ -244,7 +244,7 @@ async def test_start_payload_opens_card_as_one_rich_message() -> None:
 
 @pytest.mark.asyncio
 async def test_start_without_payload_sends_only_the_menu() -> None:
-    db = FakeDB()
+    db = FakeDB(locales={7: "ru"})
     repo = FakeRepo()
     bot = FakeBot()
     message = _message()
@@ -257,13 +257,15 @@ async def test_start_without_payload_sends_only_the_menu() -> None:
 
 
 @pytest.mark.asyncio
-async def test_start_saves_telegram_language_once() -> None:
+async def test_start_before_the_choice_shows_the_picker_and_writes_nothing() -> None:
     db = FakeDB()
+    bot = FakeBot()
     message = _message(language_code="tt-TR")
 
-    await commands.start(message, SimpleNamespace(args=None), FakeBot(), FakeRepo(), db.factory())
+    await commands.start(message, SimpleNamespace(args=None), bot, FakeRepo(), db.factory())
 
-    assert db.locales[7] == "tt"
+    assert db.locales == {} and db.chosen == {}
+    assert "Сиңа нинди тел уңайлырак?" in bot.sent[0]["rich_message"].html
 
 
 @pytest.mark.asyncio
