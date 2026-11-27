@@ -138,7 +138,7 @@ requests==2.34.2
     # via
     #   opentelemetry-exporter-http-transport
     #   opentelemetry-exporter-otlp-proto-http
-sentry-sdk==2.75.0
+sentry-sdk==3.0.0
     # via byte-guardian-bot
 sqlalchemy==2.1.9
     # via
